@@ -3,15 +3,15 @@
 ## Published / scheduled (YouTube via Metricool)
 | Time (Riga) | Video | Dropbox file |
 |---|---|---|
-| 19 Nov 16:00 | The Lost Toy Room, Part 1: "Every toy you lost is waiting in this room" | `/Youtube/lost-toy-room-part1.mp4` |
-| 19 Nov 18:20 | Part 2: "The lost toy room got a phone call… (Part 2)" | `/Youtube/lost-toy-room-part2.mp4` |
-| 19 Nov 20:20 | Part 3: "She forgot everyone… except this song (Part 3)" | `/Youtube/lost-toy-room-part3.mp4` |
-| 19 Nov 22:20 | Part 4: "The lost toy room's last rule (Finale)" | `/Youtube/lost-toy-room-part4-finale.mp4` |
+| 19 Nov 16:00 ✅ [live](https://www.youtube.com/shorts/8DlR4Mf9Mx4) | The Lost Toy Room, Part 1: "Every toy you lost is waiting in this room" | `/Youtube/lost-toy-room-part1.mp4` |
+| 19 Nov 18:20 ✅ [live](https://www.youtube.com/shorts/kfaWF7kWvTY) | Part 2: "The lost toy room got a phone call… (Part 2)" | `/Youtube/lost-toy-room-part2.mp4` |
+| 19 Nov 20:20 ✅ [live](https://www.youtube.com/shorts/jG9lEuLbcAE) | Part 3: "She forgot everyone… except this song (Part 3)" | `/Youtube/lost-toy-room-part3.mp4` |
+| 19 Nov 22:20 ✅ [live](https://www.youtube.com/shorts/9re0uEIczkI) | Part 4: "The lost toy room's last rule (Finale)" | `/Youtube/lost-toy-room-part4-finale.mp4` |
 
 Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because the parts were released 2 hours apart.
 
-## Ready, not yet posted
-- **The Second Cup** (68.6 s, the first fully animated story). The full-quality file was lost when the cloud session was reset. Only the 52 MB phone copy survives, with the owner. Next step: upload it to Dropbox `/Youtube/the-second-cup.mp4` and schedule it.
+## Scheduled
+- **The Second Cup**: 20 Nov 2026 16:00 Riga (Metricool post uuid -1017785154483633580). Source: Dropbox `/Youtube/Video Nov 20 2026, 1 09 42 AM.mp4` (the 52 MB phone copy, 68.6 s).
   - Title: "He makes two cups of tea every morning. Nobody knows why."
   - First comment: "Who would you make the second cup for? 👇"
 
