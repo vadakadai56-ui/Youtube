@@ -15,10 +15,10 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
   - Title: "He makes two cups of tea every morning. Nobody knows why."
   - First comment: "Who would you make the second cup for? 👇"
 
-## Lost in the 19 Nov reset (to rebuild into `pipeline/`)
-- Blender scene and character builders: toy room, toys, Bun-Bun, door, silhouettes, bedroom, park bench, peg dolls, kitchen, snowy street, care home and care room.
-- Eevee animation renderer, per-shot update functions.
-- Edit scripts (cuts, captions, sound design) and the Dropbox upload helper.
+## Rebuilt after the 19 Nov reset (done, tested end to end)
+- `pipeline/` toolkit, renderer, aligner, editor and Dropbox publisher. `stories/the-second-cup/` is fully re-renderable.
+- Not rebuilt: the Lost Toy Room per-shot camera files (Parts 1 to 4 are finished and live). The set, toys, Bun-Bun, door and silhouettes are in `scene.py`.
+- Lost for good: the narration mp3s (ElevenLabs history has them), the rendered frames, and the full-quality "The Second Cup" (the phone copy exists).
 
 ## Open items
 - Instagram: the owner could not connect it in Metricool yet. Needs a professional (Creator) account, then Metricool > Brand settings > Connections > Instagram.
