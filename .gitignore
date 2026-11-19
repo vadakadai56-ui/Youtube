@@ -1,0 +1,7 @@
+*.mp4
+*.mov
+*.wav
+renders/
+out/
+__pycache__/
+.venv/
