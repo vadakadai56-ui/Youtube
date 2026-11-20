@@ -34,6 +34,26 @@ python3 pipeline/publish.py out/my-story.mp4
 ```
 Keep long renders under the 3-hour background-job limit: render in batches of shots (`anim.py ... k1 k2 k3`).
 
+## YouTube agent skills (`.claude/skills/yt-*`)
+Claude Code skills that run the channel. Type `/yt-channel` (or "run my YouTube") to see where things stand and what to do next.
+
+| Skill | Job |
+|---|---|
+| `/yt-channel` | Hub: reads STATUS, Metricool and the story folders, picks the next step |
+| `/yt-idea` | Pitches 3 original story ideas (sad start, warm twist) |
+| `/yt-script` | Writes `narration.txt` with v4 audio tags; waits for owner approval |
+| `/yt-hook` | 10 opening lines, scored, for the first 3 s |
+| `/yt-voice` | ElevenLabs narration (George) and `words.json` timings |
+| `/yt-build` | `shots.py`, `edit_config.py`, Blender render and edit |
+| `/yt-qc` | `pipeline/qc.py`: 9:16, length, -14 LUFS, true peak, hook gaps |
+| `/yt-title` | Title options, description, tags, pinned question |
+| `/yt-thumbnail` | `pipeline/cover.py`: candidate frames and text covers |
+| `/yt-publish` | Dropbox upload and Metricool scheduling |
+| `/yt-plan` | 7 to 14-day calendar worked back from each slot |
+| `/yt-analytics` | Metricool numbers, patterns, changes for next scripts |
+| `/yt-comments` | Reply drafts, pins, ideas from viewers |
+| `/yt-series` | Multi-part story outlines and release plans |
+
 ## Code
 - `pipeline/scene.py`: Blender toolkit (materials, primitives, lights, camera), the Lost Toy Room set, toys, Bun-Bun, door, silhouettes.
 - `pipeline/world.py`: peg-doll characters (Walter, Rose, nurse, neighbours), walk and breathe animation, props (cups, teapot, flask), Steam, Snow, sets (kitchen, snowy street, care home, care room).
@@ -41,6 +61,8 @@ Keep long renders under the 3-hour background-job limit: render in batches of sh
 - `pipeline/align.py`: word timings from the narration's pauses and the script.
 - `pipeline/edit.py`: the editor and sound toolkit; reads the story's `edit_config.py`.
 - `pipeline/publish.py`: Dropbox upload (chunked) and public link.
+- `pipeline/qc.py`: pre-upload checks (exit 1 on a fail).
+- `pipeline/cover.py`: contact sheet of candidate cover frames, and 1080x1920 covers with caption-style text.
 
 ## Rules
 - Original stories, characters and scenes only. No copying other channels' stories, characters or looks.
