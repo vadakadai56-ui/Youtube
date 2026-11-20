@@ -1,9 +1,9 @@
 # How a Frozen River Becomes a Hotel
 
-Status: script drafted 20 Nov 2026, **waiting for owner approval**. Do not voice or render before approval.
+Status: script **approved by the owner 20 Nov 2026** (55 s cut). Title 1 chosen.
 
 - Trend: "How a ___ becomes a ___" (see `channel/trends.md`, 20 Nov: #1, top Short 36.4M views in 5 days) + winter season.
-- Target length: 45 to 55 s (about 130 words at George's pace). The script is 135 words, about 60 s at George's pace (The Empty Swing: 148 words, about 67 s). Cut 2 lines to reach 55 s if wanted.
+- Target length: 45 to 55 s (about 130 words at George's pace). The approved script is about 115 words, about 52 s plus the end card.
 - Look: clean, bright 3D cutaway. Blue-white ice, warm amber light inside, dark blue night sky. No toy-world dust.
 - Facts kept general (no real hotel or place named): river ice harvested late winter, stored frozen over summer, built from snow and ice sprayed over steel moulds, hand-carved rooms, sub-zero inside, melts in spring.
 
@@ -20,11 +20,9 @@ Status: script drafted 20 Nov 2026, **waiting for owner approval**. Do not voice
 | s8 | In November, the cold comes back. | Trees go bare, snow (`Snow` class) starts. |
 | s9 | And so do the builders. | Workers walk in (`walk`) across the snow. |
 | s10-11 | Snow and ice are sprayed over steel moulds. | Steel half-cylinder moulds in a row, then snow layers building up over them. |
-| s12 | When the moulds come out... | Mould slides out; arch stands alone. |
 | s13 | Then the artists arrive... | Artist chiselling an ice sculpture, ice chips flying. |
 | s14 | The bed is ice. The glasses are ice. | Two quick cuts: ice bed, ice glasses catching light. |
 | s15 | Inside, it stays below freezing... | A thermometer at -5 °C, breath steam (`Steam`). |
-| s17 | ...nothing but winter. | Wide again, night, aurora-like glow, hotel lit. |
 | s18 | Then spring comes. | Sun up, drips. |
 | s19 | The walls drip. The arches sag. | Close-up drips, arch sagging. |
 | s20 | ...flows back into the river... | Water rushing, ice gone. |
@@ -42,7 +40,7 @@ frozen river, hotel, melts, march, thickest, blocks, fridge, freezer, november, 
   3. This hotel melts every spring. They rebuild it every winter.
   4. They sleep in a hotel made of river ice.
   5. Why this hotel has to be rebuilt every single year
-- Recommended: 1 (matches the hook word for word).
+- **Chosen: 1** (matches the hook).
 - Description: "Every spring it melts. Every winter it comes back. ❄️ A new animated Short every day. #shorts #howitsmade #animation #winter"
 - Tags: ice hotel, frozen river, how it's made, how it works, winter, ice, animation, 3d animation, short story, satisfying
 - Pinned comment: "Would you sleep one night at minus five? Comment ICE if yes 🧊👇"
