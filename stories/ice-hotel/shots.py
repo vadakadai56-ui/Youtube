@@ -7,7 +7,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "..", "pipeline"))
 from world import *          # noqa
 
-NIGHT = (0.02, 0.035, 0.09); DAY = (0.55, 0.7, 0.9); MARCH = (0.75, 0.72, 0.8); SUMMER = (0.5, 0.75, 0.95)
+NIGHT = (0.02, 0.035, 0.09); DAY = (0.18, 0.42, 0.9); MARCH = (0.75, 0.72, 0.8); SUMMER = (0.5, 0.75, 0.95)
 HIVIS = (0.95, 0.45, 0.08); PARKA = (0.15, 0.35, 0.75); AMBER = (1.0, 0.62, 0.28)
 
 
@@ -30,15 +30,18 @@ def river(frozen=True, cut=False, water_z=-0.35):
     return {"water": water, "slab": slab, "top": top}
 
 
-def hotel(loc=(0, 0, 0), lit=1.0):
-    """Ice hotel: five vaulted halls side by side, an entrance arch, warm light inside. Returns the root to melt (scale z)."""
-    root = empty("hotel", loc); im = ice_m("hotelice", 0.25); parts = []
+def hotel(loc=(0, 0, 0), lit=1.0, glow=0.25):
+    """Ice hotel: five vaulted halls behind an ice facade with small warm windows and a lit doorway. Returns the root to melt (scale z)."""
+    root = empty("hotel", loc); im = ice_m("hotelice%.2f" % glow, glow); parts = []
     for k in range(5):
-        x = (k - 2) * 1.05
-        parts.append(cyl((x, 0, 0), 0.5, 3.0, im, rot=(math.pi / 2, 0, 0), verts=40))
-        parts.append(cyl((x, -1.52, 0), 0.42, 0.06, mat("glowend", AMBER, 0.4, emit=AMBER, emit_str=2.5 * lit), rot=(math.pi / 2, 0, 0), verts=40))
-    parts.append(cyl((0, -1.9, 0), 0.38, 0.8, im, rot=(math.pi / 2, 0, 0), verts=40))           # entrance tunnel
-    parts.append(cyl((0, -2.31, 0), 0.26, 0.02, mat("door", AMBER, 0.4, emit=AMBER, emit_str=6 * lit), rot=(math.pi / 2, 0, 0), verts=32))
+        parts.append(cyl(((k - 2) * 1.05, 0, 0), 0.5, 3.0, im, rot=(math.pi / 2, 0, 0), verts=40))
+    parts.append(cube((0, -1.5, 0.27), (5.5, 0.14, 0.54), im, bevel=0.02))                      # facade
+    parts.append(cube((0, -1.5, 0.565), (5.6, 0.2, 0.05), snow_m("snowcap")))                    # snow along the top
+    win = mat("win%.1f" % lit, AMBER, 0.4, emit=AMBER, emit_str=5 * lit + 0.01)
+    for k in range(-4, 5):
+        if k: parts.append(cube((k * 0.55, -1.58, 0.3), (0.1, 0.02, 0.16), win))
+    parts.append(cyl((0, -1.85, 0), 0.34, 0.6, im, rot=(math.pi / 2, 0, 0), verts=40))           # entrance tunnel
+    parts.append(cyl((0, -2.16, 0), 0.24, 0.02, mat("door%.1f" % lit, AMBER, 0.4, emit=AMBER, emit_str=7 * lit + 0.01), rot=(math.pi / 2, 0, 0), verts=32))
     for o in parts: o.parent = root; o.location = Vector(o.location)
     light("POINT", (loc[0], loc[1] - 1.0, 0.25), 120 * lit, col=AMBER, size=0.6)
     return root
@@ -49,7 +52,7 @@ def worker(loc, rot=0.0, col=HIVIS, kind="neighbour1", h=0.5):
 
 
 def saw(loc, rot=0.0):
-    m = mat("steel", (0.75, 0.77, 0.8), 0.25, metal=1.0)
+    m = mat("steel", (0.3, 0.32, 0.36), 0.3, metal=1.0)
     root = empty("saw", loc)
     b = cube((0, 0, 0), (0.7, 0.01, 0.12), m); hnd = cube((0.38, 0, 0.08), (0.08, 0.03, 0.12), mat("handle", (0.8, 0.15, 0.1), 0.5))
     for o in (b, hnd): o.parent = root
@@ -87,8 +90,8 @@ def s2(rng):                       # the camera sinks to the ice edge: the hotel
 
 
 def s3(rng):                       # every spring it melts: same wide shot, daylight, it slumps into water
-    r = river(); h = hotel(lit=0.0); world_color(DAY)
-    light("SUN", (0, 0, 10), 3.0, col=(1.0, 0.95, 0.85), rot=(0.8, 0.2, 0.5))
+    r = river(); h = hotel(lit=0.0, glow=0.04); world_color(DAY)
+    light("SUN", (0, 0, 10), 4.5, col=(1.0, 0.93, 0.8), rot=(1.05, 0.15, 0.9))
     cam = camera((3.0, -6.0, 1.3), (0, 0, 0.3), lens=32)
     def upd(t):
         k = smooth((t - 0.5) / 1.8); h.scale = (1.0, 1.0, max(0.02, 1.0 - 0.97 * k)); h.location.z = -0.1 * k
@@ -101,26 +104,26 @@ def s4(rng):                       # March: white river, low sun, workers saw a 
     gm = mat("grid", (0.4, 0.55, 0.75), 0.3)
     for k in range(-3, 4):
         cube((k * 0.45, 0, 0.004), (0.012, 3.2, 0.004), gm); cube((0, k * 0.45, 0.004), (3.2, 0.012, 0.004), gm)
-    w1 = worker((-0.3, -0.25, 0), rot=0.3); w2 = worker((0.6, 0.4, 0), rot=-2.2, col=PARKA, kind="sam")
+    w1 = worker((-0.3, -0.25, 0), rot=0.3, h=0.65); w2 = worker((0.6, 0.4, 0), rot=-2.2, col=PARKA, kind="sam", h=0.65)
     s = saw((-0.1, -0.05, 0.06), rot=0.3)
-    cam = camera((1.6, -2.6, 1.6), (0, 0, 0), lens=30)
+    cam = camera((1.0, -1.7, 0.95), (0.1, 0.05, 0.25), lens=30)
     def upd(t):
         s.location.x = -0.1 + 0.12 * math.sin(t * 9); w1["R"].rotation_euler[0] = -1.0 + 0.3 * math.sin(t * 9)
-        breathe(w1, t); breathe(w2, t); cam.location.x = 1.6 - 0.1 * t
+        breathe(w1, t); breathe(w2, t); cam.location.x = 1.0 - 0.08 * t
     return upd
 
 
 def s5(rng):                       # a block lifts out: bigger than a fridge (a fridge beside it for scale)
     river(); world_color(MARCH); light("SUN", (0, 0, 10), 2.4, col=(1.0, 0.82, 0.65), rot=(1.25, 0.0, -0.9))
     cube((0, 0, -0.17), (0.9, 0.9, 0.36), mat("holew", (0.05, 0.14, 0.22), 0.05, coat=1.0))
-    blk = cube((0, 0, -0.17), (0.86, 0.86, 0.62), ice_m("block", 0.5), bevel=0.02)
-    chain = cyl((0, 0, 1.6), 0.01, 2.6, mat("chain", (0.2, 0.2, 0.22), 0.4, metal=1.0))
-    fr = cube((1.0, 0.2, 0.32), (0.32, 0.3, 0.64), mat("fridge", (0.96, 0.96, 0.97), 0.3), bevel=0.03)
-    cube((0.83, 0.2, 0.42), (0.01, 0.03, 0.18), mat("fhandle", (0.5, 0.5, 0.55), 0.3, metal=1.0))
-    w = worker((-0.9, -0.3, 0), rot=0.8)
-    cam = camera((0.6, -3.0, 0.7), (0.3, 0, 0.45), lens=34)
+    blk = cube((0, 0, 0.1), (0.86, 0.86, 0.8), ice_m("block", 0.15), bevel=0.02)
+    chain = cyl((0, 0, 1.9), 0.012, 2.6, mat("chain", (0.2, 0.2, 0.22), 0.4, metal=1.0))
+    fr = cube((0.95, -0.1, 0.28), (0.34, 0.32, 0.56), mat("fridge", (0.85, 0.2, 0.18), 0.35, coat=0.6), bevel=0.03)
+    cube((0.77, -0.1, 0.38), (0.01, 0.03, 0.16), mat("fhandle", (0.8, 0.8, 0.85), 0.3, metal=1.0))
+    w = worker((-0.85, -0.35, 0), rot=0.8, h=0.65)
+    cam = camera((0.9, -2.3, 0.75), (0.35, 0, 0.4), lens=32)
     def upd(t):
-        k = smooth(t / 2.2); blk.location.z = -0.17 + 0.62 * k + 0.01 * math.sin(t * 5); chain.location.z = 1.6 + 0.62 * k; breathe(w, t)
+        k = smooth(t / 2.6); blk.location.z = 0.1 + 0.3 * k + 0.01 * math.sin(t * 5); chain.location.z = 1.9 + 0.3 * k; breathe(w, t)
     return upd
 
 
@@ -143,12 +146,14 @@ def s6(rng):                       # the blocks wait out the summer, stacked in 
 def s7(rng):                       # outside it's summer: green trees, the freezer door breathes cold
     world_color(SUMMER); cube((0, 0, -0.05), (30, 30, 0.1), mat("grass", (0.3, 0.55, 0.22), 0.9, noise=0.3))
     light("SUN", (0, 0, 10), 3.0, col=(1.0, 0.95, 0.85), rot=(0.7, 0.2, 0.6))
-    cube((0, 2.0, 1.4), (5, 3, 2.8), mat("shed", (0.75, 0.78, 0.82), 0.5, metal=0.3))
-    cube((0, 0.49, 0.8), (1.2, 0.02, 1.6), mat("dooropen", (0.6, 0.8, 1.0), 0.3, emit=(0.6, 0.8, 1.0), emit_str=2.5))
+    sh = mat("shed", (0.45, 0.5, 0.58), 0.45, metal=0.4)
+    cube((0, 2.0, 1.1), (4.2, 3, 2.2), sh); cube((0, 2.0, 2.3), (4.4, 3.2, 0.2), mat("roof", (0.25, 0.28, 0.32), 0.5))
+    cube((0, 0.49, 0.75), (1.3, 0.02, 1.5), mat("dooropen", (0.6, 0.8, 1.0), 0.3, emit=(0.6, 0.85, 1.0), emit_str=4.0))
+    text("COLD STORE", (0, 0.47, 1.85), 0.28, mat("sign", (1, 1, 1), 0.5, emit=(1, 1, 1), emit_str=1.5), rot=(math.pi / 2, 0, 0))
     for tx, ty in ((-3.6, 1.0), (3.4, 1.4), (-2.6, -1.8), (4.2, -1.0)): tree((tx, ty, 0), "dusk", rng)
     mist = Steam((0, 0.3, 0.1), n=18, rng=rng)
-    cam = camera((1.8, -5.0, 1.1), (0, 1.0, 0.9), lens=30)
-    def upd(t): mist.update(t, 1.4); cam.location.y = -5.0 + 0.3 * t
+    cam = camera((3.2, -6.5, 1.6), (0, 1.2, 1.0), lens=30)
+    def upd(t): mist.update(t, 1.4); cam.location.y = -6.5 + 0.35 * t
     return upd
 
 
@@ -211,8 +216,8 @@ def s11(rng):                      # then artists carve every room by hand
 
 
 def room_set():
-    world_color((0.02, 0.03, 0.06)); cube((0, 0, -0.05), (10, 10, 0.1), snow_m("rfloor"))
-    cyl((0, 0.5, 0), 1.8, 4, ice_m("rvault", 0.18), rot=(0, math.pi / 2, 0), verts=48)
+    world_color((0.01, 0.015, 0.04)); cube((0, 0, -0.05), (10, 10, 0.1), mat("rfloor", (0.45, 0.5, 0.6), 0.7))
+    cyl((0, 0.5, 0), 1.8, 4, ice_m("rvault", 0.06), rot=(0, math.pi / 2, 0), verts=48)
     light("POINT", (0.0, -0.4, 1.4), 70, col=AMBER, size=0.5); light("POINT", (0.9, 1.2, 0.5), 50, col=(0.5, 0.75, 1.0), size=0.5)
 
 
@@ -229,12 +234,12 @@ def s12(rng):                      # the bed is ice (with reindeer-skin blanket)
 def s13(rng):                      # the glasses are ice
     room_set()
     cube((0, 0.3, 0.45), (1.6, 0.5, 0.9), ice_m("bar", 0.4), bevel=0.04)
-    gm = ice_m("glass", 1.0); gl = []
+    gm = ice_m("glass", 0.6)
     for k in range(4):
-        gl.append(cube((-0.45 + 0.3 * k, 0.25, 0.98), (0.12, 0.12, 0.16), gm, bevel=0.01))
-    drink = cube((0.15, 0.25, 0.96), (0.09, 0.09, 0.09), mat("drink", (0.9, 0.3, 0.4), 0.2, emit=(0.9, 0.3, 0.4), emit_str=1.0))
-    cam = camera((0.5, -0.9, 1.15), (0, 0.25, 0.98), lens=45, dof=1.2, fstop=2.0)
-    def upd(t): cam.location.x = 0.5 - 0.2 * t; look_at(cam, Vector((0, 0.25, 0.98)))
+        x = -0.36 + 0.24 * k
+        cyl((x, 0.2, 1.0), 0.055, 0.18, gm, verts=24); cyl((x, 0.2, 0.96), 0.045, 0.08, mat("drink%d" % k, [(0.95, 0.3, 0.4), (0.95, 0.65, 0.1), (0.3, 0.8, 0.5), (0.4, 0.5, 0.95)][k], 0.2, emit=[(0.95, 0.3, 0.4), (0.95, 0.65, 0.1), (0.3, 0.8, 0.5), (0.4, 0.5, 0.95)][k], emit_str=1.2), verts=24)
+    cam = camera((0.35, -0.75, 1.15), (0, 0.2, 1.0), lens=45, dof=1.0, fstop=5.6)
+    def upd(t): cam.location.x = 0.35 - 0.2 * t; look_at(cam, Vector((0, 0.2, 1.0)))
     return upd
 
 
@@ -268,20 +273,24 @@ def s16(rng):                      # then spring comes: the sun rises over the h
 
 
 def s17(rng):                      # the walls drip: close-up of a vault edge, drops falling
-    world_color(DAY); light("SUN", (0, 0, 10), 3.0, col=(1.0, 0.95, 0.85), rot=(0.8, 0.2, 0.5))
+    world_color(DAY); light("SUN", (0, 0, 10), 4.5, col=(1.0, 0.93, 0.8), rot=(1.05, 0.15, 0.9))
     cube((0, 0, -0.05), (10, 10, 0.1), mat("slush", (0.6, 0.7, 0.8), 0.2, coat=1.0))
-    cyl((0, 0.5, 0), 0.9, 3, ice_m("wet", 0.2), rot=(math.pi / 2, 0, 0), verts=48)
-    drops = [sphere((0, 0, 0), 0.025, ice_m("drop", 0.8), scale=(1, 1, 1.4), seg=10) for _ in range(9)]
-    cam = camera((0.3, -1.4, 0.35), (0, -1.0, 0.55), lens=42, dof=0.55, fstop=2.0)
+    wet = ice_m("wet", 0.05)
+    cyl((0, 0.5, 0), 0.9, 3, wet, rot=(math.pi / 2, 0, 0), verts=48)
+    drops = []
+    for i in range(7):
+        x = -0.6 + 0.2 * i; zt = math.sqrt(max(0.0, 0.81 - x * x))
+        ic = cyl((x, -1.02, zt - 0.08), 0.015, 0.16, wet, verts=10); ic.scale = (1, 1, 1.0)
+        drops.append((sphere((x, -1.02, zt - 0.17), 0.022, mat("drop", (0.6, 0.8, 1.0), 0.05, coat=1.0, emit=(0.7, 0.9, 1.0), emit_str=1.5), scale=(1, 1, 1.4), seg=10), zt - 0.17, i))
+    cam = camera((1.1, -2.4, 0.55), (0, -1.0, 0.55), lens=40)
     def upd(t):
-        for i, d in enumerate(drops):
-            u = ((t * 0.9 + i / 9) % 1.0); x = -0.6 + 0.15 * i
-            zt = math.sqrt(max(0.0, 0.81 - x * x)); d.location = Vector((x, -1.0, max(0.02, zt - 1.4 * u * u)))
+        for d, z0, i in drops:
+            u = ((t * 1.1 + i * 0.37) % 1.0); d.location.z = max(0.02, z0 - 1.6 * u * u)
     return upd
 
 
 def s18(rng):                      # the arches sag
-    r = river(); h = hotel(lit=0.0); world_color(DAY); light("SUN", (0, 0, 10), 3.0, col=(1.0, 0.95, 0.85), rot=(0.8, 0.2, 0.5))
+    r = river(); h = hotel(lit=0.0, glow=0.04); world_color(DAY); light("SUN", (0, 0, 10), 4.5, col=(1.0, 0.93, 0.8), rot=(1.05, 0.15, 0.9))
     cam = camera((1.6, -3.6, 0.6), (0, 0, 0.3), lens=34)
     def upd(t):
         k = smooth(t / 2.0); h.scale = (1.0 + 0.1 * k, 1.0, 1.0 - 0.55 * k); h.location.z = -0.05 * k
@@ -289,19 +298,23 @@ def s18(rng):                      # the arches sag
 
 
 def s19(rng):                      # the whole hotel flows back into the river
-    r = river(); h = hotel(lit=0.0); world_color(DAY); light("SUN", (0, 0, 10), 3.0, col=(1.0, 0.95, 0.85), rot=(0.8, 0.2, 0.5))
+    r = river(); h = hotel(lit=0.0, glow=0.04); world_color(DAY); light("SUN", (0, 0, 10), 4.5, col=(1.0, 0.93, 0.8), rot=(1.05, 0.15, 0.9))
     h.scale = (1.1, 1.0, 0.45)
-    cam = camera((3.0, -5.0, 1.6), (0, 0, 0.0), lens=30)
+    bsdf(r["water"].data.materials[0]).inputs["Base Color"].default_value = (0.08, 0.3, 0.55, 1)
+    chunks = [cube((rng.uniform(-2.5, 2.5), rng.uniform(-3, 1), -0.3), (rng.uniform(0.2, 0.5), rng.uniform(0.2, 0.5), 0.08), ice_m("chunk", 0.1), rot=(0, 0, rng.uniform(0, 3)), bevel=0.02) for _ in range(14)]
+    cam = camera((2.2, -4.2, 1.1), (0, -0.5, 0.0), lens=30)
     def upd(t):
-        k = smooth(t / 1.3); h.scale = (1.1, 1.0, max(0.01, 0.45 * (1 - k))); h.location.z = -0.3 * k
-        r["top"].scale = (1, 1, max(0.01, 1 - k)); r["slab"].location.z = -0.17 - 0.3 * k; r["water"].location.z = -0.35 + 0.33 * k
+        k = smooth(t / 1.2); h.scale = (1.1, 1.0, max(0.01, 0.45 * (1 - k))); h.location.z = -0.3 * k
+        r["top"].scale = (1, 1, max(0.01, 1 - k)); r["slab"].location.z = -0.17 - 0.3 * k; r["water"].location.z = -0.35 + 0.37 * k
+        for i, c in enumerate(chunks): c.location.z = -0.35 + 0.37 * k + 0.02; c.location.x += 0.004
     return upd
 
 
 def s20(rng):                      # next March: the saw touches fresh ice again
     river(); world_color(MARCH); light("SUN", (0, 0, 10), 2.4, col=(1.0, 0.82, 0.65), rot=(1.25, 0.0, -0.9))
-    s = saw((0, 0, 0.1), rot=0.0); w = worker((0.2, 0.35, 0), rot=math.pi, h=0.6)
-    cam = camera((0.0, -1.1, 0.35), (0, 0, 0.05), lens=40, dof=1.1, fstop=2.2)
+    s = saw((0, 0, 0.1), rot=0.0); w = worker((0.55, 0.45, 0), rot=math.pi + 0.4, h=0.65)
+    cube((0, 0, 0.004), (1.6, 0.012, 0.004), mat("grid", (0.4, 0.55, 0.75), 0.3))
+    cam = camera((0.25, -1.25, 1.05), (0.1, 0.1, 0.1), lens=30)
     def upd(t):
         k = smooth(t / 1.0); s.location.z = 0.1 - 0.06 * k; s.location.x = 0.05 * math.sin(t * 9) * (t > 1.0) * (t < 1.6); breathe(w, t)
     return upd
