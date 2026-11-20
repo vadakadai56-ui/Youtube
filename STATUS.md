@@ -11,13 +11,24 @@
 Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because the parts were released 2 hours apart.
 
 ## Scheduled
-- **The Second Cup**: 20 Nov 2026 16:00 Riga (Metricool post uuid -1017785154483633580). Source: Dropbox `/Youtube/Video Nov 20 2026, 1 09 42 AM.mp4` (the 52 MB phone copy, 68.6 s).
+- **The Second Cup**: published 20 Nov 2026 16:00 Riga ([live](https://www.youtube.com/shorts/ZZuKn5VseOI)) (Metricool post uuid -1017785154483633580). Source: Dropbox `/Youtube/Video Nov 20 2026, 1 09 42 AM.mp4` (the 52 MB phone copy, 68.6 s).
   - Title: "He makes two cups of tea every morning. Nobody knows why."
   - First comment: "Who would you make the second cup for? 👇"
 
 - **The Empty Swing**: rendered 20 Nov (71.7 s, -14.2 LUFS). Waiting for a new Dropbox token, then upload and schedule for 21 Nov 16:00 Riga.
   - Title: "Every evening at 6, he pushes an empty swing."
   - First comment: "Who would you push the swing for? 👇"
+
+## In production
+- **How a Frozen River Becomes a Hotel** (`stories/ice-hotel/`): first trend-driven video ("How a ___ becomes a ___"). Script and packaging drafted 20 Nov. **Waiting for owner approval.** Plan: voice 21 Nov, render 22 Nov, qc and schedule 23 Nov, live 24 Nov 16:00 Riga.
+
+## Plan (20 Nov)
+| Date | Slot (Riga) | Video | Stage | Next action | Blocker |
+|---|---|---|---|---|---|
+| 20 Nov | 16:00 | The Second Cup | live ✅ | none | none |
+| 21 Nov | 16:00 | The Empty Swing | rendered | upload and schedule | Dropbox token expired |
+| 24 Nov | 16:00 | How a Frozen River Becomes a Hotel | script | owner approval, then /yt-voice | approval |
+| 27 or 28 Nov | 16:00 | Christmas "how it works" Short (trend #2) | idea | /yt-idea | none |
 
 ## Rebuilt after the 19 Nov reset (done, tested end to end)
 - `pipeline/` toolkit, renderer, aligner, editor and Dropbox publisher. `stories/the-second-cup/` is fully re-renderable.
