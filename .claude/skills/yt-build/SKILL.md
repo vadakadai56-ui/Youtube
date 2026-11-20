@@ -15,9 +15,10 @@ PREVIEW=1 PCT=25 ES=6 $VENV/bin/python pipeline/anim.py stories/<slug> /tmp/fram
 ```
 Look at frame 0 of every shot. Fix framing before the full render.
 ```bash
-PCT=50 ES=12 $VENV/bin/python pipeline/anim.py stories/<slug> /tmp/frames all            # full render, resumable
+ENGINE=CYCLES SAMPLES=40 PCT=50 $VENV/bin/python pipeline/anim.py stories/<slug> /tmp/frames all   # full render, resumable
 python3 pipeline/edit.py stories/<slug> /tmp/frames narration.mp3 out/<slug>.mp4
 ```
+- **Use Cycles for the full render.** On the cloud machine (4 CPUs, no GPU) Eevee runs in software at about 47 s a frame; Cycles CPU with 40 samples and denoising takes about 11 s and looks better. Check speed on the first frames of every render.
 - Background jobs stop at 3 hours: render in batches of shots (`anim.py ... s1 s2 s3`) and re-run to resume.
 - Confirm with the owner before a render expected to take over an hour.
 
