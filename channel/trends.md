@@ -1,25 +1,37 @@
-# Trends: 20 Nov 2026
+# Trends: 20 Nov 2026 (full pages read)
 
-Source note: built from 4 web searches on 20 Nov 2026 (search-result summaries). The trend pages themselves could not be opened: this session's network blocks those hosts. Most sources are third-party trend sites, not YouTube or TikTok. Treat counts as indicative. Re-run `/yt-trends` after 27 Nov.
+Sources, all read on 20 Nov 2026:
+- Kabo: top 100 YouTube uploads of the last 7 days, snapshot 20 Nov.
+- Trends24: World Shorts, 18 to 20 Nov, plus duration stats from 257 Shorts.
+- Postdom: TikTok scan for the week of 16 to 22 Nov, updated 20 Nov.
+- Virlo: TikTok creator counts for the last 7 days, updated 20 Nov.
+- Virotok: TikTok trends for the week of 16 Nov.
+- Anijam: Shorts trends, November section.
 
-Scores 1 to 5: Mo = momentum, Sh = shelf life, Fit = buildable in the toy-world pipeline in 2 to 3 days, Or = room for an original version, Sa = safety. Days left = estimate.
+All of them are third-party trackers. The numbers are what each page showed.
 
-| # | Trend | Kind | Evidence (source, date) | Mo | Sh | Fit | Or | Sa | Total | Days left |
+Scores 1 to 5: Mo = momentum, Sh = shelf life, Fit = buildable in the toy-world pipeline in 2 to 3 days, Or = room for an original version, Sa = safety.
+
+| # | Trend | Kind | Evidence | Mo | Sh | Fit | Or | Sa | Total | Days left |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1 | Holiday kickoff after Thanksgiving ("Christmas music is allowed now", Christmas dances) | Topic | Several TikTok trend trackers, 16 to 20 Nov 2026 (socialpilot, virlo, newengen, postdom) | 4 | 5 | 5 | 5 | 5 | **24** | ~35 (to 25 Dec) |
-| 2 | Animated story Shorts boom (55 to 70 s narrated animated stories) | Format | X post: "Animated story shorts are all over TikTok and Reels"; GitHub claude-animated-shorts +3,954 stars, 31 Oct to 18 Nov (trendshift.io) | 4 | 4 | 5 | 4 | 5 | **22** | 30+ (more competition coming) |
-| 3 | "Comment 'X' if you need one!" ask-the-viewer hook | Hook pattern | Trends24 World Shorts, 18 Nov 2026: top Short at 100M views uses it | 4 | 3 | 4 | 4 | 4 | **19** | ~14 |
-| 4 | Thanksgiving (US, 26 Nov) | Topic | TikTok trackers 16 to 20 Nov (turkey boards, holiday food) | 5 | 1 | 3 | 4 | 5 | **18** | 6 (too short for a 3-day build plus buffer) |
-| 5 | Twins at the Carousel (a deadpan character stared at by tiny copies of itself, remade by animators with their own characters) | Format / meme | anijam.ai Nov 2026 roundup (commercial blog). Started June 2026, so it may have peaked. Unconfirmed. | 2 | 2 | 4 | 3 | 4 | **15** | unknown |
-| 6 | "My Moon My Man" soft-launch couple montage | Format + sound | Several TikTok trackers, 16 to 20 Nov | 4 | 2 | 2 | 2 | 4 | 14 | ~7 |
-| 7 | Pranks and challenges ("Closing the Door Prank", "You're Under Arrest", blueberry challenge) | Format | TikTok trackers, Shortstrends, 16 to 20 Nov | 4 | 2 | 1 | 2 | 3 | 12 | ~7 |
-| 8 | Black Friday, GTA VI launch, Starbucks Red Cup Day | Topic | postdom, 16 to 22 Nov | 5 | 1 | 1 | 1 | 2 | 10 | under 7; brands, skip |
+| 1 | **"How a ___ becomes a ___" animated mini-stories.** The title is a strange action or a transformation; the video shows the process. | Format | Kabo, 20 Nov. Shorts #2, #20 and #23 of the week's top 100 uploads: "He Flooded His Own Basement Before the River Could" (36.4M, 5 days), "How an Attic Becomes a Secret Room" (6.9M, 3 days), "How a Hole 2.5 Miles Deep Becomes a Gold Mine" (6.2M, 6 days). Two of them are from one channel, so the format repeats. | 5 | 4 | 5 | 5 | 5 | **24** | 21+ |
+| 2 | **The Christmas switch-on** ("The tree goes up", "Christmas music is allowed now", Deck the Halls dance) | Topic | Postdom, 16 to 22 Nov: named trends this week; #christmastree has 3.07M videos; a "Christmas" sound has 1.2M videos. | 4 | 5 | 5 | 5 | 5 | **24** | ~35 (to 25 Dec) |
+| 3 | **"Time: then and now"** (cut from an old photo or video to the same pose, place or skill today, years later) | Format | Postdom, 16 to 22 Nov: example at 3.3M views; its sound has 605.8K videos. The music is Pink Floyd's "Time", so make our own music. | 4 | 3 | 5 | 5 | 5 | **22** | ~10 to 14 |
+| 4 | **"POV: you're the villain but…"** | Format / hook | Virlo, 20 Nov: Fresh, 104 creators, new this week | 4 | 4 | 4 | 5 | 5 | **22** | ~14 to 21 |
+| 5 | **"This is your sign to…"** | Hook pattern | Postdom, 16 Nov: Rising; the most-viewed example has 11M views | 4 | 4 | 4 | 4 | 5 | **21** | ~14 |
+| 6 | **"Comment 'X' if you need one!"** call to action | Hook / CTA | Trends24, 18 Nov: the top World Short ("Comment 'DRY'…") | 4 | 3 | 4 | 4 | 4 | 19 | ~14 |
+| 7 | "While they're out partying btw" (grinding while others rest) | Format | Virlo: Rising, 463 creators (+292%). Needs a specific breathing audio. | 5 | 3 | 3 | 3 | 5 | 19 | ~10 |
+| 8 | "My moon my man" couple montage | Format + sound | Virlo: Rising, 952 creators (+307%). Needs the copyrighted song. | 5 | 3 | 1 | 2 | 4 | 15 | ~10 |
+| 9 | GTA 6 launch | Topic | Kabo: #1, #5, #10 and #12 of the top uploads | 5 | 4 | 1 | 1 | 1 | 12 | brand, skip |
+| 10 | Dance trends (Dame Hombro, Night Dance, Studio Trio, Big Guy) and pranks | Format | Anijam (Nov), Virotok (16 Nov, up to 47.3M views), Virlo ("Closing the door prank" is Fading, -55%) | 4 | 2 | 1 | 2 | 4 | 13 | ~7 |
 
-Sounds: the trending sounds ("My Moon My Man", "It's Time", "You Spin Me Round", the ILLIT clip) are all copyrighted. Do not use them; match their mood with synthesized music.
+Length: Trends24's data on 257 Shorts says 30 to 45 s Shorts get the most engagement (2.5%), engagement peaks around 45 to 50 s, and 45 to 60 s Shorts get the most comments. The channel target is 55 to 75 s. Test 45 to 55 s cuts.
 
-Own data (`STATUS.md`, 20 Nov): channel views jumped to about 1,100 to 1,200 a day on 16 and 17 Nov; subscribers went from 0 to 12. Per-video data is not available yet, so no own-data boost was applied.
+Sounds: every trending sound above is copyrighted. Match the mood with music made in `edit.py` instead.
+
+Own data (`STATUS.md`, 20 Nov): there is no per-video data yet, so no trend got a boost from it.
 
 ## Top 3 for Dustlight
-1. **Holiday kickoff.** Make **The Snow Globe Town** (already in `stories/ideas.md`) the December series. The first part goes live 27 to 28 Nov, when "Christmas is allowed now" peaks. Snow is already in `world.py`.
-2. **Animated story format.** Lean into what already sets us apart (3D toy world, the George voice, word-by-word captions) before copycat channels arrive. Post daily and keep a strong hook in the first 3 s.
-3. **"Comment 'X'" hook.** Use it as the pinned comment and end-card call to action, for example "Comment 'SHAKE' if you'd turn the globe 👇". It must fit the story and is never a prize or giveaway bait.
+1. **"How a ___ becomes a ___".** Use our world for it: "How a lost toy becomes a Lost Toy Room resident", "How a snow globe town gets its snow". The title states the process, and the story pays it off with a feeling.
+2. **The Christmas switch-on.** Make The Snow Globe Town (in `stories/ideas.md`) the December series. Part 1 goes live 27 or 28 Nov, when "the tree goes up" peaks. Its hook could use pattern 1: "How a snow globe town survives the Shake."
+3. **"Time: then and now".** It fits Dustlight: a toy as it was the day it was unwrapped, then the same toy today in the same pose, years later. Make it a 45 to 50 s single story with our own music.
