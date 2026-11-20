@@ -1,3 +1,5 @@
 output/
 animals/*.png
 animals/*.jpg
+make_cv.py
+*CV*.pdf
