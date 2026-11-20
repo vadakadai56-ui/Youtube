@@ -34,3 +34,10 @@ Forward-looking: the page is built around the brand, not around earlier stories.
 
 ## Captions
 Hook line, then 2 or 3 story lines, then a question, then 3 to 5 hashtags (#shortstory #3danimation #wholesome #storytime #emotional).
+
+## Kit (channel/instagram/)
+- `profile-picture.png`: 1080x1080 lantern, rendered by `pfp.py` (Eevee) plus a glow pass.
+- `highlight-1..5-*.png`: 1080x1920 highlight covers (Start Here, Stories, Your Stories, Behind, Coming Soon).
+- `reel-cover-template.png` and `reel-cover-guide.png`: hook text at y 300-700, inside the 3:4 grid crop (y 240-1680).
+- `profile-mockup.png`: how the page looks. The six grid hooks are placeholders, not real stories.
+- Rebuild: `python3 channel/instagram/make_kit.py channel/instagram/profile-picture.png channel/instagram/`
