@@ -27,7 +27,7 @@ import patterns
 TITLE = "Cozy Christmas Coloring Book"
 SUBTITLE = "Cute Critters, Mandalas & Snowflakes for Kids Ages 4-8"
 W, H = 8.5 * inch, 11 * inch
-MARGIN = 0.5 * inch
+MARGIN = 0.75 * inch  # KDP no-bleed minimum is 0.375 in gutter / 0.25 in outside
 N_DESIGNS = 24
 
 pdfmetrics.registerFont(TTFont("Bold", "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf"))
@@ -40,9 +40,37 @@ def pattern_plan(n, seed=2026):
     return [(kinds[i % 3], seed + i * 7) for i in range(n)]
 
 
+def _measure(kind, seed, R):
+    """Render one design alone and return its ink bounding box in points."""
+    import subprocess, tempfile
+    import numpy as np
+    from PIL import Image
+    with tempfile.TemporaryDirectory() as d:
+        pdf = os.path.join(d, "m.pdf")
+        t = canvas.Canvas(pdf, pagesize=(W * 2, H * 2))
+        patterns.GENERATORS[kind](t, W, H, R, seed)
+        t.save()
+        subprocess.run(["pdftoppm", "-r", "36", "-gray", pdf, os.path.join(d, "m")], check=True)
+        img = [f for f in os.listdir(d) if f.endswith(".pgm")][0]
+        a = np.asarray(Image.open(os.path.join(d, img))) < 200
+    ys, xs = np.where(a)
+    k = 72 / 36
+    hpx = a.shape[0]
+    return xs.min() * k, (hpx - ys.max()) * k, xs.max() * k, (hpx - ys.min()) * k
+
+
 def draw_pattern_page(c, kind, seed):
-    R = {"mandala": 3.1, "snowflake": 2.9, "ornament": 3.2}[kind] * inch
-    patterns.GENERATORS[kind](c, W / 2, H / 2, R, seed)
+    """Draw a design scaled and centred so all ink sits inside MARGIN."""
+    R = 3.0 * inch
+    x0, y0, x1, y1 = _measure(kind, seed, R)
+    pad = 6  # points of safety for line width / rasterising error
+    s = min((W - 2 * MARGIN - 2 * pad) / (x1 - x0), (H - 2 * MARGIN - 2 * pad) / (y1 - y0))
+    cx_off, cy_off = (x0 + x1) / 2 - W, (y0 + y1) / 2 - H  # bbox centre relative to drawing centre
+    c.saveState()
+    c.translate(W / 2 - cx_off * s, H / 2 - cy_off * s)
+    c.scale(s, s)
+    patterns.GENERATORS[kind](c, 0, 0, R, seed, lw=3.2 / s)
+    c.restoreState()
 
 
 def draw_image_page(c, path):
