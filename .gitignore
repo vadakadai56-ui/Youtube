@@ -5,3 +5,4 @@ renders/
 out/
 __pycache__/
 .venv/
+*.mp3
