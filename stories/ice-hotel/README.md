@@ -3,7 +3,7 @@
 Status: script drafted 20 Nov 2026, **waiting for owner approval**. Do not voice or render before approval.
 
 - Trend: "How a ___ becomes a ___" (see `channel/trends.md`, 20 Nov: #1, top Short 36.4M views in 5 days) + winter season.
-- Target length: 45 to 55 s (about 130 words at George's pace). The script is about 120 spoken words (The Empty Swing: 148 words, about 67 s).
+- Target length: 45 to 55 s (about 130 words at George's pace). The script is 135 words, about 60 s at George's pace (The Empty Swing: 148 words, about 67 s). Cut 2 lines to reach 55 s if wanted.
 - Look: clean, bright 3D cutaway. Blue-white ice, warm amber light inside, dark blue night sky. No toy-world dust.
 - Facts kept general (no real hotel or place named): river ice harvested late winter, stored frozen over summer, built from snow and ice sprayed over steel moulds, hand-carved rooms, sub-zero inside, melts in spring.
 
