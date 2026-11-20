@@ -28,3 +28,10 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
 - Instagram: the owner could not connect it in Metricool yet. Needs a professional (Creator) account, then Metricool > Brand settings > Connections > Instagram.
 - Channel: create the "The Lost Toy Room" playlist (public) and set "Related video" on each part to the next part.
 - Old ball-sim Shorts were set to private by the owner.
+
+## Analytics (20 Nov 2026, Metricool, 23 Oct to 20 Nov)
+- Per-video data: none returned (connectors "videos published in range" and "all videos" are empty). No per-video ranking possible yet.
+- Channel views: 1,118 on 16 Nov and 1,202 on 17 Nov; 1 to 27 a day before that. No view data yet after 17 Nov (YouTube reporting lag).
+- Those spikes came before the Lost Toy Room went live (19 Nov), so they came from older uploads, probably the ball-sim Shorts that are now private. Unconfirmed.
+- Subscribers: 0 until 16 Nov, then 2 (17 Nov), 4 (18 Nov), 12 (19 Nov). 0 lost.
+- Lost Toy Room (19 Nov) is under 48 h old; The Second Cup goes live today. Re-run /yt-analytics on 22 Nov or later.
