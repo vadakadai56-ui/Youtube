@@ -24,8 +24,8 @@ from reportlab.pdfgen import canvas
 
 import patterns
 
-TITLE = "Cozy Christmas Critters"
-SUBTITLE = "A Festive Coloring Book for Kids Ages 4-8"
+TITLE = "Cozy Christmas Coloring Book"
+SUBTITLE = "Cute Critters, Mandalas & Snowflakes for Kids Ages 4-8"
 W, H = 8.5 * inch, 11 * inch
 MARGIN = 0.5 * inch
 N_DESIGNS = 24
@@ -56,7 +56,7 @@ def draw_image_page(c, path):
 def title_page(c):
     c.setFont("Bold", 40)
     c.drawCentredString(W / 2, H * 0.62, "Cozy Christmas")
-    c.drawCentredString(W / 2, H * 0.62 - 50, "Critters")
+    c.drawCentredString(W / 2, H * 0.62 - 50, "Coloring Book")
     c.setFont("Reg", 16)
     c.drawCentredString(W / 2, H * 0.62 - 95, SUBTITLE)
     patterns.draw_snowflake(c, W / 2, H * 0.3, 1.4 * inch, 11, lw=2.5)
@@ -169,20 +169,20 @@ def front_cover(c, x0, y0, cw, ch, hero=None):
         colour_bauble(c, x0 + cw * fx, y0 + ch * fy, r, col, band)
     # title banner
     c.setFillColor(GOLD)
-    c.setFont("Bold", 62)
-    for dy, txt in ((0.87, "Cozy Christmas"), (0.785, "Critters")):
+    c.setFont("Bold", 56)
+    for dy, txt in ((0.87, "Cozy Christmas"), (0.785, "Coloring Book")):
         c.setFillColor(DRED)
         c.drawCentredString(cx + 4, y0 + ch * dy - 4, txt)
         c.setFillColor(white)
         c.drawCentredString(cx, y0 + ch * dy, txt)
     c.setFillColor(GOLD)
-    c.setFont("Sans", 26)
-    c.drawCentredString(cx, y0 + ch * 0.725, "COLORING BOOK")
+    c.setFont("Sans", 22)
+    c.drawCentredString(cx, y0 + ch * 0.725, "CRITTERS • MANDALAS • SNOWFLAKES")
     # badge
     c.setFillColor(GREEN); c.setStrokeColor(white); c.setLineWidth(4)
     c.roundRect(cx - cw * 0.33, y0 + ch * 0.07, cw * 0.66, 0.62 * inch, 22, stroke=1, fill=1)
     c.setFillColor(white); c.setFont("Sans", 19)
-    c.drawCentredString(cx, y0 + ch * 0.07 + 0.22 * inch, "24 Cute Holiday Pages  •  Ages 4-8")
+    c.drawCentredString(cx, y0 + ch * 0.07 + 0.22 * inch, "24 Festive Designs  •  Ages 4-8")
 
 
 def back_cover(c, x0, y0, cw, ch):
