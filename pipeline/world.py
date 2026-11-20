@@ -36,6 +36,12 @@ def peg(loc, body_col, kind="walter", rot=0.0, scarf=None, h=1.0):
     elif kind == "nurse":
         H += [sphere((0, 0.03, 0.84), 0.15, mat("hair_n", (0.25, 0.15, 0.08), 0.9), scale=(1.05, 0.95, 0.76)),
               cyl((0, 0.0, 0.95), 0.08, 0.05, mat("cap", (1, 1, 1), 0.6))]
+    elif kind == "lily":                                                   # bald under a yellow knitted beanie
+        knit = mat("beanie", (0.98, 0.78, 0.15), 0.95, sheen=0.9, noise=0.35)
+        H += [sphere((0, 0.01, 0.845), 0.152, knit, scale=(1.04, 1.02, 0.72)), sphere((0, 0.0, 0.975), 0.035, knit),
+              torus((0, 0.005, 0.80), 0.143, 0.018, knit)]
+    elif kind == "sam":                                                    # short brown hair
+        H += [sphere((0, 0.03, 0.85), 0.152, mat("hair_s", (0.3, 0.2, 0.12), 0.9, sheen=0.4), scale=(1.03, 1.0, 0.62))]
     elif kind == "neighbour1":
         H += [sphere((0, 0.02, 0.86), 0.152, mat("hair_g", (0.5, 0.5, 0.5), 0.9), scale=(1.03, 1, 0.6))]
     for o in H: o.parent = head; o.location = Vector(o.location) - Vector(head.location)
@@ -225,3 +231,133 @@ def care_room(rng, sun=1.0):
     cyl((-1.0, 1.35, 0.22), 0.12, 0.25, mat("bigpot", (0.75, 0.45, 0.3), 0.7))
     for _ in range(9): sphere((-1.0 + rng.uniform(-.12, .12), 1.35 + rng.uniform(-.1, .1), 0.4 + rng.uniform(0, 0.35)), 0.07, mat("leaf", (0.2, 0.5, 0.2), 0.6))
     return sunl, win
+
+
+# ---------------------------------------------------------------- weather and seasons
+class Rain:
+    """Falling rain streaks; update(t) each frame."""
+    def __init__(self, center, size=(5, 4, 3), n=260, rng=None):
+        rng = rng or random.Random(3); self.c = Vector(center); self.size = size
+        m = mat("rain", (0.8, 0.85, 1.0), 0.1, emit=(0.8, 0.85, 1.0), emit_str=0.5, alpha=0.35)
+        self.f = [(cyl((0, 0, 0), 0.0025, 0.12, m, verts=6), Vector((rng.uniform(-.5, .5) * size[0], rng.uniform(-.5, .5) * size[1], rng.uniform(0, 1) * size[2])), rng.uniform(5, 7)) for _ in range(n)]
+    def update(self, t):
+        for o, p, v in self.f:
+            o.location = self.c + Vector((p.x, p.y, (p.z - v * t) % self.size[2]))
+
+
+class Flutter:
+    """Falling, tumbling flakes for autumn leaves or spring petals; update(t)."""
+    def __init__(self, center, colors, size=(4, 3, 3), n=90, rng=None, flake=0.03):
+        rng = rng or random.Random(4); self.c = Vector(center); self.size = size
+        ms = [mat("flutter%d" % i, c, 0.7, sheen=0.4) for i, c in enumerate(colors)]
+        self.f = [(sphere((0, 0, 0), flake * rng.uniform(0.6, 1.2), rng.choice(ms), scale=(1, 0.6, 0.15), seg=10),
+                   Vector((rng.uniform(-.5, .5) * size[0], rng.uniform(-.5, .5) * size[1], rng.uniform(0, 1) * size[2])),
+                   rng.uniform(0.25, 0.45), rng.uniform(0, 6)) for _ in range(n)]
+    def update(self, t):
+        for o, p, v, ph in self.f:
+            o.location = self.c + Vector((p.x + 0.25 * math.sin(t * 1.3 + ph), p.y + 0.1 * math.cos(t + ph), (p.z - v * t) % self.size[2]))
+            o.rotation_euler = (t * 2 + ph, t * 1.5, ph)
+
+
+SEASONS = {   # ground, foliage colours, sky (world colour)
+    "dusk":   ((0.16, 0.28, 0.14), [(0.2, 0.42, 0.18), (0.25, 0.48, 0.2)], (0.10, 0.09, 0.17)),
+    "autumn": ((0.3, 0.3, 0.14), [(0.85, 0.42, 0.1), (0.75, 0.25, 0.08), (0.9, 0.62, 0.15)], (0.22, 0.15, 0.16)),
+    "rain":   ((0.15, 0.25, 0.14), [(0.18, 0.34, 0.18)], (0.08, 0.09, 0.12)),
+    "snow":   ((0.85, 0.88, 0.95), [], (0.09, 0.1, 0.17)),
+    "spring": ((0.25, 0.48, 0.2), [(0.98, 0.72, 0.8), (1.0, 0.82, 0.88)], (0.42, 0.28, 0.34)),
+}
+
+
+def tree(loc, season, rng):
+    x, y, z = loc
+    cyl((x, y, z + 0.7), 0.08, 1.4, mat("bark", (0.3, 0.2, 0.12), 0.9, noise=0.5))
+    cols = SEASONS[season][1]
+    if not cols:                                                       # bare winter branches with snow
+        for k in range(5):
+            cyl((x + 0.15 * math.cos(k), y + 0.15 * math.sin(k), z + 1.5), 0.025, 0.6, mat("bark", (0.3, 0.2, 0.12), 0.9, noise=0.5), rot=(0.6 * math.sin(k * 2), 0.6 * math.cos(k * 2), 0))
+        return
+    for _ in range(9):
+        sphere((x + rng.uniform(-.35, .35), y + rng.uniform(-.35, .35), z + 1.5 + rng.uniform(-0.1, 0.45)), rng.uniform(0.25, 0.38),
+               mat("foliage", rng.choice(cols), 0.8, sheen=0.3), seg=16)
+
+
+def swing_set(loc):
+    """Child's swing. Returns (pivot, seat): rotate pivot.rotation_euler[0] to swing (forward = +y)."""
+    x, y, z = loc
+    frame = mat("swingframe", (0.75, 0.2, 0.2), 0.35, metal=0.6); chain = mat("chain", (0.6, 0.6, 0.62), 0.3, metal=1)
+    for sx in (-0.7, 0.7):
+        for sy in (-0.35, 0.35): cyl((x + sx, y + sy * 0.6, z + 0.9), 0.03, 1.9, frame, rot=(sy * 0.5, 0, 0))
+    cyl((x, y, z + 1.8), 0.035, 1.5, frame, rot=(0, math.pi / 2, 0))
+    piv = empty("swingpivot", (x, y, z + 1.78))
+    parts = [cyl((x + sx, y, z + 1.18), 0.006, 1.2, chain, verts=6) for sx in (-0.2, 0.2)]
+    seat = cube((x, y, z + 0.58), (0.48, 0.18, 0.035), mat("seat", (0.25, 0.25, 0.28), 0.6), bevel=0.01)
+    for o in parts + [seat]: o.parent = piv; o.location = Vector(o.location) - Vector(piv.location)
+    return piv, seat
+
+
+def park(rng, season="dusk", lamps_on=1.0):
+    """The park: swing, fence and gate, lamps, trees, bench, clock tower. Returns dict of handles."""
+    g, _, sky = SEASONS[season]
+    cube((0, 0, -0.05), (30, 30, 0.1), mat("ground_" + season, g, 0.9, noise=0.3))
+    cube((0, -0.6, 0.003), (1.2, 30, 0.006), mat("parkpath", (0.6, 0.55, 0.48) if season != "snow" else (0.9, 0.92, 0.96), 0.85, noise=0.3), rot=(0, 0, 0.3))
+    piv, seat = swing_set((0, 0, 0))
+    fm = mat("parkfence", (0.15, 0.17, 0.15), 0.4, metal=0.7)
+    for k in range(-20, 21):
+        if abs(k) > 1: cyl((k * 0.15, -2.2, 0.4), 0.012, 0.8, fm, verts=6)
+    cube((0, -2.2, 0.78), (6.2, 0.03, 0.03), fm)
+    lamps = []
+    for lx, ly in ((-1.6, -1.6), (1.7, -1.5), (-2.2, 1.2)):
+        cyl((lx, ly, 1.1), 0.035, 2.2, mat("lampm", (0.08, 0.08, 0.09), 0.4, metal=0.8))
+        lamps.append(sphere((lx, ly, 2.25), 0.1, mat("plamp%.1f" % lx, (1, 0.85, 0.6), 0.2, emit=(1, 0.78, 0.45), emit_str=18 * lamps_on)))
+        lamps.append(light("POINT", (lx, ly, 2.1), 60 * lamps_on, col=(1.0, 0.75, 0.45), size=0.2))
+    for tx, ty in ((-2.6, 2.4), (2.4, 2.0), (3.2, -0.5), (-3.4, -0.2)): tree((tx, ty, 0), season, rng)
+    cube((1.6, 0.9, 0.22), (0.9, 0.3, 0.05), mat("bench", (0.45, 0.28, 0.15), 0.6, noise=0.5))
+    cube((1.6, 1.05, 0.42), (0.9, 0.04, 0.3), mat("bench", (0.45, 0.28, 0.15), 0.6, noise=0.5))
+    tw = mat("tower", (0.7, 0.62, 0.55), 0.85, noise=0.3)
+    cube((-4.5, 5.5, 2.0), (0.8, 0.8, 4.0), tw); cube((-4.5, 5.5, 4.2), (0.95, 0.95, 0.4), tw)
+    face = cyl((-4.5, 5.08, 3.3), 0.3, 0.03, mat("towerface", (0.95, 0.93, 0.85), 0.6, emit=(1, 0.95, 0.8), emit_str=1.2), rot=(math.pi / 2, 0, 0))
+    ink = mat("clockink", (0.05, 0.04, 0.03), 0.6)
+    cube((-4.5, 5.05, 3.42), (0.025, 0.01, 0.22), ink); cube((-4.5, 5.05, 3.18), (0.03, 0.01, 0.22), ink)   # 6 o'clock
+    world_color(sky)
+    light("SUN", (0, 0, 6), 1.2 if season in ("spring", "autumn") else 0.6, col=(1.0, 0.75, 0.6) if season != "snow" else (0.75, 0.8, 1.0), rot=(1.1, 0.2, -0.6))
+    return {"swing": piv, "seat": seat, "lamps": lamps}
+
+
+def swing_angle(t, amp=0.5, period=2.2):
+    return amp * math.sin(2 * math.pi * t / period)
+
+
+def hospital(rng, lily_window_lit=True, across=9.0):
+    """The children's hospital across the road (front face at y=across-1). Window (floor 4, col 3) is Lily's."""
+    y = across
+    cube((0, y + 1.5, 3.0), (7.5, 3.0, 6.0), mat("hosp", (0.88, 0.88, 0.85), 0.8, noise=0.15))
+    cube((0, y, 0.002), (12, 2.2, 0.004), mat("road", (0.35, 0.36, 0.4), 0.8, noise=0.3))
+    cube((0, y + 0.0, 5.7), (2.6, 0.05, 0.45), mat("hsign", (0.25, 0.45, 0.7), 0.6))
+    text("CHILDREN'S HOSPITAL", (0, y - 0.03, 5.7), 0.22, mat("hsignink", (1, 1, 1), 0.5, emit=(1, 1, 1), emit_str=2))
+    lit = mat("hwinlit", (1, 0.85, 0.6), 0.5, emit=(1, 0.82, 0.55), emit_str=3); dark = mat("hwindark", (0.15, 0.18, 0.25), 0.3)
+    target = None
+    for fl in range(5):
+        for col in range(6):
+            x = -2.75 + col * 1.1; z = 0.8 + fl * 1.05
+            is_lily = fl == 3 and col == 2
+            m = (lit if lily_window_lit else dark) if is_lily else (lit if rng.random() < 0.55 else dark)
+            w = cube((x, y - 0.01, z), (0.6, 0.02, 0.7), m)
+            if is_lily: target = Vector((x, y, z))
+    return target
+
+
+def hospital_room(rng, dusk=True):
+    """Lily's room: a window wall at y=1.2 looking out to the park, bed, drip stand."""
+    cube((0, 0, -0.05), (6, 6, 0.1), mat("hfloor", (0.75, 0.78, 0.8), 0.5, noise=0.1))
+    wall = mat("hwall", (0.82, 0.88, 0.9), 0.9, noise=0.1)
+    cube((-1.35, 1.2, 1.5), (1.9, 0.1, 3), wall); cube((1.35, 1.2, 1.5), (1.9, 0.1, 3), wall)
+    cube((0, 1.2, 2.45), (0.8, 0.1, 1.1), wall); cube((0, 1.2, 0.35), (0.8, 0.1, 0.7), wall)
+    cube((0, 1.35, 1.3), (0.8, 0.02, 1.2), mat("dusksky", (0.9, 0.6, 0.5), 0.5, emit=(1.0, 0.62, 0.45) if dusk else (0.8, 0.9, 1.0), emit_str=1.3))
+    cube((-2.0, 0, 1.5), (0.1, 6, 3), wall)
+    bm = mat("hbed", (0.95, 0.95, 0.97), 0.8)
+    cube((-1.2, 0.2, 0.32), (0.8, 1.6, 0.18), bm, bevel=0.05); cube((-1.2, 0.85, 0.5), (0.8, 0.08, 0.5), mat("hbedframe", (0.7, 0.72, 0.75), 0.4, metal=0.6))
+    cyl((0.6, 0.6, 0.75), 0.015, 1.5, mat("drip", (0.7, 0.72, 0.75), 0.3, metal=0.8))
+    sphere((0.6, 0.6, 1.4), 0.06, mat("dripbag", (0.85, 0.9, 1.0), 0.2, alpha=0.6), scale=(0.8, 0.5, 1.3))
+    light("AREA", (0, 1.0, 1.4), 45, col=(1.0, 0.7, 0.5) if dusk else (0.9, 0.95, 1.0), size=0.8, rot=(math.pi / 2, 0, 0))
+    light("POINT", (-0.5, -1.2, 2.0), 30, col=(1.0, 0.85, 0.7), size=0.6)
+    light("AREA", (-0.8, -0.2, 1.6), 18, col=(1.0, 0.8, 0.65), size=1.0, target=(0, 1.0, 0.6))
