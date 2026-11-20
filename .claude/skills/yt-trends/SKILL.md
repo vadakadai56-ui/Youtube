@@ -25,11 +25,15 @@ Trends move in days. Always research live; never pitch from memory or from a tre
 ## 3. Score each trend 1 to 5
 - **Momentum**: rising now, not peaked (sources in the last 7 days, growing counts).
 - **Shelf life**: days left before it is stale (a 3-day build needs 5+ days).
-- **Fit**: can the Blender toy-world pipeline make it in 2 to 3 days?
+- **Engagement**: proof it gets views and interaction (views per day, likes/comments per view, creators copying it). This is the main score.
+- **Fit**: can our pipeline (Blender 3D, AI voice, captions, synthesized sound) make it in 2 to 3 days? Any subject or look counts; build new sets when needed.
 - **Originality room**: can we make our own version, not a copy?
 - **Safety**: no tragedy-baiting, no real people's likeness, no brands, no misinformation, nothing aimed at kids for clicks.
 
-## 4. Output
+## 4. Rank
+Sort by total, with Engagement as the tie-breaker. Pick by engagement potential, never by what fits an old channel theme.
+
+## 5. Output
 Write `channel/trends.md`: date, a ranked table (trend, kind, evidence with source and date, scores, days left), and the top 3 with one line on how Dustlight would do each. Commit. Then hand off to `/yt-idea`.
 
 ## Rules

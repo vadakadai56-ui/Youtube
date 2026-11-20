@@ -9,9 +9,10 @@ Most viewers decide in the first 1 to 3 s. The hook is the first spoken line, th
 ## Write 10 variants, across these patterns
 1. **Strange routine:** "Every morning he makes two cups of tea."
 2. **Number or time:** "For one hundred and twelve days, at six o'clock..."
-3. **Rule:** "The lost toy room has one rule."
+3. **Rule:** "This house has one rule."
 4. **Hidden place:** "Inside a snow globe in your grandma's attic..."
-5. **Direct address:** "Every toy you ever lost is waiting in this room."
+5. **Direct address:** "This is your sign to never open that door."
+8. **Process:** "How an attic becomes a secret room."
 6. **Reaction first:** "The other parents pulled their children away."
 7. **Mid-action:** start in the middle of the moment, no setup.
 Mix in your own. Each under 12 words, speakable in under 3 s.

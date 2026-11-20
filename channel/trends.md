@@ -10,7 +10,7 @@ Sources, all read on 20 Nov 2026:
 
 All of them are third-party trackers. The numbers are what each page showed.
 
-Scores 1 to 5: Mo = momentum, Sh = shelf life, Fit = buildable in the toy-world pipeline in 2 to 3 days, Or = room for an original version, Sa = safety.
+Scores 1 to 5: Mo = momentum, Sh = shelf life, Fit = buildable with our pipeline in 2 to 3 days (any subject), Or = room for an original version, Sa = safety.
 
 | # | Trend | Kind | Evidence | Mo | Sh | Fit | Or | Sa | Total | Days left |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -32,6 +32,6 @@ Sounds: every trending sound above is copyrighted. Match the mood with music mad
 Own data (`STATUS.md`, 20 Nov): there is no per-video data yet, so no trend got a boost from it.
 
 ## Top 3 for Dustlight
-1. **"How a ___ becomes a ___".** Use our world for it: "How a lost toy becomes a Lost Toy Room resident", "How a snow globe town gets its snow". The title states the process, and the story pays it off with a feeling.
-2. **The Christmas switch-on.** Make The Snow Globe Town (in `stories/ideas.md`) the December series. Part 1 goes live 27 or 28 Nov, when "the tree goes up" peaks. Its hook could use pattern 1: "How a snow globe town survives the Shake."
-3. **"Time: then and now".** It fits Dustlight: a toy as it was the day it was unwrapped, then the same toy today in the same pose, years later. Make it a 45 to 50 s single story with our own music.
+1. **"How a ___ becomes a ___".** The most-viewed Short format this week (36.4M in 5 days). Clean 3D cutaway of a real-world process with a strange-action title: "How a Frozen Lake Becomes an Ice Hotel", "He Buried His Car to Save It From the Storm". 45 to 55 s.
+2. **The Christmas switch-on.** Combine it with format 1 for December: "How a Christmas Tree Farm Gets 10,000 Trees Ready in a Week", "How Santa's Workshop Would Really Work". First one live 27 or 28 Nov, when "the tree goes up" peaks.
+3. **"Time: then and now".** 3D then-vs-now of a place or object (a street in 1925 vs today, a house built and then 100 years later) in the same camera angle. 45 to 50 s, our own music.

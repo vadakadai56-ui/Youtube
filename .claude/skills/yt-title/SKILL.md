@@ -14,7 +14,7 @@ description: Write the YouTube title, description, tags and pinned first comment
 ```
 <one-sentence teaser, no spoilers>
 
-Dustlight: stories about the things we forgot. A new short story every day.
+<channel tagline from channel/channel-kit.md>. A new Short every day.
 ▶ <series or related video, if any>
 
 Every story, character and scene on this channel is original.
@@ -22,7 +22,7 @@ Every story, character and scene on this channel is original.
 ```
 
 ## Tags (Metricool `youtubeData.tags`)
-8 to 12: the story's nouns, "short story", "animated story", "emotional story", "dustlight". No unrelated trending tags.
+8 to 12: the video's subject nouns, the trend's format words ("how it works", "story", "POV"), "animation", the channel name. No unrelated trending tags.
 
 ## Pinned first comment
 A question the viewer answers from their own life, ending with 👇. Past: "Who would you make the second cup for? 👇", "Who would you push the swing for? 👇"

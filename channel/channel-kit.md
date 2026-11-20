@@ -17,7 +17,7 @@ Every toy you ever lost is waiting somewhere. This channel tells their stories: 
 Every story, character and scene on this channel is original.
 
 ## Style
-- Warm, dusty 3D toy world. A bulb glow, floating dust, a soft vignette and grain.
+- **Changed 20 Nov 2026:** the toy-world theme is dropped. Subjects and looks now follow whatever is trending and most engaging (see `channel/trends.md`). The name, tagline, banner, profile picture and description below still describe the old toy theme; the owner should rename or keep them.
 - Narrator: ElevenLabs "George", a warm British storyteller.
 - Captions: 1 to 3 words at a time, white with a thick black outline, keywords in yellow (#FFD640), centred around y=1210 to 1240 of 1920.
 - Cut every 2 to 3 s. End card text on black.
