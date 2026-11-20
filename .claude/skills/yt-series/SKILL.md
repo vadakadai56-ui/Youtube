@@ -9,7 +9,7 @@ Model: The Lost Toy Room (4 parts, 19 Nov, 2 h apart, all live; see `stories/los
 ## Shape
 - **Part 1** must work alone: hook, world, one rule or mystery, and a cliffhanger in the last 5 s.
 - **Middle parts** open with a 1-line recap in the first 3 s, then a new hook, and end on a new question.
-- **Finale** pays off the very first hook and lands the heartwarming twist (owner preference: sad start, warm end).
+- **Finale** pays off the very first hook. Check `channel/trends.md` first: a series takes days, so the trend needs a long shelf life.
 - Each part 55 to 75 s and its own approved script (`/yt-script` for each).
 
 ## Packaging

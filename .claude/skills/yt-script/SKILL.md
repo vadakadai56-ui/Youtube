@@ -10,11 +10,12 @@ description: Write the narration script for a new Short. Use after an idea is ch
 - Ellipses (`...`) for pauses. Numbers spelled out the way they should be spoken ("one hundred and twelve days").
 
 ## Structure
+Follow the format of the trend the idea came from (see `channel/trends.md`). The default beats:
 1. **Hook, 0 to 3 s.** The first line states something strange and specific. No "Have you ever", no greeting, no channel name. Run `/yt-hook` if unsure.
 2. **Open loop.** By line 3 the viewer has a question ("why does he push it?").
 3. **Escalate.** Every 2 or 3 lines add a detail that deepens the question (other people react, time passes, weather changes). Each line should be a picture the build can show.
 4. **The turn.** One line that moves the camera somewhere new ("Nobody ever looked across the road.").
-5. **The twist and payoff.** Reframe the opening. Warm, not saccharine.
+5. **The payoff.** Deliver what the trend format promises (the reveal, the punchline, the twist, the satisfying finish). Keep the tone the trend uses.
 6. **Last line echoes the first.** A callback the viewer can feel ("Higher, Daddy.").
 
 ## Also write

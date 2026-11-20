@@ -40,7 +40,8 @@ Claude Code skills that run the channel. Type `/yt-channel` (or "run my YouTube"
 | Skill | Job |
 |---|---|
 | `/yt-channel` | Hub: reads STATUS, Metricool and the story folders, picks the next step |
-| `/yt-idea` | Pitches 3 original story ideas (sad start, warm twist) |
+| `/yt-trends` | Live research: trending topics, formats and hooks, ranked; writes `channel/trends.md` |
+| `/yt-idea` | Pitches 3 original ideas built on the current top trends |
 | `/yt-script` | Writes `narration.txt` with v4 audio tags; waits for owner approval |
 | `/yt-hook` | 10 opening lines, scored, for the first 3 s |
 | `/yt-voice` | ElevenLabs narration (George) and `words.json` timings |

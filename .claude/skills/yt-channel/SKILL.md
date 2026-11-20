@@ -16,6 +16,7 @@ Live, scheduled, in production (story folders without a render), blocked (for ex
 ## 3. Pick the next step and offer it
 | Situation | Skill |
 |---|---|
+| `channel/trends.md` missing or older than 7 days | `/yt-trends` |
 | No approved script in the pipeline | `/yt-idea` then `/yt-script` |
 | Approved script, weak opening | `/yt-hook` |
 | Approved script, no narration | `/yt-voice` |
@@ -29,7 +30,7 @@ Live, scheduled, in production (story folders without a render), blocked (for ex
 | A new story idea needs a home in a series | `/yt-series` |
 
 ## The pack
-`/yt-idea` story pitches · `/yt-script` narration script · `/yt-hook` first 3 seconds · `/yt-voice` ElevenLabs narration and word timings · `/yt-build` Blender render and edit · `/yt-qc` pre-upload checks · `/yt-title` title, description, tags, pinned comment · `/yt-thumbnail` Shorts cover · `/yt-publish` Dropbox and Metricool scheduling · `/yt-plan` weekly calendar · `/yt-analytics` performance report · `/yt-comments` replies and community · `/yt-series` multi-part stories.
+`/yt-trends` what is trending now · `/yt-idea` pitches from trends · `/yt-script` narration script · `/yt-hook` first 3 seconds · `/yt-voice` ElevenLabs narration and word timings · `/yt-build` Blender render and edit · `/yt-qc` pre-upload checks · `/yt-title` title, description, tags, pinned comment · `/yt-thumbnail` Shorts cover · `/yt-publish` Dropbox and Metricool scheduling · `/yt-plan` weekly calendar · `/yt-analytics` performance report · `/yt-comments` replies and community · `/yt-series` multi-part stories.
 
 ## Hard rules (from README)
 - The owner approves every script before it is built. Never start `/yt-voice` or `/yt-build` on an unapproved script.

@@ -21,6 +21,6 @@ Mix in your own. Each under 12 words, speakable in under 3 s.
 - **Question** (does it force "why?")
 - **Visual** (can frame 1 show it?)
 - **Honest** (the story actually pays it off; no clickbait the ending betrays)
-- **Brand** (Dustlight tone: quiet, warm, a little sad)
+- **Trend** (uses this week's hook pattern from `channel/trends.md`)
 
 Return a table sorted by total, recommend one, and say what frame 1 should show. If it replaces the script's first line, update `narration.txt` and flag that the owner must re-approve the change.
