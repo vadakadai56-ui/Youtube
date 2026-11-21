@@ -28,3 +28,7 @@ Default: the next free day at 16:00 Europe/Riga (series parts 2 h apart). If the
 Add the row to `STATUS.md` (time, title, Dropbox path, Metricool post id, planner URL), commit, and push.
 
 Never edit or delete an already scheduled or live post without the owner asking.
+
+
+## Upload route (from 22 Nov 2026)
+Use `python3 pipeline/publish_github.py out/<slug>.mp4 <slug>.mp4` and give Metricool the printed raw.githubusercontent.com URL. Attach `vadakadai56-ui/dustlight-media` (push) and clone it to `/home/user/dustlight-media` first if it is missing. Dropbox (`publish.py`) is the fallback only.
