@@ -10,8 +10,8 @@ Forward-looking: the page is built around the brand, not around earlier stories.
 - Bio:
   ```
   stories about the things we forgot 🕯️
-  tiny 3D stories · sad start, warm ending
-  new story every few days ↓
+  tiny 3D stories, new every few days
+  watch the full ones on YouTube ↓
   ```
 - Link: the YouTube channel.
 
