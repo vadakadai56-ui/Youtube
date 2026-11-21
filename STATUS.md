@@ -19,7 +19,7 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
   - Title: "Every evening at 6, he pushes an empty swing."
   - First comment: "Who would you push the swing for? 👇"
 
-- **The Extra Plate**: script approved 21 Nov 2026 (`stories/the-extra-plate/narration.txt`, 170 words). Target: live 25 Nov 16:00 Riga, in the low-poly night style. Next: voice, then build.
+- **The Extra Plate**: script approved 21 Nov 2026 (`stories/the-extra-plate/narration.txt`, 170 words). Rendered 21 Nov: `out/the-extra-plate.mp4` (77.4 s with end card, -14.7 LUFS, true peak -1.4 dBTP, QC ready). Next: owner review, Dropbox upload (new token needed), then schedule YouTube 25 Nov 16:00 and Instagram + TikTok 18:00.
 
 ## Instagram Reels (@dustlightstories, via Metricool, AI label on)
 | Time (Riga) | Reel | Metricool uuid |
