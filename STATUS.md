@@ -24,11 +24,11 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
 ## Instagram Reels (@dustlightstories, via Metricool, AI label on)
 | Time (Riga) | Reel | Metricool uuid |
 |---|---|---|
-| 21 Nov 16:00 | The Empty Swing | -5308225935741598034 |
-| 21 Nov 19:00 | The Second Cup | 6902143095151608622 |
-| 22 Nov 16:00 | Ice hotel ("Every winter, they build a hotel out of a frozen river."), same time as its YouTube post | -7028284931705059524 |
-| 25 Nov 16:00 | The Extra Plate (to schedule after the render) | |
-Lost Toy Room is not posted to Instagram (owner's choice, 21 Nov).
+| 21 Nov 18:00 | The Empty Swing | -5308225935741598034 |
+| 22 Nov 10:00 | The Second Cup | 6902143095151608622 |
+| 22 Nov 18:00 | Ice hotel ("Every winter, they build a hotel out of a frozen river."); YouTube at 16:00 | -7028284931705059524 |
+| 25 Nov 18:00 | The Extra Plate (to schedule after the render; YouTube at 16:00) | |
+Lost Toy Room is not posted to Instagram (owner's choice, 21 Nov). Times follow Metricool's best Instagram hours (10:00 and 18:00 Riga); YouTube stays at 16:00, its best hour.
 
 ## Rebuilt after the 19 Nov reset (done, tested end to end)
 - `pipeline/` toolkit, renderer, aligner, editor and Dropbox publisher. `stories/the-second-cup/` is fully re-renderable.
