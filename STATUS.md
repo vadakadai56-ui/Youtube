@@ -30,14 +30,14 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
 | 25 Nov 18:00 | The Extra Plate (to schedule after the render; YouTube at 16:00) | |
 Lost Toy Room is not posted to Instagram (owner's choice, 21 Nov). Times follow Metricool's best Instagram hours (10:00 and 18:00 Riga); YouTube stays at 16:00, its best hour.
 
-## TikTok (@divine.773, via Metricool, AI label on)
+## TikTok (@dustlight00, formerly @divine.773, via Metricool, AI label on)
 | Time (Riga) | Video | Metricool uuid |
 |---|---|---|
 | 21 Nov 18:00 | The Empty Swing | -4855298876224879780 |
 | 22 Nov 10:00 | The Second Cup | 2666965360092859592 |
 | 22 Nov 18:00 | Ice hotel | -2938055666207273225 |
 | 25 Nov 18:00 | The Extra Plate (after the render) | |
-TikTok connected 21 Nov 2026 as @divine.773 (owner confirmed; can be renamed in TikTok later). TikTok's best hours match Instagram's (10:00, 12:00, 18:00).
+TikTok connected 21 Nov 2026 as @divine.773, renamed @dustlight00 the same day (next rename allowed after 30 days). The account already had 1,197 followers from older content. TikTok's best hours match Instagram's (10:00, 12:00, 18:00).
 
 ## Rebuilt after the 19 Nov reset (done, tested end to end)
 - `pipeline/` toolkit, renderer, aligner, editor and Dropbox publisher. `stories/the-second-cup/` is fully re-renderable.
