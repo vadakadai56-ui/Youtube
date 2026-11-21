@@ -55,6 +55,9 @@ Claude Code skills that run the channel. Type `/yt-channel` (or "run my YouTube"
 | `/yt-comments` | Reply drafts, pins, ideas from viewers |
 | `/yt-series` | Multi-part story outlines and release plans |
 
+## Edit Kit (optional extra skills)
+41 video skills from the owner's Edit-Kit.zip (HyperFrames, captions, transitions, special looks). Not committed; reinstall with `bash pipeline/install_editkit.sh`. The `/yt-*` skills stay the main pipeline.
+
 ## Code
 - `pipeline/scene.py`: Blender toolkit (materials, primitives, lights, camera), the Lost Toy Room set, toys, Bun-Bun, door, silhouettes.
 - `pipeline/world.py`: peg-doll characters (Walter, Rose, nurse, neighbours), walk and breathe animation, props (cups, teapot, flask), Steam, Snow, sets (kitchen, snowy street, care home, care room).
@@ -63,6 +66,7 @@ Claude Code skills that run the channel. Type `/yt-channel` (or "run my YouTube"
 - `pipeline/edit.py`: the editor and sound toolkit; reads the story's `edit_config.py`.
 - `pipeline/publish.py`: Dropbox upload (chunked) and public link.
 - `pipeline/qc.py`: pre-upload checks (exit 1 on a fail).
+- `pipeline/install_editkit.sh`: downloads and installs the Edit Kit skills, and fills its font and GSAP cache.
 - `pipeline/cover.py`: contact sheet of candidate cover frames, and 1080x1920 covers with caption-style text.
 
 ## Rules
