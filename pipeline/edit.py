@@ -6,6 +6,7 @@ STORY_DIR/edit_config.py defines:
   T_END  = total length in seconds
   KEY    = {"phrase", ...}                                         # caption words shown in yellow
   XFADE  = {"shot": seconds}                                       # optional dissolves into a shot
+  CAPTION = {"words": 1, "y": 520, "size": 140}                    # optional caption style (default 3 words, y 1240, size 92)
   END_LINES = [(text, font_size, y, rgb, italic, delay)]           # end card text
   def sound(S): ...                                                # music and effects using the S toolkit below
   def overlay(img, t): ...                                         # optional on-screen graphics (typed headline, year counter), drawn under the captions
@@ -99,10 +100,11 @@ def main(story_dir, frames_dir, narration, outf):
         x = local * FPSA; i = int(x); a = x - i; A = frame(shot, i)
         return Image.blend(A, frame(shot, i + 1), a) if a > 0.02 else A
 
-    chunks, cur = [], []                                           # captions: 1-3 words, broken on punctuation
+    capc = getattr(C, "CAPTION", {}); CAP_W = capc.get("words", 3); CAP_Y = capc.get("y", 1240); CAP_SIZE = capc.get("size", 92)
+    chunks, cur = [], []                                           # captions: 1-3 words (CAPTION["words"]), broken on punctuation
     for w, a, b in words:
         cur.append((w, a, b))
-        if w[-1] in ".,?!" or w.endswith("...") or len(cur) == 3 or w.endswith('"'): chunks.append(cur); cur = []
+        if w[-1] in ".,?!" or w.endswith("...") or len(cur) == CAP_W or w.endswith('"'): chunks.append(cur); cur = []
     if cur: chunks.append(cur)
     def is_key(ci, j):
         ws = [c[0].strip('".,?!').lower().rstrip(".") for c in chunks[ci]]
@@ -111,7 +113,7 @@ def main(story_dir, frames_dir, narration, outf):
             for s in range(len(ws) - len(ks) + 1):
                 if ws[s:s + len(ks)] == ks and s <= j < s + len(ks): return True
         return False
-    FONT = {s: ImageFont.truetype(FONT_BLACK, s) for s in range(40, 130, 2)}
+    FONT = {s: ImageFont.truetype(FONT_BLACK, s) for s in range(40, 170, 2)}
     def caption(img, t):
         for ci, ch in enumerate(chunks):
             st = ch[0][1]; en = min(chunks[ci + 1][0][1] if ci + 1 < len(chunks) else ch[-1][2] + 0.6, ch[-1][2] + 0.7)
@@ -119,15 +121,15 @@ def main(story_dir, frames_dir, narration, outf):
             shown = [(w, j) for j, (w, a, b) in enumerate(ch) if t >= a - 0.05]
             if not shown: return
             txt = [w.strip('"').upper() for w, _ in shown]
-            k = min(1.0, (t - st + 0.05) / 0.12); sc = 0.85 + 0.15 * (1 - (1 - k) ** 3); size = 92
+            k = min(1.0, (t - st + 0.05) / 0.12); sc = 0.85 + 0.15 * (1 - (1 - k) ** 3); size = CAP_SIZE
             while True:
-                f = FONT[min(128, max(40, int(size * sc) // 2 * 2))]
+                f = FONT[min(168, max(40, int(size * sc) // 2 * 2))]
                 widths = [f.getlength(x) for x in txt]; space = f.getlength(" ")
                 if sum(widths) + space * (len(txt) - 1) < W - 120 or size <= 50: break
                 size -= 6
             d = ImageDraw.Draw(img); x = W / 2 - (sum(widths) + space * (len(txt) - 1)) / 2
             for (w, j), tx, wd in zip(shown, txt, widths):
-                d.text((x, 1240), tx, font=f, fill=YELLOW if is_key(ci, j) else (255, 255, 255), anchor="lm", stroke_width=9, stroke_fill=(0, 0, 0))
+                d.text((x, CAP_Y), tx, font=f, fill=YELLOW if is_key(ci, j) else (255, 255, 255), anchor="lm", stroke_width=9, stroke_fill=(0, 0, 0))
                 x += wd + space
             return
 
