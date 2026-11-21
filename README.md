@@ -62,6 +62,7 @@ Claude Code skills that run the channel. Type `/yt-channel` (or "run my YouTube"
 - `pipeline/align.py`: word timings from the narration's pauses and the script.
 - `pipeline/edit.py`: the editor and sound toolkit; reads the story's `edit_config.py`.
 - `pipeline/publish.py`: Dropbox upload (chunked) and public link.
+- `pipeline/openverse.py`: search and download openly licensed sounds and images (CC0, public domain, CC-BY, CC-BY-SA only) from the Openverse API. Writes the story's `CREDITS.md`. Put any BY / BY-SA credit lines in the YouTube description.
 - `pipeline/qc.py`: pre-upload checks (exit 1 on a fail).
 - `pipeline/cover.py`: contact sheet of candidate cover frames, and 1080x1920 covers with caption-style text.
 
