@@ -1,20 +1,22 @@
 # Dustlight: channel kit
 
 - **Name:** Dustlight
-- **Handle:** @the.dustlight.stories
+- **Handle:** @the.dustlight.stories (YouTube), @dustlightstories (Instagram), @dustlight00 (TikTok)
 - **Tagline:** *stories about the things we forgot*
 - **Profile picture:** Bun-Bun (a worn stuffed rabbit with a crooked stitched ear) in warm bulb light.
 - **Banner:** the toy room with Bun-Bun by the "LOST TOYS" door. "D U S T L I G H T" in cream (InterDisplay-Black), the tagline in yellow italics, dust specks, text kept inside the 1546x423 phone-safe area.
 
-## Description
-Dustlight: stories about the things we forgot.
+## Description (updated 21 Nov 2026)
+Dustlight: stories about the things we forgot. 🕯️
 
-Every toy you ever lost is waiting somewhere. This channel tells their stories: one lost thing, one short story, a new part every day.
+Tiny 3D stories about the people and moments that stay with us: a plate set every Thanksgiving, a swing pushed every evening, a cup of tea made for someone who isn't there. Each one is under a minute and has a twist you won't see coming.
 
-▶ Start here: The Lost Toy Room, Part 1
-🧸 New parts daily. Follow so you don't miss the next one.
+🎬 New story every few days
+📸 Instagram: @dustlightstories
+🎵 TikTok: @dustlight00
 
-Every story, character and scene on this channel is original.
+Every story, character and scene on this channel is original, made by hand in 3D.
+Narration: AI voice.
 
 ## Style
 - Warm, dusty 3D toy world. A bulb glow, floating dust, a soft vignette and grain.
