@@ -122,7 +122,7 @@ for i, (top, key, bg) in enumerate(SAMPLES):
 W, P = 1080, 40; H = 2340
 m = Image.new("RGB", (W, H), (255, 255, 255)); d = ImageDraw.Draw(m)
 ui = lambda s: font("Inter-Bold.otf", s); reg = lambda s: font("Inter-Regular.otf", s); med = lambda s: font("Inter-Medium.otf", s)
-d.text((P, 60), "the.dustlight.stories", font=ui(46), fill=(0, 0, 0))
+d.text((P, 60), "dustlightstories", font=ui(46), fill=(0, 0, 0))
 # avatar
 av = pfp.resize((250, 250), Image.LANCZOS); mask = Image.new("L", (250, 250), 0); ImageDraw.Draw(mask).ellipse((0, 0, 250, 250), fill=255)
 d.ellipse((P - 6, 160 - 6, P + 256, 160 + 256), outline=(220, 220, 220), width=3); m.paste(av, (P, 160), mask)
@@ -135,7 +135,7 @@ d.text((P, y), "Digital creator", font=reg(32), fill=(115, 115, 115)); y += 50
 bx = P + d.textlength("stories about the things we forgot ", font=reg(34)); by = y + 6   # candle (the mock-up font has no emoji)
 d.rectangle((bx + 8, by + 18, bx + 20, by + 38), fill=(240, 236, 228), outline=(170, 160, 150))
 d.ellipse((bx + 9, by + 2, bx + 19, by + 18), fill=(255, 170, 40))
-for ln in ["stories about the things we forgot", "tiny 3D stories · sad start, warm ending", "new story every few days ↓"]:
+for ln in ["stories about the things we forgot", "tiny 3D stories, new every few days", "watch the full ones on YouTube ↓"]:
     d.text((P, y), ln, font=reg(34), fill=(0, 0, 0)); y += 48
 d.text((P, y), "youtube.com/@the.dustlight.stories", font=med(33), fill=(0, 55, 107)); y += 80
 bw = (W - 2 * P - 20) // 2
