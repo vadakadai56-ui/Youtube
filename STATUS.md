@@ -15,7 +15,7 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
   - Title: "He makes two cups of tea every morning. Nobody knows why."
   - First comment: "Who would you make the second cup for? 👇"
 
-- **The Empty Swing**: rendered 20 Nov (71.7 s, -14.2 LUFS). Waiting for a new Dropbox token, then upload and schedule for 21 Nov 16:00 Riga.
+- **The Empty Swing**: 21 Nov 2026 16:00 Riga (Metricool post uuid 8077661360486368967, id 436256054). Source: Dropbox `/Youtube/the-empty-swing.mp4` (full 1080p, 71.7 s, -14.4 LUFS, QC passed). Narration backup: `/Dustlight-backup/the-empty-swing-narration.mp3`.
   - Title: "Every evening at 6, he pushes an empty swing."
   - First comment: "Who would you push the swing for? 👇"
 
