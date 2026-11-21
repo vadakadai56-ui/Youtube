@@ -19,3 +19,14 @@ another ElevenLabs voice, synthesized music plus real CC0 sounds).
 
 ## Weekly rotation (to test, 2 weeks)
 Rotate through all four formats with equal slots, plus new formats as they appear in trends. After 2 weeks, give more slots to whichever formats earn the most subscribers per 1,000 views.
+
+## Style recipe per format (from the references studied on 21 Nov 2026)
+| | 1 Emotional twist | 2 Anticlimax POV | 3 "You" + a power | 4 Town rule + quirk |
+|---|---|---|---|---|
+| **Look** | Low-poly night, candle warm against moonlight blue, shallow focus | Two looks per beat: the scare in horror lighting (dark, one cold light, low angle), the reveal in flat, bright, normal light | Bright, clean daylight, saturated colours; phone and clock inserts as motion graphics | Bright snowy town, chunky shapes, crowds of peg dolls |
+| **Camera** | Slow push-ins, fixed "same spot" frames | Creeping push-in for the scare, hard cut to a static wide for the reveal | Medium shots on "you", quick inserts on objects | Wide town shots, close-ups on the hero |
+| **Pace** | 2 to 3 s per shot | about 1 s per shot; a scare and its reveal every 5 to 7 s | 2 s per shot; a new rule or escalation every 6 to 8 s | 1.5 s per shot; whole story in about 30 s |
+| **Captions** | 1 to 3 words, yellow keywords, typed hook headline | One huge word at a time, top third, white with black outline | 1 to 3 words, yellow keywords | 1 to 3 words; the quirk-related words coloured (red) |
+| **Voice** | George, warm storyteller, slow | Young, flat, deadpan first person; no drama in the voice | Energetic second-person narrator, quick | Young first person, cheerful, a bit proud |
+| **Music** | Piano and pads, minor to major | Silence or low drone under the scare, a horror sting, then a dry comic "deflate" sound on the reveal | Bouncy plucks, a "rewind" whoosh on each use of the power, darker at the cost | Plucky upbeat music, a triumphant hit at the payoff |
+| **Ending** | Callback to the first line | "So yeah…" deadpan sign-off | Open cliffhanger | "Comment / type your…" prompt |

@@ -29,8 +29,19 @@ Trends move in days. Always research live; never pitch from memory or from a tre
 - **Originality room**: can we make our own version, not a copy?
 - **Safety**: no tragedy-baiting, no real people's likeness, no brands, no misinformation, nothing aimed at kids for clicks.
 
-## 4. Output
-Write `channel/trends.md`: date, a ranked table (trend, kind, evidence with source and date, scores, days left), and the top 3 with one line on how Dustlight would do each. Commit. Then hand off to `/yt-idea`.
+## 4. Ideal style for each top trend
+For every trend or format in the top 3, study the top 2 or 3 example videos (frame sheet + transcript when the owner shares one, or the
+pages read in step 1) and pick the Dustlight style that fits it best. Write one style recipe per trend:
+- **Look:** art direction and lighting (low-poly night, bright snowy day, horror lighting, flat pastel), camera (fixed, handheld, POV).
+- **Pace:** seconds per shot, how often a new micro-hook lands.
+- **Captions:** size, position, words per caption, colour tricks (yellow keywords, red quirk letters, one huge word at a time).
+- **Voice:** which ElevenLabs voice type (warm storyteller, deadpan young, energetic second-person), delivery tags.
+- **Music and sound:** mood, stings, real CC0 sounds from the library.
+- **Length and ending:** seconds, and the comment driver (question, cliffhanger, "type your…").
+Start from the format recipe in `channel/formats.md` and change only what this trend needs. Never copy a reference's characters, lines or look 1:1.
+
+## 5. Output
+Write `channel/trends.md`: date, a ranked table (trend, kind, evidence with source and date, scores, days left), the top 3 with one line on how Dustlight would do each, and the style recipe for each of the top 3. Commit. Then hand off to `/yt-idea`.
 
 ## Rules
 - Ride the trend; do not copy a video. Original script, characters, scenes and sound every time. Copying another creator's video risks copyright claims and YouTube's reused-content demonetization.
