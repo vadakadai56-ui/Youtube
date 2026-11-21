@@ -20,14 +20,14 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
   - First comment: "Who would you push the swing for? 👇"
 
 ## In production
-- **How a Frozen River Becomes a Hotel** (`stories/ice-hotel/`): first trend-driven video ("How a ___ becomes a ___"). Script approved 20 Nov (55 s cut), title 1. Plan: voice 21 Nov, render 22 Nov, qc and schedule 23 Nov, live 24 Nov 16:00 Riga.
+- **How a Frozen River Becomes a Hotel** (`stories/ice-hotel/`): first trend-driven video ("How a ___ becomes a ___"). Script approved 20 Nov (55 s cut), title 1. **Rendered 21 Nov** (Cycles, 580 frames): `out/ice-hotel.mp4`, 50.6 s, -14.3 LUFS, true peak -1.2 dBTP, qc READY. Cover `out/ice-hotel-cover.jpg`. Not in Dropbox yet (token expired, 401). Not committed (mp4). Plan: voice 21 Nov, render 22 Nov, qc and schedule 23 Nov, live 24 Nov 16:00 Riga.
 
 ## Plan (20 Nov)
 | Date | Slot (Riga) | Video | Stage | Next action | Blocker |
 |---|---|---|---|---|---|
 | 20 Nov | 16:00 | The Second Cup | live ✅ | none | none |
 | 21 Nov | 16:00 | The Empty Swing | rendered | upload and schedule | Dropbox token expired |
-| 24 Nov | 16:00 | How a Frozen River Becomes a Hotel | approved | /yt-voice, /yt-build | none |
+| 24 Nov | 16:00 | How a Frozen River Becomes a Hotel | rendered, qc passed | upload and schedule | Dropbox token expired |
 | 27 or 28 Nov | 16:00 | Christmas "how it works" Short (trend #2) | idea | /yt-idea | none |
 
 ## Rebuilt after the 19 Nov reset (done, tested end to end)
