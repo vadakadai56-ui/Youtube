@@ -8,6 +8,8 @@ STORY_DIR/edit_config.py defines:
   XFADE  = {"shot": seconds}                                       # optional dissolves into a shot
   END_LINES = [(text, font_size, y, rgb, italic, delay)]           # end card text
   def sound(S): ...                                                # music and effects using the S toolkit below
+  def overlay(img, t): ...                                         # optional on-screen graphics (typed headline, year counter), drawn under the captions
+Real recordings: S.sample("ambience/fire", at, dur, g) plays a sound from the Dustlight library (~/dustlight-sfx, see pipeline/sfx_library.py).
 STORY_DIR/words.json = [[word, start, end], ...]  (make it with pipeline/align.py)
 Loudness: loudnorm to -14 LUFS, then a measured gain trim so the result lands at about -14.
 """
@@ -61,6 +63,16 @@ class Sound:
         for k in range(n): self.add(self.noise(0.015, 2) * self.env(int(0.015 * SR), 0.001, 0.01), start + k * every, g)
     def wind(self, start, dur, g=0.06):
         self.add(self.noise(dur, 400) * self.env(int(dur * SR), 1.5, 2) * 5, start, g)
+    def sample(self, cat, at, dur=None, g=0.3, pick=0, fade=0.4, offset=0.0):
+        """A real recording from the sound library: the pick-th file in LIB/cat, trimmed to dur seconds, faded in and out."""
+        lib = os.path.expanduser(os.environ.get("SFX_LIB", "~/dustlight-sfx")); d = os.path.join(lib, cat)
+        fs = sorted(f for f in os.listdir(d) if not f.startswith(".")) if os.path.isdir(d) else []
+        if not fs: print(f"! no sound in {d}, skipped"); return
+        raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", str(offset), "-i", os.path.join(d, fs[pick % len(fs)])] + (["-t", str(dur)] if dur else []) +
+                             ["-ac", "1", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout
+        x = np.frombuffer(raw, np.float32).astype(np.float64)
+        if not len(x): return
+        x = x / max(1e-9, np.max(np.abs(x))); self.add(x * self.env(len(x), fade, fade), at, g)
     def knock(self, t, g=0.7):
         n = int(0.25 * SR); x = np.arange(n) / SR
         self.add(np.sin(2 * np.pi * 95 * x) * np.exp(-x * 28) + self.noise(0.25, 8) * np.exp(-x * 50) * 0.6, t, g)
@@ -141,7 +153,9 @@ def main(story_dir, frames_dir, narration, outf):
         if ci + 1 < len(cuts) and cuts[ci + 1][1] == "END" and cuts[ci + 1][0] - t < 0.8:
             img = Image.blend(Image.new("RGB", (W, H), (8, 6, 5)), img, max(0, (cuts[ci + 1][0] - t) / 0.8))
         arr = np.asarray(img).astype(np.float32) * vig + GR[fi % 6]
-        img = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)); caption(img, t); proc.stdin.write(img.tobytes())
+        img = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8))
+        if hasattr(C, "overlay"): C.overlay(img, t)
+        caption(img, t); proc.stdin.write(img.tobytes())
     proc.stdin.close(); proc.wait()
 
     S = Sound(C.T_END); S.A[:] += S.noise(len(S.A) / SR, 220) * 0.035; C.sound(S)

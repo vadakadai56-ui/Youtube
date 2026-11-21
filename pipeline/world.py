@@ -7,8 +7,9 @@ SKIN = (0.97, 0.80, 0.62); WHITE = (0.95, 0.94, 0.92)
 
 
 # ---------------------------------------------------------------- peg dolls
-def peg(loc, body_col, kind="walter", rot=0.0, scarf=None, h=1.0):
-    """Wooden peg doll (about 1 unit tall). kind: walter | rose | nurse | neighbour1 | neighbour2 | plain.
+def peg(loc, body_col, kind="walter", rot=0.0, scarf=None, h=1.0, hair=None):
+    """Wooden peg doll (about 1 unit tall). kind: walter | rose | nurse | neighbour1 | neighbour2 | plain | lily | sam | margaret | danny | girl.
+    hair: optional hair colour (margaret, danny, girl).
     Returns handles {root, head, L, R, cheek, base} for animation."""
     wood = mat("skin", SKIN, 0.55, noise=0.12); bm = mat("body_" + kind, body_col, 0.7, noise=0.15)
     blk = mat("eyeblk", (0.01, 0.01, 0.01), 0.2); wht = mat("eyewht", (1, 1, 1), 0.2)
@@ -40,6 +41,19 @@ def peg(loc, body_col, kind="walter", rot=0.0, scarf=None, h=1.0):
         knit = mat("beanie", (0.98, 0.78, 0.15), 0.95, sheen=0.9, noise=0.35)
         H += [sphere((0, 0.01, 0.845), 0.152, knit, scale=(1.04, 1.02, 0.72)), sphere((0, 0.0, 0.975), 0.035, knit),
               torus((0, 0.005, 0.80), 0.143, 0.018, knit)]
+    elif kind == "margaret":                                               # hair in a bun; colour greys with the years
+        hm = mat("hair_m_%d" % int(1000 * sum(hair or WHITE)), hair or WHITE, 0.9, sheen=0.5)
+        H += [sphere((0, 0.035, 0.84), 0.152, hm, scale=(1.05, 0.98, 0.74)), sphere((0, 0.13, 0.9), 0.065, hm)]
+        frame = mat("glasses_m", (0.55, 0.35, 0.2), 0.3, metal=0.6)
+        for sx in (-1, 1): H.append(torus((sx * 0.05, -0.148, 0.805), 0.028, 0.0035, frame, rot=(math.pi / 2, 0, 0)))
+    elif kind == "danny":                                                  # messy dark hair and a short beard
+        hm = mat("hair_d", hair or (0.18, 0.12, 0.08), 0.9, sheen=0.4)
+        H += [sphere((0, 0.02, 0.86), 0.155, hm, scale=(1.04, 1.02, 0.6)), sphere((0.06, -0.11, 0.9), 0.035, hm, scale=(1.4, 0.7, 0.6)),
+              sphere((0, -0.075, 0.7), 0.105, hm, scale=(0.95, 0.55, 0.3))]
+    elif kind == "girl":                                                   # two bunches with red ribbons
+        hm = mat("hair_g2", hair or (0.45, 0.28, 0.14), 0.9, sheen=0.5); rb = mat("ribbon", (0.85, 0.15, 0.2), 0.7)
+        H += [sphere((0, 0.03, 0.85), 0.153, hm, scale=(1.04, 1.0, 0.66))]
+        for sx in (-1, 1): H += [sphere((sx * 0.16, 0.03, 0.82), 0.055, hm, scale=(0.8, 0.8, 1.2)), sphere((sx * 0.14, 0.03, 0.86), 0.02, rb)]
     elif kind == "sam":                                                    # short brown hair
         H += [sphere((0, 0.03, 0.85), 0.152, mat("hair_s", (0.3, 0.2, 0.12), 0.9, sheen=0.4), scale=(1.03, 1.0, 0.62))]
     elif kind == "neighbour1":
@@ -361,3 +375,123 @@ def hospital_room(rng, dusk=True):
     light("AREA", (0, 1.0, 1.4), 45, col=(1.0, 0.7, 0.5) if dusk else (0.9, 0.95, 1.0), size=0.8, rot=(math.pi / 2, 0, 0))
     light("POINT", (-0.5, -1.2, 2.0), 30, col=(1.0, 0.85, 0.7), size=0.6)
     light("AREA", (-0.8, -0.2, 1.6), 18, col=(1.0, 0.8, 0.65), size=1.0, target=(0, 1.0, 0.6))
+
+
+# ---------------------------------------------------------------- The Extra Plate: dining room and Thanksgiving props
+SEATS = {"L1": (-0.62, 0.15), "L2": (-0.62, 0.7), "L3": (-0.62, 1.25), "R1": (0.62, 0.15), "R2": (0.62, 0.7),
+         "R3": (0.62, 1.25), "HEAD": (0.0, 1.85)}                          # R2 is Danny's chair, R3 gets the tiny chair
+TABLE_Z = 0.5
+
+
+def plate(loc, food=False):
+    x, y, z = loc; pm = mat("plate", (0.96, 0.95, 0.9), 0.25, coat=0.5)
+    P = [cyl((x, y, z + 0.005), 0.12, 0.01, pm, verts=24), cyl((x, y, z + 0.012), 0.08, 0.004, mat("plate_in", (0.93, 0.92, 0.86), 0.3), verts=24)]
+    sm = mat("silver", (0.8, 0.8, 0.82), 0.25, metal=1.0)
+    P += [cube((x - 0.15, y, z + 0.006), (0.012, 0.16, 0.006), sm), cube((x + 0.15, y, z + 0.006), (0.012, 0.16, 0.006), sm)]
+    if food: P += [sphere((x - 0.03, y, z + 0.025), 0.04, mat("food1", (0.75, 0.45, 0.2), 0.6), scale=(1.2, 1, 0.5)),
+                   sphere((x + 0.04, y + 0.02, z + 0.025), 0.03, mat("food2", (0.3, 0.55, 0.2), 0.6), scale=(1, 1, 0.5))]
+    return P
+
+
+def name_card(loc, name="Danny", rot=0.0):
+    x, y, z = loc; cm = mat("card", (0.97, 0.94, 0.86), 0.7)
+    a = cube((x, y, z + 0.035), (0.13, 0.004, 0.07), cm, rot=(-0.35, 0, rot))
+    t = text(name, (x, y - 0.012, z + 0.04), 0.035, mat("cardink", (0.45, 0.12, 0.08), 0.6), rot=(math.pi / 2 - 0.35, 0, rot))
+    return [a, t]
+
+
+def turkey(loc):
+    x, y, z = loc; tm = mat("turkey", (0.62, 0.32, 0.12), 0.45, coat=0.4, noise=0.4)
+    P = [cyl((x, y, z + 0.01), 0.2, 0.02, mat("platter", (0.9, 0.88, 0.82), 0.3, coat=0.4), verts=24),
+         sphere((x, y, z + 0.09), 0.12, tm, scale=(1.25, 1, 0.7))]
+    for sx in (-1, 1): P += [sphere((x + sx * 0.1, y - 0.07, z + 0.07), 0.04, tm, scale=(1, 1.4, 0.8)),
+                             sphere((x + sx * 0.13, y - 0.13, z + 0.07), 0.018, mat("bone", (0.95, 0.92, 0.85), 0.5))]
+    return P
+
+
+def pie(loc):
+    x, y, z = loc
+    return [cyl((x, y, z + 0.02), 0.1, 0.04, mat("crust", (0.8, 0.55, 0.28), 0.6, noise=0.4), verts=20),
+            cyl((x, y, z + 0.041), 0.085, 0.004, mat("filling", (0.75, 0.38, 0.1), 0.5), verts=20)]
+
+
+def candle(loc, h=0.16, lit=True):
+    x, y, z = loc; P = [cyl((x, y, z + h / 2), 0.018, h, mat("wax", (0.96, 0.92, 0.82), 0.5)),
+                        cyl((x, y, z), 0.035, 0.012, mat("brass_c", (0.75, 0.55, 0.2), 0.3, metal=1.0))]
+    if lit:
+        f = sphere((x, y, z + h + 0.022), 0.011, mat("cflame", (1, 0.7, 0.3), 0.3, emit=(1.0, 0.5, 0.12), emit_str=12), scale=(0.7, 0.7, 1.8))
+        f.visible_shadow = False; P.append(f)
+        light("POINT", (x, y, z + h + 0.06), 6, col=(1.0, 0.55, 0.2), size=0.02)
+    return P
+
+
+def chair(loc, rot=0.0, s=1.0, col=(0.42, 0.25, 0.13)):
+    x, y, z = loc; m = mat("chair_%d" % int(s * 100), col, 0.55, noise=0.5); P = []
+    P.append(cube((0, 0, 0.3 * s), (0.34 * s, 0.32 * s, 0.04 * s), m, bevel=0.01))
+    P.append(cube((0, 0.15 * s, 0.6 * s), (0.34 * s, 0.03 * s, 0.6 * s), m, bevel=0.01))
+    for sx in (-0.14, 0.14):
+        for sy in (-0.13, 0.13): P.append(cube((sx * s, sy * s, 0.15 * s), (0.03 * s, 0.03 * s, 0.3 * s), m))
+    g = group("chair", P, (0, 0, 0)); g.location = (x, y, z); g.rotation_euler[2] = rot
+    return g
+
+
+def dining_room(rng, outside="autumn", night=True, candles=True, tiny_chair=False, danny_plate=True, card=True, food=True):
+    """Margaret's dining room. Long table along y, seats in SEATS, a window behind the head seat showing the season,
+    a doorway on the left wall. outside: autumn | snow | rain | dusk. Returns handles."""
+    cube((0, 0, -0.05), (10, 10, 0.1), mat("dfloor", (0.36, 0.22, 0.12), 0.6, noise=0.5))
+    wall = mat("dwall", (0.55, 0.36, 0.26), 0.9, noise=0.2)
+    cube((-1.0, 2.5, 1.5), (1.4, 0.1, 3), wall); cube((1.0, 2.5, 1.5), (1.4, 0.1, 3), wall)
+    cube((0, 2.5, 2.55), (0.6, 0.1, 0.9), wall); cube((0, 2.5, 0.35), (0.6, 0.1, 0.7), wall)
+    cube((-1.7, -0.6, 1.5), (0.1, 3.2, 3), wall); cube((-1.7, 2.1, 1.5), (0.1, 0.8, 3), wall); cube((-1.7, 1.35, 2.6), (0.1, 0.7, 0.8), wall)
+    cube((1.7, 0.5, 1.5), (0.1, 6, 3), wall)
+    sky = {"autumn": (0.10, 0.08, 0.22), "snow": (0.06, 0.09, 0.2), "rain": (0.05, 0.06, 0.1), "dusk": (0.35, 0.18, 0.25)}[outside]
+    cube((0, 2.8, 1.45), (0.62, 0.02, 1.2), mat("dsky_" + outside, sky, 0.5, emit=sky, emit_str=1.0))
+    fm = mat("dframe", (0.9, 0.88, 0.82), 0.5)
+    cube((0, 2.46, 1.45), (0.04, 0.06, 1.22), fm); cube((0, 2.46, 1.45), (0.64, 0.06, 0.04), fm)
+    if outside == "autumn":
+        for _ in range(5): sphere((rng.uniform(-0.3, 0.3), 3.3, rng.uniform(1.0, 1.9)), rng.uniform(0.15, 0.3), mat("dtree", (0.55, 0.25, 0.08), 0.8))
+    light("AREA", (0, 2.3, 1.4), 12, col=(0.45, 0.55, 1.0), size=0.8, rot=(math.pi / 2, 0, 0))        # cool window light
+    tm = mat("dtable", (0.5, 0.3, 0.15), 0.5, noise=0.5)
+    cube((0, 0.95, TABLE_Z), (0.9, 2.2, 0.05), tm, bevel=0.01)
+    for sx in (-0.38, 0.38):
+        for sy in (0.0, 1.9): cube((sx, sy, TABLE_Z / 2), (0.05, 0.05, TABLE_Z), tm)
+    cube((0, 0.95, TABLE_Z + 0.03), (0.7, 2.0, 0.004), mat("dcloth", (0.92, 0.88, 0.78), 0.9, sheen=0.4, noise=0.2))
+    cube((0, 0.95, TABLE_Z + 0.034), (0.25, 2.0, 0.003), mat("drunner", (0.65, 0.2, 0.12), 0.9, sheen=0.5))
+    seats = {}
+    for k, (x, y) in SEATS.items():
+        rot = (math.pi / 2 if x < 0 else -math.pi / 2) if k != "HEAD" else 0.0          # chair back away from the table
+        seats[k] = chair((x + (-0.12 if x < 0 else 0.12 if x > 0 else 0), y + (0.12 if k == "HEAD" else 0), 0), rot)
+        if k == "R2" and not danny_plate: continue
+        px = x * 0.55; py = y if k != "HEAD" else y - 0.15
+        plate((px, py, TABLE_Z + 0.036), food=food and k != "R2")
+    tiny = chair((0.82, SEATS["R3"][1], 0), -math.pi / 2, s=0.62, col=(0.85, 0.55, 0.4)) if tiny_chair else None
+    hc = name_card((SEATS["R2"][0] * 0.55 - 0.02, SEATS["R2"][1] + 0.12, TABLE_Z + 0.036), "Danny", rot=math.pi / 2) if card else None
+    if food:
+        turkey((0, 0.75, TABLE_Z + 0.036)); pie((0, 1.35, TABLE_Z + 0.036))
+    if candles:
+        for y in (0.35, 1.1, 1.55): candle((0, y, TABLE_Z + 0.036))
+    light("POINT", (0, 0.95, 1.75), 55, col=(1.0, 0.62, 0.3), size=0.4)                                   # warm pendant (out of frame)
+    light("AREA", (0, -1.2, 1.6), 9, col=(1.0, 0.75, 0.55), size=1.5, target=(0, 1.0, 0.7))               # soft fill from the camera side
+    hall = cube((-2.5, 1.35, 1.1), (0.05, 1.2, 2.2), mat("dhall", (1, 0.85, 0.6), 0.5, emit=(1.0, 0.78, 0.5), emit_str=0.0))
+    cube((-1.64, 1.35, 0.015), (0.03, 0.66, 0.03), mat("dgap", (1, 0.8, 0.5), 0.5, emit=(1.0, 0.75, 0.45), emit_str=25))   # light under the door
+    door = empty("dhinge", (-1.68, 1.0, 0))
+    d = cube((-1.68, 1.35, 1.1), (0.06, 0.66, 2.18), mat("ddoor", (0.32, 0.17, 0.08), 0.55, noise=0.6), bevel=0.01)
+    d.parent = door; d.location = Vector(d.location) - Vector(door.location)
+    return {"seats": seats, "tiny": tiny, "card": hc, "door": door, "hall": hall}
+
+
+def spot_camera(push=0.0):
+    """The 'same spot' camera: the same frame of the table every year."""
+    return camera((0.0, -1.05 + push, 1.12), (0.0, 1.05, 0.62), lens=26, dof=2.0, fstop=4.0)
+
+
+def cam(loc, target, lens=45, fstop=2.2):
+    """Camera focused exactly on its target."""
+    return camera(loc, target, lens=lens, dof=(Vector(target) - Vector(loc)).length, fstop=fstop)
+
+
+def postcard(loc, text_body="Your plate\nis still warm.", rot=(0, 0, 0)):
+    x, y, z = loc
+    c = cube((x, y, z), (0.3, 0.2, 0.004), mat("postcard", (0.96, 0.92, 0.8), 0.7), rot=rot)
+    t = text(text_body, (x, y, z + 0.004), 0.03, mat("pcink", (0.15, 0.15, 0.35), 0.6), rot=rot)
+    return [c, t]
