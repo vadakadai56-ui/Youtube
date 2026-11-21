@@ -5,7 +5,7 @@ description: Pitch new video ideas built on what is trending right now. Use when
 # /yt-idea: story pitches
 
 ## Inputs
-- `channel/formats.md`: the four story formats (emotional twist, nothing ever happens, "you" + a power, weird town rule). Spread pitches across formats, not only emotional stories.
+- `channel/formats.md`: the four story formats (emotional twist, nothing ever happens, "you" + a power, weird town rule). Dustlight does all kinds of stories; emotional twists were only the start. Spread pitches across formats, and add new formats when trends show them.
 - `channel/trends.md`. If it is missing or older than 7 days, run `/yt-trends` first. Ideas come from the current top trends.
 - `channel/channel-kit.md`, `stories/ideas.md` (do not re-pitch what is there), `STATUS.md` (what is live), and the latest `/yt-analytics` notes (what worked here).
 
