@@ -40,7 +40,21 @@ def world_color(rgb):
     bpy.context.scene.world.node_tree.nodes["Background"].inputs[0].default_value = (*rgb, 1)
 
 
+STYLE = os.environ.get("STYLE", "")
+
+
+def lowpoly_pass(ratio=0.18, min_size=0.06):
+    """Faceted low-poly look: flat shading plus a Decimate on every mesh bigger than min_size (eyes and tiny details stay smooth)."""
+    for o in bpy.data.objects:
+        if o.type != "MESH" or "lowpoly" in o: continue
+        o["lowpoly"] = 1
+        if max(o.dimensions) < min_size or len(o.data.polygons) < 40: continue
+        for p in o.data.polygons: p.use_smooth = False
+        d = o.modifiers.new("lp", "DECIMATE"); d.decimate_type = "COLLAPSE"; d.ratio = ratio; d.use_collapse_triangulate = True
+
+
 def render(path):
+    if STYLE == "lowpoly": lowpoly_pass()
     bpy.context.view_layer.update()
     bpy.context.scene.render.filepath = path
     bpy.ops.render.render(write_still=True)
