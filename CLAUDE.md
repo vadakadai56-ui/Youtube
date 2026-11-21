@@ -11,8 +11,8 @@ Read `README.md` (pipeline, rules) and `STATUS.md` (what is live and scheduled) 
 The `/yt-*` skills in `.claude/skills/` run the channel. `/yt-channel` is the hub.
 
 For every new request from the owner, unless the right skill is obvious, run `/skill-finder` first. It searches every
-skill on the account (this repo, the account's claude.ai skills, built-in skills, and skills not yet enabled), picks
-the best one and runs it. Don't ask the owner which skill to use.
+skill on the account (this repo, the account's claude.ai skills, built-in skills, and skills not yet enabled), keeps
+every skill that adds something useful, and runs them all in order. Don't ask the owner which skills to use.
 
 ## Cheap helper (Haiku)
 `.claude/agents/haiku-helper.md` runs on Haiku. Hand it these jobs with the Agent tool (`subagent_type: haiku-helper`):

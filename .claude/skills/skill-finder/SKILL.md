@@ -1,16 +1,17 @@
 ---
 name: skill-finder
-description: Find and run the right skill (or chain of skills) for the owner's request, searching every skill available to the account, not just this repo. Covers the repo's skills (yt-*, motion-design, real-sfx, real-sound, earshot), the account's enabled claude.ai skills (anthropic-skills:*, e.g. docs, pptx, canvas-design, ghost, deep-research), claude.ai built-in skills, and account skills not yet enabled. Use when the owner says "find the skill", "which skill", "/skill-finder", shares a prompt and wants Claude to pick the tool itself, when a request could match several skills, or after a new skill is installed. Ranks them, picks the best, and runs it without asking.
+description: Find and run the right skill (or chain of skills) for the owner's request, searching every skill available to the account, not just this repo. Covers the repo's skills (yt-*, motion-design, real-sfx, real-sound, earshot), the account's enabled claude.ai skills (anthropic-skills:*, e.g. docs, pptx, canvas-design, ghost, deep-research), claude.ai built-in skills, and account skills not yet enabled. Use when the owner says "find the skill", "which skill", "/skill-finder", shares a prompt and wants Claude to pick the tool itself, when a request could match several skills, or after a new skill is installed. Ranks them, keeps every skill that adds something useful, and runs all of them in a sensible order without asking.
 ---
 
-# skill-finder: pick the right skill and run it
+# skill-finder: find every useful skill and run them all
 
-The owner shares a prompt. Find the skill that fits it best, then use it. Don't ask which skill to use: that is this skill's job.
+The owner shares a prompt. Find **every** skill that adds something useful to it, not only the best match, and run them
+all. Don't ask which skills to use: that is this skill's job.
 
 ## 1. Shortlist from every source
 1. Run:
    ```bash
-   python3 .claude/skills/skill-finder/scripts/find.py "<the owner's request, verbatim>" --n 5
+   python3 .claude/skills/skill-finder/scripts/find.py "<the owner's request, verbatim>" --useful
    ```
    It ranks every SKILL.md on disk by how well its name, description and instructions match the words of the request:
 
@@ -28,22 +29,37 @@ The owner shares a prompt. Find the skill that fits it best, then use it. Don't 
    enabled cannot be run yet: show it with `SuggestSkills` (or name it) and tell the owner to enable it, then do the task
    the best available way meanwhile.
 
-## 2. Decide
-- Read the descriptions of the top candidates and pick the one whose stated purpose matches the request. If
-  needed, read the top two SKILL.md files in full.
-- Apply the routing rules below when skills overlap.
-- If the request needs several steps, plan a chain (for example `yt-script` then `yt-voice` then `yt-build`).
-- If no skill fits (the best one does not do what was asked), say so in one line and do the task directly.
+## 2. Decide: keep every useful skill
+`--useful` lists every skill that scores at least 35% of the top match (up to 12). For each one, ask: does this skill
+add something real to the result? Keep it if it does:
+- **The main skill** that does the task.
+- **Skills that improve it:** a hook or title skill for a script, a trends check before ideas, a cover for a video,
+  a style or theme skill for a design, the writing-style skill for text the owner sends as their own.
+- **Skills that check it:** `yt-qc` before an upload, earshot listening on a mix, a critique step.
+- **Skills that finish it:** credits, the status update, a phone-size copy.
+
+Drop a candidate only when it does not apply (a word match with no real use, such as `pptx` for a "thumbnail"), when
+another kept skill already does the same job (keep the one the routing table names), or when it would publish,
+schedule, spend credits or message someone without the owner asking.
+
+Then put the kept skills in order: research, then create, then improve, then check, then finish. Example for "make the
+next video": `yt-trends` (if stale), `yt-idea`, `yt-hook`, `yt-script` (stop for approval), `yt-voice`, `yt-build`,
+`real-sfx` / `real-sound`, `yt-qc`, `yt-thumbnail`, `yt-title`, `yt-publish` (stop to confirm the slot).
+
+If no skill fits at all, say so in one line and do the task directly.
 
 ## 3. Run
-- Invoke the chosen skill with the Skill tool (name as in the table above), passing the owner's request as `args`.
+- Before starting, list the plan in one line, e.g. "Using yt-hook, yt-script, then yt-title."
+- Run every kept skill, one at a time, in that order. Invoke each with the Skill tool (name as in the table above), passing the owner's request as `args`.
   For a `built-in` skill, read its SKILL.md (and any file it points to) and follow it yourself. Then follow that skill's
   instructions exactly, including its gates (owner approval of scripts, confirming a slot before scheduling).
-- For a chain, run one skill at a time and carry results forward. Stop at any gate that needs the owner.
-- Tell the owner in one line which skill was chosen and why, e.g. "Using real-sound: full soundtrack with licensed
-  recordings."
+- Carry each result forward into the next skill. Stop at any gate that needs the owner (script approval, the
+  posting slot, spending credits), and continue the rest of the plan after they answer.
+- At the end, report in one short table which skills ran and what each added.
 
 ## Routing rules (Dustlight)
+
+When two skills do the same job, keep the one named here. Skills that do different jobs are all kept.
 
 | Request is about | Use | Not |
 |---|---|---|

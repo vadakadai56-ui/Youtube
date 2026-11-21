@@ -1,6 +1,7 @@
 """Rank the installed skills against a request.
 
-usage:  python3 .claude/skills/skill-finder/scripts/find.py "the owner's request" [--n 5] [--all]
+usage:  python3 .claude/skills/skill-finder/scripts/find.py "the owner's request" [--useful | --n 5 | --all]
+        --useful lists every skill scoring at least 35% of the top match (up to 12): the candidates to run together.
 Reads every SKILL.md it can find: this repo's .claude/skills/, the account's synced skills (~/.claude/skills/synced/,
 invoked as anthropic-skills:NAME), user skills (~/.claude/skills/) and claude.ai's built-in skills (/mnt/skills/).
 Account skills that are not enabled are not on disk: search those with the SearchSkills tool.
@@ -39,7 +40,7 @@ def load():
             head, body = (m.group(1), m.group(2)) if m else ("", txt)
             name = (re.search(r"^name:\s*(.+)$", head, re.M) or [None, os.path.basename(os.path.dirname(f))])[1].strip().strip("'\"")
             desc = (re.search(r"^description:\s*(.+)$", head, re.M) or [None, ""])[1].strip()
-            if name in seen: continue
+            if name in seen or name == "skill-finder": continue
             seen.add(name)
             out.append({"src": src, "invoke": how.format(name=name), "nameset": set(words(name.replace("-", " "))), "name": name, "desc": desc, "path": f,
                         "tokens": words(name.replace("-", " ")) * 8 + words(desc) * 3 + words(body)})
@@ -67,7 +68,9 @@ if __name__ == "__main__":
     if not args: sys.exit(__doc__)
     ranked = rank(" ".join(args), load())
     top = ranked[0]["score"] or 1
-    for s in ranked if "--all" in sys.argv else ranked[:n]:
+    if "--useful" in sys.argv: ranked = [s for s in ranked if s["score"] >= 0.35 * top][:12]
+    elif "--all" not in sys.argv: ranked = ranked[:n]
+    for s in ranked:
         if s["score"] <= 0: break
         print(f"{s['score'] / top:4.2f}  {s['name']:<26} [{s['src']}]  {', '.join(s['hits'])}\n"
               f"      {s['desc'][:150]}\n      invoke: {s['invoke']}   file: {s['path']}")
