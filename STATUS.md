@@ -28,7 +28,7 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
 | 20 Nov | 16:00 | The Second Cup | live ✅ | none | none |
 | 21 Nov | 16:00 | The Empty Swing | **render lost** | re-voice (ElevenLabs history) and re-render | the mp4 was never uploaded and the old container is gone |
 | 22 Nov | 16:00 | How a Frozen River Becomes a Hotel | **scheduled** (Metricool id 436245216, uuid 86422291588859844) | /yt-analytics on 24 Nov | none |
-| 27 or 28 Nov | 16:00 | Christmas "how it works" Short (trend #2) | idea | /yt-idea | none |
+| 27 Nov | 16:00 | How a Pine Forest Becomes 10,000 Christmas Trees | script drafted | owner approval by 23 Nov | approval |
 
 ## Rebuilt after the 19 Nov reset (done, tested end to end)
 - `pipeline/` toolkit, renderer, aligner, editor and Dropbox publisher. `stories/the-second-cup/` is fully re-renderable.
