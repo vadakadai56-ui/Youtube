@@ -20,14 +20,14 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
   - First comment: "Who would you push the swing for? 👇"
 
 ## In production
-- **How a Frozen River Becomes a Hotel** (`stories/ice-hotel/`): first trend-driven video ("How a ___ becomes a ___"). Script approved 20 Nov (55 s cut), title 1. **Rendered 21 Nov** (Cycles, 580 frames): `out/ice-hotel.mp4`, 50.6 s, -14.3 LUFS, true peak -1.2 dBTP, qc READY. Cover `out/ice-hotel-cover.jpg`. Uploaded 21 Nov: Dropbox `/Youtube/ice-hotel.mp4`, cover `/Youtube/covers/ice-hotel.jpg`. Not scheduled yet. Plan: voice 21 Nov, render 22 Nov, qc and schedule 23 Nov, live 24 Nov 16:00 Riga.
+- **How a Frozen River Becomes a Hotel** (`stories/ice-hotel/`): first trend-driven video ("How a ___ becomes a ___"). Script approved 20 Nov (55 s cut), title 1. **Rendered 21 Nov** (Cycles, 580 frames): `out/ice-hotel.mp4`, 50.6 s, -14.3 LUFS, true peak -1.2 dBTP, qc READY. Cover `out/ice-hotel-cover.jpg`. Uploaded 21 Nov: Dropbox `/Youtube/ice-hotel.mp4`, cover `/Youtube/covers/ice-hotel.jpg`. Scheduled 22 Nov 2026 16:00 Riga ([planner](https://app.metricool.com/planner/calendar?blogId=7551785&openWithPostUuid=86422291588859844)). Title: "Every winter, they build a hotel out of a frozen river." First comment: "Would you sleep one night at minus five? Comment ICE if yes 🧊👇" Plan: voice 21 Nov, render 22 Nov, qc and schedule 23 Nov, live 22 Nov 16:00 Riga.
 
 ## Plan (20 Nov)
 | Date | Slot (Riga) | Video | Stage | Next action | Blocker |
 |---|---|---|---|---|---|
 | 20 Nov | 16:00 | The Second Cup | live ✅ | none | none |
 | 21 Nov | 16:00 | The Empty Swing | **render lost** | re-voice (ElevenLabs history) and re-render | the mp4 was never uploaded and the old container is gone |
-| 24 Nov | 16:00 | How a Frozen River Becomes a Hotel | in Dropbox | schedule in Metricool | owner confirms slot |
+| 22 Nov | 16:00 | How a Frozen River Becomes a Hotel | **scheduled** (Metricool id 436245216, uuid 86422291588859844) | /yt-analytics on 24 Nov | none |
 | 27 or 28 Nov | 16:00 | Christmas "how it works" Short (trend #2) | idea | /yt-idea | none |
 
 ## Rebuilt after the 19 Nov reset (done, tested end to end)
