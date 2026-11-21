@@ -39,3 +39,12 @@ Sources: [newengen.com](https://newengen.com/insights/tiktok-trends/), [virlo.ai
 [socialpilot.co](https://www.socialpilot.co/blog/tiktok-trends), [anijam.ai](https://www.anijam.ai/blog/youtube-shorts-trends/),
 [youtube.com tutorial](https://www.youtube.com/watch?v=AC0AOpgLtRA), [note.com](https://note.com/tanatana_game/n/n8f0a091103bd?hl=en),
 [revid.ai](https://www.revid.ai/blog/short-form-video-trends)
+
+## Story formats check (21 Nov 2026, evening)
+| Format (see channel/formats.md) | Evidence (source, date) | Verdict |
+|---|---|---|
+| "You" + a power ("What if you could…") | Several animated "what if you" series on TikTok and Shorts with posts 7 to 19 days old; one part 2 at 44.8K likes (tiktok.com discover pages, Oct to Nov 2026) | **Active.** Mom 4, shelf long (evergreen genre), fit 4, room 4. Make ours with an unusual power and a real cost |
+| Nothing ever happens (anticlimax POV) | The phrase is an active TikTok meme, but tied to the 4chan /pol/ "chud" and Wojak scene (tiktok.com/tag/nothingeverhappens). An "It never happened" variant around 16 Nov had about 160K likes (unverified) | **Use the format, not the phrase or its hashtags.** Title ours differently ("In my town, a normal night is terrifying"), no #chud or #nothingeverhappens |
+| Weird town rule + "type your name" ending | Comment-your-name and type-your-name posts are a long-running pattern, not new this week (tiktok.com discover pages, last updated Jun to Aug 2026) | **Evergreen comment driver**, not a trend. Use the ending on any format |
+
+Sources: [what-if superpowers](https://www.tiktok.com/discover/what-would-you-do-if-you-had-superpowers), [what if 1000x stronger](https://www.youtube.com/shorts/bWjDs2fb1Bk), [#nothingeverhappens](https://www.tiktok.com/tag/nothingeverhappens), [pov nothing happened](https://www.tiktok.com/discover/pov-nothing-happened), [type your name trend](https://www.tiktok.com/discover/type-your-name-trend)
