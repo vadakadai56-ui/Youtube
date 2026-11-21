@@ -19,6 +19,8 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
   - Title: "Every evening at 6, he pushes an empty swing."
   - First comment: "Who would you push the swing for? 👇"
 
+- **The Extra Plate**: script approved 21 Nov 2026 (`stories/the-extra-plate/narration.txt`, 170 words). Target: live 25 Nov 16:00 Riga, in the low-poly night style. Next: voice, then build.
+
 ## Rebuilt after the 19 Nov reset (done, tested end to end)
 - `pipeline/` toolkit, renderer, aligner, editor and Dropbox publisher. `stories/the-second-cup/` is fully re-renderable.
 - Not rebuilt: the Lost Toy Room per-shot camera files (Parts 1 to 4 are finished and live). The set, toys, Bun-Bun, door and silhouettes are in `scene.py`.
