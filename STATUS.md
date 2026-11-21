@@ -27,7 +27,7 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
 - Lost for good: the narration mp3s (ElevenLabs history has them), the rendered frames, and the full-quality "The Second Cup" (the phone copy exists).
 
 ## Open items
-- Instagram: the owner could not connect it in Metricool yet. Needs a professional (Creator) account, then Metricool > Brand settings > Connections > Instagram.
+- Instagram: connected in Metricool on 21 Nov 2026 as **@dustlightstories** (YouTube is @the.dustlight.stories). Reels can now be scheduled with the YouTube posts.
 - Channel: create the "The Lost Toy Room" playlist (public) and set "Related video" on each part to the next part.
 - Old ball-sim Shorts were set to private by the owner.
 

@@ -4,7 +4,7 @@ Forward-looking: the page is built around the brand, not around earlier stories.
 
 ## Profile
 - Name field: `Dustlight | Stories that stay` (searchable)
-- Handle: `@the.dustlight.stories`
+- Handle: `@dustlightstories` (connected to Metricool 21 Nov 2026; YouTube is `@the.dustlight.stories`)
 - Profile picture: one warm glowing object (a lit window or an old lamp) on a dark background, readable at tiny sizes, not tied to a character.
 - Category: Digital Creator
 - Bio:
