@@ -49,6 +49,12 @@ TikTok connected 21 Nov 2026 as @divine.773, renamed @dustlight00 the same day (
 - Channel: create the "The Lost Toy Room" playlist (public) and set "Related video" on each part to the next part.
 - Old ball-sim Shorts were set to private by the owner.
 
+## Analytics (21 Nov 2026, from YouTube Studio screenshot, last 28 days)
+- Channel: 8.2K views, 38.8 watch hours, 18 subscribers. Daily views peaked at about 2.7K on 20 Nov (story launch).
+- Top Shorts: Scissors was down to 1 (old ball-sim) 1.3K over ~6 days; Last ball standing (ball-sim) 1.2K over ~6 days; Lost Toy Room Part 1 1.1K over ~2 days; **The Second Cup 1.1K in ~1 day**; Lost Toy Room Part 3 1.0K over ~2 days.
+- Verdict: the story format gets 2 to 5 times more views per day than the ball-sims and converts subscribers (+13 in 2 days vs +4 from ~3,400 ball-sim views). Single standalone stories with a "strange daily routine" hook (The Second Cup) beat series parts. Make more standalone stories.
+- Monetization page still showed data as of 16 Nov (0 qualified Shorts views). Owner to turn on 2-Step Verification.
+
 ## Analytics (20 Nov 2026, Metricool, 23 Oct to 20 Nov)
 - Per-video data: none returned (connectors "videos published in range" and "all videos" are empty). No per-video ranking possible yet.
 - Channel views: 1,118 on 16 Nov and 1,202 on 17 Nov; 1 to 27 a day before that. No view data yet after 17 Nov (YouTube reporting lag).
