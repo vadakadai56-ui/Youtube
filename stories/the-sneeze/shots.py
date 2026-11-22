@@ -203,12 +203,15 @@ def s7(rng):            # he stares at you. "how did you know?" you don't tell h
 
 
 def s8(rng):            # missed shot? sneeze. score.: outside at a hoop
-    park(rng, season="spring"); lights_day((0, 1.5, 1.2), 1.0)
+    cube((0, 0, -0.05), (30, 30, 0.1), mat("grass", (0.3, 0.55, 0.25), 0.85, noise=0.3))
+    cube((0, 1.2, 0.002), (2.4, 3.0, 0.004), mat("court", (0.75, 0.45, 0.35), 0.8, noise=0.2))
+    for x in (-3, -1.6, 1.8, 3.2): tree((x, 4.5, 0), "spring", rng)
+    lights_day((0, 1.5, 1.2), 1.0)
     pole = cyl((0, 2.5, 1.2), 0.04, 2.4, mat("pole", (0.3, 0.3, 0.32), 0.4, metal=0.6))
     cube((0, 2.45, 2.35), (0.8, 0.04, 0.55), mat("board2", (0.95, 0.95, 0.95), 0.5))
     torus((0, 2.2, 2.15), 0.16, 0.012, mat("rim", (0.95, 0.4, 0.1), 0.4, metal=0.5))
     y = bean((0, 0.6, 0), rot=math.pi, **YOU); b = ball((0, 0.5, 1.0))
-    c = _cam((1.6, -0.9, 1.1), (0, 1.6, 1.3), lens=30, fstop=5)
+    c = _cam((-1.3, -1.0, 1.0), (-0.2, 1.2, 1.15), lens=28, fstop=5)
     def upd(t):
         sneeze(y, t, 0.85)
         if t < 0.8:                                                       # the first shot clangs off the rim
@@ -221,7 +224,7 @@ def s8(rng):            # missed shot? sneeze. score.: outside at a hoop
 
 
 def s9(rng):            # said something dumb to your crush? sneeze. say something smooth instead.
-    park(rng, season="spring"); lights_day((0, 0.5, 0.6), 1.0)
+    classroom(rng)
     y = bean((-0.3, 0.3, 0), rot=0.6, **YOU); cr = bean((0.3, 0.5, 0), rot=-0.6, **CRUSH)
     c = _cam((0.1, -1.3, 0.8), (0.0, 0.4, 0.62), lens=40, fstop=2.8)
     def upd(t):
@@ -238,7 +241,7 @@ def s10(rng):           # you start sniffing pepper before every test.
     shaker = cyl((0, 0, 0), 0.03, 0.09, mat("shaker", (0.15, 0.15, 0.17), 0.4, metal=0.4))
     c = _cam((0.12, -1.55, 0.72), (0, -0.55, 0.65), lens=48, fstop=2.2)
     def upd(t):
-        y["R"].rotation_euler[0] = -2.0; shaker.location = y["root"].location + Vector((0.08, -0.25, 0.7 + 0.02 * math.sin(t * 9)))
+        y["R"].rotation_euler[0] = -2.0; shaker.location = y["root"].location + Vector((0.14, -0.24, 0.5 + 0.02 * math.sin(t * 9)))
         y["head"].rotation_euler[0] = 0.12 * math.sin(t * 6); breathe(y, t)
     return upd
 
@@ -271,11 +274,11 @@ def s13(rng):           # mom walks in with tissues. again. and again. and again
     m = bean((1.2, -0.6, 0), rot=2.3, **MOM)
     box = cube((0, 0, 0), (0.14, 0.1, 0.08), mat("tbox", (0.3, 0.6, 0.9), 0.6))
     hits = [x - START["s13"] for x in SNEEZES if START["s13"] <= x < START["s13"] + _D["s13"]]
-    c = _cam((1.4, -1.6, 1.2), (-0.2, 0.6, 0.6), lens=28, fstop=4.5)
+    c = _cam((0.9, -2.9, 1.6), (-0.4, 0.5, 0.5), lens=26, fstop=6)
     def upd(t):
         last = max([0.0] + [h0 for h0 in hits if t > h0])
         k = min(1.0, (t - last) / 1.0)                                    # she walks in, gets reset, walks in again
-        m["root"].location = Vector((1.2 - 1.0 * k, -0.6 + 1.0 * k, 0.02 * abs(math.sin(t * 9))))
+        m["root"].location = Vector((0.6 - 0.9 * k, -0.9 + 1.3 * k, 0.02 * abs(math.sin(t * 9))))
         m["R"].rotation_euler[0] = -1.0; box.location = m["root"].location + Vector((-0.18, -0.12, 0.45))
         for h0 in hits: sneeze(y, t, h0, big=0.5)
     return upd
@@ -320,12 +323,12 @@ def s17(rng):           # then the doorbell rings.: the front door, closed, a be
 
 
 def s18(rng):           # it's Grandma. holding the biggest bunch of flowers you've ever seen.
-    hinge = front_door(rng, 1.0); g = bean((0, 1.35, 0), **GRAN); bq = bouquet((0.05, 1.05, 0.45), s=1.6, rng=rng)
-    c = _cam((0.0, -0.9, 0.55), (0, 1.1, 0.9), lens=26, fstop=4)
+    hinge = front_door(rng, 1.0); g = bean((-0.08, 1.35, 0), **GRAN); bq = bouquet((0.32, 1.0, 0.05), s=1.0, rng=rng)
+    c = _cam((0.0, -0.7, 0.75), (0.0, 1.1, 0.75), lens=30, fstop=4)
     def upd(t):
         g["root"].location.y = 1.35 - 0.25 * smooth(t / 1.0); bq.location.y = 1.05 - 0.25 * smooth(t / 1.0)
         g["R"].rotation_euler[0] = -1.3; g["L"].rotation_euler[0] = -1.3
-        c.location.z = 0.55 + 0.25 * smooth((t - 0.6) / 2.0)
+        c.location.z = 0.75 + 0.15 * smooth((t - 0.6) / 2.0)
     return upd
 
 
