@@ -24,7 +24,7 @@ its story, format and trend, and write it in the style recipe as **Character**. 
 | 5 | **Trend Short** (daily extra) | One trending topic, format or hook from `channel/trends.md`, done in the Dustlight world: one idea, one payoff, no setup | 15 to 30 s | A question or "comment…" prompt | Made to be cheap: 2 or 3 shots, reused sets, 20 to 60 words of voice |
 | 4 | **Weird town rule + quirk** | A town with one strange rule, a hero with a quirk that seems useless, a crisis only the quirk can fix | 25 to 35 s | Interactive call to action ("type your name the way my town says it") | 22.6K-like blocky-town video, voice-password town, hero who can't say R |
 | 6 | **"What if" + real science** | Second person ("What if you could see…"). A power shown as a live on-screen number or meter, a real study or fact every 20 to 30 s, the power backfires, being real fixes it, twist in the last beat | 75 to 100 s | Twist ("…you can see them too?"), then a comment question and a series hook | 1:53 flat-2D "see how much people like you" video (liking gap study, 1966 pratfall effect), studied 22 Nov 2026 |
-| 7 | **Pause challenge** (weekly extra at most) | Hook text "Only 1% can pause with all 3 … in the frame!"; three Dustlight things tumble past a frame or window; exactly one real frame where all three line up; seamless loop | 8 to 12 s | No outro: the last frame cuts straight back to the first, so it replays; caption asks "Did you get it? 👇" and points to the series the objects come from | 9.6 s "pause all 3 cars in the frame" Reel (cars, red outline, Instagram outro), studied 22 Nov 2026 |
+| 7 | **Pause challenge** (Instagram/TikTok only, weekly extra at most) | Hook text "Only 1% can pause with all 3 … in the frame!"; three Dustlight things tumble past a frame or window; exactly one real frame where all three line up; seamless loop | 8 to 12 s | No outro: the last frame cuts straight back to the first, so it replays; caption asks "Did you get it? 👇" and points to the series the objects come from | 9.6 s "pause all 3 cars in the frame" Reel (cars, red outline, Instagram outro), studied 22 Nov 2026 |
 
 ## "What if" + real science rules (format 6)
 - Every fact is real and checkable: name the study or year on screen ("1966 · ARONSON"). Look it up before the script; no made-up numbers.
@@ -33,7 +33,7 @@ its story, format and trend, and write it in the style recipe as **Character**. 
 - Look: flat 2D or simple 3D, picked per video like every other format. Flat 2D renders in seconds a frame, so it suits a weekly series.
 
 ## Pause challenge rules (format 7)
-- At most once a week, in a trend slot. It earns rewatches and comments but few followers, so it supports the stories, never replaces them.
+- **Instagram and TikTok only, never YouTube** (owner's rule, 22 Nov 2026). At most once a week, at 12:00 Riga. It earns rewatches and comments but few followers, so it supports the stories, never replaces them.
 - Use objects or characters from our own videos (Lost Toy Room toys, Bun-Bun, the huss ball), so the caption can point to that video.
 - It must be possible: one real frame where all three are inside the frame. Check it before publishing (step through the frames).
 - No voice; real sound only (whooshes, a soft tick). A seamless loop, no end card. About 30 minutes to render.
