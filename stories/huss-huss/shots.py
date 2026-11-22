@@ -180,8 +180,8 @@ def h8(rng):            # she stole my ball.: Grandma swipes it, the kid freezes
 
 def h9(rng):            # huss. huss. HUSS.: Grandma dribbles, proud, the kid's mouth open
     porch(rng, door_open=1.0); sn = flakes(rng)
-    g = person((0.0, -2.0, 0), rot=0.25, **GRAN); slippers(g); k = person((0.9, -2.3, 0), rot=-0.9, **dict(KID, mouth="open")); b = ball((0, 0, 0.3))
-    c = _cam((0.5, -3.7, 0.65), (0.35, -2.0, 0.5), lens=34, fstop=3.5)
+    g = person((0.0, -2.0, 0), rot=0.25, **GRAN); slippers(g); k = person((0.62, -2.35, 0), rot=-0.9, **dict(KID, mouth="open")); b = ball((0, 0, 0.3))
+    c = _cam((0.3, -3.8, 0.65), (0.3, -2.1, 0.5), lens=30, fstop=3.5)
     def upd(t):
         T = START["h9"] + t; hold_ball(g, b, T, side="L"); sn.update(t)
         g["head"].rotation_euler[0] = -0.15; g["root"].location.z = 0.012 * abs(math.sin(T * 7))
