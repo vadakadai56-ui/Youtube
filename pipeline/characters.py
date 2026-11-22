@@ -18,9 +18,9 @@ def _pin(objs, piv):
 
 
 def blocky(loc, shirt, pants=(0.2, 0.25, 0.4), skin="light", hair=None, style="kid", rot=0.0, h=1.0, name="blk",
-           hat=None, glasses=False, shoes=(0.12, 0.1, 0.1)):
+           hat=None, glasses=False, shoes=(0.12, 0.1, 0.1), mouth="smile"):
     """Block person about 1 unit tall (same scale as the peg dolls). style: kid | gran | dad | mum (changes hair and build).
-    hair: colour (None = default for the style). hat: colour of a knitted beanie. Returns handles incl. legs LL, LR."""
+    hair: colour (None = default for the style). hat: colour of a knitted beanie. mouth: smile | flat | open. Returns handles incl. legs LL, LR."""
     sk = mat("bskin_" + name, SKINS.get(skin, skin) if isinstance(skin, str) else skin, 0.55, noise=0.05)
     sm = mat("bshirt_" + name, shirt, 0.75, sheen=0.3, noise=0.12)
     pm = mat("bpants_" + name, pants, 0.8, noise=0.12)
@@ -43,8 +43,13 @@ def blocky(loc, shirt, pants=(0.2, 0.25, 0.4), skin="light", hair=None, style="k
               sphere((sx * hs * 0.2 + 0.008, ey - 0.008, hc + 0.035), 0.009, wht),
               cube((sx * hs * 0.2, ey, hc + 0.075), (0.05, 0.01, 0.012), blk, rot=(0, sx * 0.18, 0)),
               sphere((sx * hs * 0.32, ey + 0.004, hc - 0.03), 0.025, cheek, scale=(1, 0.3, 0.7))]
-    for k in range(5):                              # little smile
-        x = -0.03 + k * 0.015; H.append(sphere((x, ey, hc - 0.05 + 10 * x * x), 0.007, blk, seg=8))
+    if mouth == "flat":                             # deadpan line
+        H.append(cube((0, ey, hc - 0.05), (0.06, 0.01, 0.012), blk))
+    elif mouth == "open":                           # surprised "o"
+        H.append(sphere((0, ey, hc - 0.055), 0.022, blk, scale=(0.8, 0.3, 1.0)))
+    else:
+        for k in range(5):                          # little smile
+            x = -0.03 + k * 0.015; H.append(sphere((x, ey, hc - 0.05 + 10 * x * x), 0.007, blk, seg=8))
     hcol = hair or {"kid": (0.22, 0.14, 0.08), "gran": (0.93, 0.92, 0.9), "dad": (0.15, 0.1, 0.07), "mum": (0.45, 0.26, 0.12)}[style]
     hm = mat("bhair_" + name, hcol, 0.9, sheen=0.4, noise=0.2)
     top = hc + hs / 2

@@ -9,3 +9,4 @@ __pycache__/
 # real-sfx listening model (3 GB, not committed)
 .claude/skills/real-sfx/vendor/venv-audiolm/
 .claude/skills/real-sfx/vendor/models/
+audio/

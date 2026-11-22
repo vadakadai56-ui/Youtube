@@ -23,7 +23,9 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
 
 - **A Normal Night** (format 2, anticlimax POV): script approved 21 Nov 2026, voiced (Arthur, deadpan), rendered `out/a-normal-night.mp4`. **Scheduled 22 Nov:** YouTube 23 Nov 16:00 (uuid 5231118787503540207), Instagram 18:00 (uuid 6687967837374663258), TikTok 18:00 (uuid -4573281437109433456). Media: [Dustlight-Files](https://raw.githubusercontent.com/vadakadai56-ui/Dustlight-Files/main/videos/a-normal-night.mp4) (59.1 MB). Title "In my town, a normal night is terrifying.", first comment "What's the scariest normal thing that ever happened in your house? 👇". No #nothingeverhappens / #chud tags.
 
-- **Dustlight Stories Vol. 1** (long-form, 16:9): Lost Toy Room (full), The Second Cup, The Empty Swing, A Normal Night. Planned YouTube 24 Nov 16:00 as a normal video with chapters.
+- **Dustlight Stories Vol. 1** (long-form, 16:9, 9.1 min so mid-rolls are possible once monetized): The Extra Plate, Lost Toy Room (full), The Second Cup, The Empty Swing, The Ice Hotel, A Normal Night. Planned YouTube **Wed 26 Nov (Thanksgiving) 16:00** as a normal video with chapters (owner's choice 22 Nov).
+
+- **Huss Huss** (Trend Short, first video with the new blocky characters): script approved 22 Nov 2026 (`stories/huss-huss/narration.txt`, 48 words). Voiced 22 Nov with ElevenLabs "Lip" (DGqQmo441r9TwJq0migX), 25.9 s, 284 credits; mp3 at `audio/huss-huss.mp3` (not committed). Rendering. Planned trend slot Tue 24 Nov: YouTube 10:00, Instagram/TikTok 12:00.
 
 ## Instagram Reels (@dustlightstories, via Metricool, AI label on)
 | Time (Riga) | Reel | Metricool uuid |
