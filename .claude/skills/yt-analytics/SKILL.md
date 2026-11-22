@@ -20,3 +20,8 @@ If a metric is deprecated the tool says so; use its suggested alternative. Never
 2. 3 findings, each tied to evidence ("hooks with a number had 2x the median views: Second Cup, Empty Swing").
 3. 3 concrete changes for the next scripts and slots.
 Append a dated "Analytics" note to `STATUS.md` so `/yt-idea`, `/yt-hook` and `/yt-plan` can use it. Commit.
+
+## Data sources (22 Nov 2026)
+- **Windsor.ai** (`youtube` connector): per-video views, watch time, average view %, subscribers gained per video, traffic sources. Free on the trial.
+- **vidIQ**: `vidiq_channel_analytics` for the channel, Shorts stayed-to-watch via `vidiq_channel_analytics_extended` (needs the vidIQ browser extension; 5 credits), `vidiq_instagram_owner_insights` for Reels. Spend credits sparingly (150 a month).
+- Metricool: channel totals only (its per-video report is empty).

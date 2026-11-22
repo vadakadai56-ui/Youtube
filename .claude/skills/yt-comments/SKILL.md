@@ -5,7 +5,7 @@ description: Read and auto-reply to YouTube (and Instagram, once connected) comm
 # /yt-comments: replies and community
 
 ## Auto-reply (owner's choice, 22 Nov 2026)
-Comments are read and answered through the **Windsor.ai for Social Media** connector (YouTube account `112783`; Instagram once it is connected in Windsor). TikTok has no comment actions there.
+Comments are read and answered through the **Windsor.ai for Social Media** connector (YouTube account `112783`; Instagram once it is connected in Windsor). TikTok has no comment actions there. **vidIQ** (connected 22 Nov 2026) can read Instagram and TikTok comments (`vidiq_instagram_comment_list`, `vidiq_tiktok_comment_list`); use it to read those, report them in the weekly message, and reply on Instagram through Windsor once Instagram is connected there.
 1. Read: `get_data` connector `youtube`, fields `comment_id, comment_author, comment_text, comment_video_id, comment_published_at, comment_reply_count`, `date_preset` `last_7dT`.
 2. Skip our own comments (author `@the.dustlight.stories`) and any `comment_id` already in `channel/comment-log.md`.
 3. **Normal comments** (answers to the pinned question, personal stories, praise, jokes, simple questions about the story): reply automatically with `execute_action` `reply_to_comment`, following the reply rules below. One reply per person per video; if someone wrote twice, answer the newest one.
