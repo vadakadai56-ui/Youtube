@@ -14,7 +14,7 @@ Real recordings: S.sample("ambience/fire", at, dur, g) plays a sound from the Du
 STORY_DIR/words.json = [[word, start, end], ...]  (make it with pipeline/align.py)
 Loudness: loudnorm to -14 LUFS, then a measured gain trim so the result lands at about -14.
 """
-import importlib.util, json, math, os, subprocess, sys, wave
+import importlib.util, json, math, os, re, subprocess, sys, wave
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
@@ -42,7 +42,31 @@ class Sound:
     def piano(self, f, dur=2.5):
         n = int(dur * SR); x = np.arange(n) / SR
         return sum(np.sin(2 * np.pi * f * k * x) * np.exp(-x * (1.5 + k)) / k for k in (1, 2, 3, 4)) * self.env(n, 0.004, 0.2)
+    inst = "bell"                                                   # set per look by main(): bell | piano | marimba | pluck
     def bell(self, f, dur=1.6):
+        if self.inst == "piano": return self.piano(f, dur) * 0.8
+        if self.inst == "marimba": return self.marimba(f, min(dur, 0.8))
+        if self.inst == "pluck": return self.pluck(f, min(dur, 1.0))
+        return self._bell(f, dur)
+    def marimba(self, f, dur=0.8):
+        n = int(dur * SR); x = np.arange(n) / SR
+        return (np.sin(2 * np.pi * f * x) + 0.35 * np.sin(2 * np.pi * f * 4.0 * x) * np.exp(-x * 25)) * np.exp(-x * 7) * self.env(n, 0.002, 0.05) * 1.3
+    def pluck(self, f, dur=1.0):
+        """Karplus-Strong plucked string."""
+        n = int(dur * SR); p = max(2, int(SR / f)); buf = self.rng.uniform(-1, 1, p); out = np.zeros(n)
+        for i in range(n):
+            out[i] = buf[i % p]; buf[i % p] = 0.5 * (buf[i % p] + buf[(i + 1) % p]) * 0.996
+        return out * self.env(n, 0.002, 0.1) * 1.2
+    def drums(self, start, end, bpm=112, g=0.05):
+        """A light comedy groove: kick on 1 and 3, a soft snare on 2 and 4, closed hats on the eighths."""
+        beat = 60.0 / bpm; t, k = start, 0
+        while t < end:
+            if k % 2 == 0:
+                n = int(0.25 * SR); x = np.arange(n) / SR; self.add(np.sin(2 * np.pi * (55 + 90 * np.exp(-x * 30)) * x) * np.exp(-x * 14), t, g * 1.4)
+            else: self.add(self.noise(0.15, 3) * self.env(int(0.15 * SR), 0.001, 0.12), t, g * 0.6)
+            for h in (0, 0.5): self.add(self.noise(0.03, 1) * self.env(int(0.03 * SR), 0.001, 0.025), t + h * beat, g * 0.35)
+            t += beat; k += 1
+    def _bell(self, f, dur=1.6):
         n = int(dur * SR); x = np.arange(n) / SR
         s = np.sin(2 * np.pi * f * x) + 0.4 * np.sin(2 * np.pi * f * 2.01 * x) * np.exp(-x * 3) + 0.25 * np.sin(2 * np.pi * f * 3.98 * x) * np.exp(-x * 6)
         return s * np.exp(-x * 2.2) * self.env(n, 0.003, 0.05)
@@ -133,9 +157,41 @@ def main(story_dir, frames_dir, narration, outf):
                 x += wd + space
             return
 
+    look = getattr(C, "LOOK", None)
+    if look is None:                                                # read the story's grade from shots.py (scene.LOOK ... or "comedy")
+        m_ = re.search(r'scene\.LOOK\s*=.*?"(\w+)"', open(os.path.join(story_dir, "shots.py")).read()) if os.path.exists(os.path.join(story_dir, "shots.py")) else None
+        look = m_.group(1) if m_ else "story"
+    VIG = {"comedy": 0.0, "dream": 0.2, "story": 0.4, "horror": 0.55}.get(look, 0.4); GRAIN = {"comedy": 0, "dream": 3, "story": 5, "horror": 7}.get(look, 5)
+    # punch-in zooms: comedy gets an automatic snap zoom halfway through every shot of 2.4 s or more; ZOOMS = [(t, scale, dur)] adds more
+    zooms = list(getattr(C, "ZOOMS", []))
+    if look == "comedy" and getattr(C, "AUTO_ZOOM", True):
+        for i, (st_, nm_) in enumerate(cuts_all := C.CUTS):
+            if nm_ == "END" or i + 1 >= len(cuts_all): continue
+            dur_ = cuts_all[i + 1][0] - st_
+            if dur_ >= 2.4: zooms.append((st_ + dur_ / 2, 1.16, cuts_all[i + 1][0] - (st_ + dur_ / 2)))
+    def zoom_at(t):
+        for z0, sc_, zd in zooms:
+            if z0 <= t < z0 + zd: return sc_
+        return 1.0
+    # the hook line on screen from frame one (HOOK = None turns it off)
+    hook = getattr(C, "HOOK", "")
+    if hook == "":
+        raw = re.sub(r"\[[^\]]*\]", "", open(os.path.join(story_dir, "narration.txt")).read()).strip()
+        hook = re.split(r"(?<=[.?!])\s", raw.replace("...", "\u2026"), maxsplit=1)[0].strip()
+    HOOK_T = getattr(C, "HOOK_SECONDS", 2.6)
+    def draw_hook(img, t):
+        if not hook or t >= HOOK_T: return
+        a = min(1.0, (HOOK_T - t) / 0.3); f = FONT[76]; d = ImageDraw.Draw(img); words_, lines, line = hook.split(), [], ""
+        for w_ in words_:
+            if f.getlength((line + " " + w_).strip()) > W - 160: lines.append(line); line = w_
+            else: line = (line + " " + w_).strip()
+        lines.append(line)
+        for i, ln in enumerate(lines[:4]):
+            d.text((W / 2, (250 if CAP_Y > 800 else 150) + i * 92), ln, font=f, fill=tuple(int(255 * a) for _ in range(3)), anchor="mm", stroke_width=8, stroke_fill=(0, 0, 0))
+
     yy, xx = np.mgrid[0:H, 0:W]
-    vig = (1 - 0.4 * np.clip(((xx - W / 2) / (W * 0.8)) ** 2 + ((yy - H * 0.48) / (H * 0.65)) ** 2, 0, 1) ** 1.4)[..., None].astype(np.float32)
-    grng = np.random.default_rng(3); GR = [np.repeat(np.repeat(grng.normal(0, 5, (H // 2, W // 2, 1)).astype(np.float32), 2, 0), 2, 1) for _ in range(6)]
+    vig = (1 - VIG * np.clip(((xx - W / 2) / (W * 0.8)) ** 2 + ((yy - H * 0.48) / (H * 0.65)) ** 2, 0, 1) ** 1.4)[..., None].astype(np.float32)
+    grng = np.random.default_rng(3); GR = [np.repeat(np.repeat(grng.normal(0, max(GRAIN, 0.01), (H // 2, W // 2, 1)).astype(np.float32), 2, 0), 2, 1) for _ in range(6)]
     proc = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
                              "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18", "-preset", "medium", outf + ".video.mp4"], stdin=subprocess.PIPE)
     cuts = C.CUTS
@@ -154,13 +210,20 @@ def main(story_dir, frames_dir, narration, outf):
             pst, prev = cuts[ci - 1]; img = Image.blend(shot_image(prev, t - pst), img, (t - st) / xf)
         if ci + 1 < len(cuts) and cuts[ci + 1][1] == "END" and cuts[ci + 1][0] - t < 0.8:
             img = Image.blend(Image.new("RGB", (W, H), (8, 6, 5)), img, max(0, (cuts[ci + 1][0] - t) / 0.8))
-        arr = np.asarray(img).astype(np.float32) * vig + GR[fi % 6]
+        zf = zoom_at(t)
+        if zf > 1.001:                                              # snap punch-in, centred a little above the middle
+            cw, ch_ = int(W / zf), int(H / zf); x0 = (W - cw) // 2; y0 = int((H - ch_) * 0.42)
+            img = img.crop((x0, y0, x0 + cw, y0 + ch_)).resize((W, H), Image.LANCZOS)
+        arr = np.asarray(img).astype(np.float32) * vig + (GR[fi % 6] if GRAIN else 0)
         img = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8))
         if hasattr(C, "overlay"): C.overlay(img, t)
-        caption(img, t); proc.stdin.write(img.tobytes())
+        draw_hook(img, t); caption(img, t); proc.stdin.write(img.tobytes())
     proc.stdin.close(); proc.wait()
 
-    S = Sound(C.T_END); S.A[:] += S.noise(len(S.A) / SR, 220) * 0.035; C.sound(S)
+    S = Sound(C.T_END); S.A[:] += S.noise(len(S.A) / SR, 220) * (0.035 if look != "comedy" else 0.01)
+    S.inst = getattr(C, "INSTRUMENT", {"comedy": "marimba", "story": "piano", "dream": "piano", "horror": "bell"}.get(look, "bell"))
+    if look == "comedy" and getattr(C, "DRUMS", True): S.drums(0.0, C.CUTS[-1][0], bpm=getattr(C, "BPM", 112))
+    C.sound(S)
     tmp = outf + ".narr.wav"
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", narration, "-ac", "1", "-ar", str(SR), tmp], check=True)
     with wave.open(tmp) as wv: v = np.frombuffer(wv.readframes(wv.getnframes()), np.int16).astype(np.float32) / 32768
