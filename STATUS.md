@@ -19,7 +19,7 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
   - Title: "Every evening at 6, he pushes an empty swing."
   - First comment: "Who would you push the swing for? 👇"
 
-- **The Extra Plate**: script approved 21 Nov 2026 (`stories/the-extra-plate/narration.txt`, 170 words). Rendered 21 Nov: `out/the-extra-plate.mp4` (77.4 s with end card, -14.7 LUFS, true peak -1.4 dBTP, QC ready). Next: owner review, Dropbox upload (new token needed), then schedule YouTube 25 Nov 16:00 and Instagram + TikTok 18:00.
+- **The Extra Plate**: script approved 21 Nov 2026 (`stories/the-extra-plate/narration.txt`, 170 words). Rendered 21 Nov: `out/the-extra-plate.mp4` (77.4 s with end card, -14.7 LUFS, true peak -1.4 dBTP, QC ready). **Scheduled 22 Nov:** YouTube 25 Nov 16:00 (uuid -8511954960419764922), Instagram 18:00 (uuid 1428552922414664655), TikTok 18:00 (uuid -7868610168081003976). Media: [Dustlight-Files](https://raw.githubusercontent.com/vadakadai56-ui/Dustlight-Files/main/videos/the-extra-plate.mp4) (76.5 MB 1080p). Title "Every Thanksgiving, she sets one extra plate.", first comment "Who would you set an extra plate for? 👇".
 
 - **A Normal Night** (format 2, anticlimax POV): script approved 21 Nov 2026 (`stories/a-normal-night/narration.txt`, 132 words). Next: voice (deadpan young), build.
 
@@ -29,7 +29,7 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
 | 21 Nov 18:00 | The Empty Swing | -5308225935741598034 |
 | 22 Nov 10:00 | The Second Cup | 6902143095151608622 |
 | 22 Nov 18:00 | Ice hotel ("Every winter, they build a hotel out of a frozen river."); YouTube at 16:00 | -7028284931705059524 |
-| 25 Nov 18:00 | The Extra Plate (to schedule after the render; YouTube at 16:00) | |
+| 25 Nov 18:00 | The Extra Plate (YouTube at 16:00) | 1428552922414664655 |
 Lost Toy Room is not posted to Instagram (owner's choice, 21 Nov). Times follow Metricool's best Instagram hours (10:00 and 18:00 Riga); YouTube stays at 16:00, its best hour.
 
 ## TikTok (@dustlight00, formerly @divine.773, via Metricool, AI label on)
@@ -38,7 +38,7 @@ Lost Toy Room is not posted to Instagram (owner's choice, 21 Nov). Times follow 
 | 21 Nov 18:00 | The Empty Swing | -4855298876224879780 |
 | 22 Nov 10:00 | The Second Cup | 2666965360092859592 |
 | 22 Nov 18:00 | Ice hotel | -2938055666207273225 |
-| 25 Nov 18:00 | The Extra Plate (after the render) | |
+| 25 Nov 18:00 | The Extra Plate | -7868610168081003976 |
 TikTok connected 21 Nov 2026 as @divine.773, renamed @dustlight00 the same day (next rename allowed after 30 days). The account already had 1,197 followers from older content. TikTok's best hours match Instagram's (10:00, 12:00, 18:00).
 
 ## Rebuilt after the 19 Nov reset (done, tested end to end)
