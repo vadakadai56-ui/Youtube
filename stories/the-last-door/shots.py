@@ -105,13 +105,13 @@ def d3(rng):            # Every December, he opens one door a day. A chocolate. 
 
 
 def d4(rng):            # But for eleven years... he never opened the last one. "Not yet," he says. "Not this year.": Grandad taps door 25
-    room(rng); table(); a = advent((0, 0.4, 0.575), opened=tuple(range(1, 25)))
-    g = clay((0.45, 0.55, 0.05), rot=math.pi * 0.75, **GRANDAD); sit(g); k = clay((-0.45, 0.2, 0), rot=-0.6, **ME)
-    c = _cam((0.0, -0.9, 0.95), (0.05, 0.4, 0.75), lens=36, fstop=2.6)
+    room(rng); table(); a = advent((-0.14, 0.35, 0.575), opened=tuple(range(1, 25)), scale=0.65)
+    g = clay((0.24, 0.8, 0), rot=0.25, **GRANDAD); k = clay((-0.22, -0.15, 0), rot=math.pi * 0.9, **ME)
+    c = _cam((0.0, -1.2, 0.95), (0.05, 0.3, 0.72), lens=32, fstop=3.2)
     def upd(t):
         tap = abs(math.sin(t * 5)) * (3.6 < t < 5.0); g["L"].rotation_euler[0] = -1.0 - 0.15 * tap
         g["head"].rotation_euler[2] = 0.25 * math.sin(t * 1.1) * (t > 5.5); breathe(k, t)
-        c.location.y = -0.9 + 0.04 * t
+        c.location.y = -1.2 + 0.04 * t
     return upd
 
 
@@ -126,9 +126,9 @@ def d5(rng):            # My cousins think it's empty. My aunt thinks it's stuck
 
 
 def d6(rng):            # I asked him once. He just tapped the little door and smiled.: close two-shot by the fire
-    room(rng); table(); a = advent((0, 0.4, 0.575), opened=tuple(range(1, 25)))
-    g = clay((0.3, 0.6, 0.05), rot=math.pi * 0.8, mouth="smile", **GRANDAD); sit(g); k = clay((-0.3, 0.3, 0), rot=-0.5, mouth="open", **ME)
-    c = _cam((-0.15, -0.45, 0.85), (0.15, 0.5, 0.75), lens=40, fstop=2.2)
+    room(rng); table(); a = advent((-0.12, 0.35, 0.575), opened=tuple(range(1, 25)), scale=0.65)
+    g = clay((0.22, 0.8, 0), rot=0.2, mouth="smile", **GRANDAD); k = clay((-0.2, -0.05, 0), rot=math.pi * 0.92, mouth="open", **ME)
+    c = _cam((0.05, -0.75, 0.85), (0.1, 0.6, 0.78), lens=40, fstop=2.6)
     def upd(t):
         tap = abs(math.sin(t * 5)) * (1.4 < t < 2.6); g["L"].rotation_euler[0] = -1.0 - 0.15 * tap
         g["head"].rotation_euler[0] = -0.05 * smooth((t - 2.6) / 0.6)
@@ -168,12 +168,12 @@ def bedroom(rng):
 
 
 def d9(rng):            # He put it in my hands. "It was always yours.": Grandad in bed, handing the box over
-    bedroom(rng); g = clay((0.3, 1.2, 0.45), mouth="smile", **GRANDAD); g["root"].rotation_euler[0] = -0.7
-    k = clay((-0.45, 0.6, 0), rot=-1.2, **ME); a = advent((0, 0, 0), opened=tuple(range(1, 25)), scale=0.8)
-    c = _cam((-0.2, -0.5, 1.0), (0.0, 0.9, 0.65), lens=34, fstop=2.6)
+    bedroom(rng); g = clay((0.3, 1.2, 0.3), mouth="smile", **GRANDAD); g["root"].rotation_euler[0] = -0.2; sit(g)
+    k = clay((0.05, 0.3, 0), rot=math.pi, **ME); a = advent((0, 0, 0), opened=tuple(range(1, 25)), scale=0.8)
+    c = _cam((0.2, -0.75, 1.05), (0.22, 0.9, 0.7), lens=32, fstop=3.0)
     def upd(t):
-        p_ = smooth((t - 0.4) / 1.4); src = Vector((0.15, 0.8, 0.62)); dst = k["root"].location + Vector((0.22, -0.05, 0.38))
-        a["root"].location = src.lerp(dst, p_); a["root"].rotation_euler[2] = -1.2 * p_
+        p_ = smooth((t - 0.4) / 1.4); src = Vector((0.15, 0.8, 0.62)); dst = k["root"].location + Vector((0.0, 0.2, 0.42))
+        a["root"].location = src.lerp(dst, p_); a["root"].rotation_euler[2] = math.pi * p_
         k["L"].rotation_euler[0] = k["R"].rotation_euler[0] = -1.3 * p_; g["R"].rotation_euler[0] = -1.2 * (1 - p_)
     return upd
 
@@ -183,11 +183,11 @@ def d10(rng):           # Inside was a tiny key. And a note in his wobbly writin
     key = group("key", [torus((0, 0, 0.012), 0.008, 0.003, mat("brasskey", (0.95, 0.75, 0.3), 0.3, metal=1.0)),
                         cube((0, 0, -0.004), (0.003, 0.003, 0.022), mat("brasskey", (0.95, 0.75, 0.3), 0.3, metal=1.0))], (0, 0, 0))
     note = cube((0, 0, 0), (0.035, 0.002, 0.025), clay_mat("note", (0.96, 0.94, 0.86)))
-    c = _cam((0.08, 0.1, 0.68), (0.18, 0.4, 0.635), lens=60, fstop=1.8)
+    c = _cam((0.12, -0.12, 0.7), (0.18, 0.4, 0.64), lens=50, fstop=3.0)
     def upd(t):
         k = smooth((t - 0.3) / 0.6); a["doors"][25].rotation_euler[2] = -1.9 * k
         key.location = (0.18, 0.385, 0.64); note.location = (0.2, 0.39, 0.625); note.rotation_euler = (0, 0.2, 0)
-        c.location.y = 0.1 + 0.02 * t
+        c.location.y = -0.12 + 0.02 * t
     return upd
 
 
@@ -195,7 +195,7 @@ def d11(rng):           # "For the shed.": the note, close, in shaky handwriting
     cube((0, 0, 0), (0.6, 0.4, 0.002), clay_mat("notebig", (0.96, 0.94, 0.86)))
     text("For the shed.", (0, 0, 0.003), 0.07, mat("ink", (0.15, 0.15, 0.3), 0.6), rot=(0, 0, 0.03))
     world_color((0.1, 0.08, 0.06)); light("POINT", (0.2, -0.2, 0.6), 20, col=(1.0, 0.75, 0.45), size=0.2)
-    c = camera((0, -0.02, 0.55), (0, 0.0, 0.0), lens=45)
+    c = camera((0, -0.02, 0.8), (0, 0.0, 0.0), lens=45)
     def upd(t): pass
     return upd
 
@@ -233,11 +233,11 @@ def d14(rng):           # The note said... "Your turn. Make one for someone you 
     shed(rng); a = advent((0, 1.0, 0.48), painted=False, name=NAME)
     k = clay((0.0, 0.5, 0), rot=math.pi, **ME); brush = cyl((0, 0, 0), 0.008, 0.12, clay_mat("brush", (0.6, 0.4, 0.2)))
     first = cube((0, 0, 0), (0.075, 0.009, 0.065), clay_mat("firstred", (0.85, 0.25, 0.2)))
-    c = _cam((0.55, 0.05, 1.0), (0.0, 0.9, 0.75), lens=34, fstop=2.6)
+    c = _cam((0.75, 0.55, 0.95), (0.0, 1.0, 0.75), lens=34, fstop=2.8)
     def upd(t):
         k["R"].rotation_euler[0] = -1.4; brush.location = k["root"].location + Vector((0.14, 0.4, 0.58 + 0.01 * math.sin(t * 9)))
         p_ = smooth((t - 1.0) / 2.0); first.location = (-0.18, 0.993, 0.48 + 0.36); first.scale = (p_ + 0.001, 1, 1)
-        c.location.x = 0.55 - 0.05 * t
+        c.location.x = 0.75 - 0.04 * t
     return upd
 
 
