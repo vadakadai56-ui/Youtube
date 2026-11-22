@@ -61,7 +61,7 @@ Claude Code skills that run the channel. Type `/yt-channel` (or "run my YouTube"
 - `pipeline/anim.py`: Eevee frame renderer for a story's `shots.py`.
 - `pipeline/align.py`: word timings from the narration's pauses and the script.
 - `pipeline/edit.py`: the editor and sound toolkit; reads the story's `edit_config.py`.
-- `pipeline/publish_github.py`: **default publisher (from 22 Nov 2026).** Commits an upload copy (under 95 MB, 1080p) to the public repo `vadakadai56-ui/dustlight-media` and prints its raw.githubusercontent.com URL for Metricool. No expiring tokens. Needs that repo attached and cloned at `/home/user/dustlight-media`.
+- `pipeline/publish_github.py`: **default publisher (from 22 Nov 2026).** Commits an upload copy (under 95 MB, 1080p) to the public repo `vadakadai56-ui/Dustlight-Files` and prints its raw.githubusercontent.com URL for Metricool. No expiring tokens. Needs that repo attached and cloned at `/home/user/dustlight-files`.
 - `pipeline/publish.py`: Dropbox upload (chunked) and public link. Old route: Dropbox tokens expire after about 4 h and the owner's apps can no longer generate them.
 - `pipeline/sfx_library.py`: builds the Dustlight sound library (57 CC0 recordings in 23 categories) from Openverse into `~/dustlight-sfx`. The list is `channel/sfx-library.json`; rebuild with `python3 pipeline/sfx_library.py build`, then `cd .claude/skills/real-sfx && python3 scripts/setup.py add-library dustlight ~/dustlight-sfx --tier main --index`.
 - Listening: `earshot describe FILE` (models download on first use, about 1.1 GB). The real-sfx model (`scripts/hear.py`, 3.1 GB) is installed but weak; prefer earshot.
