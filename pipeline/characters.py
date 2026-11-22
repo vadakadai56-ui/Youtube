@@ -299,3 +299,43 @@ def dog(loc, rot=0.0, col=(0.96, 0.92, 0.84)):
         if o.parent is None: o.parent = root
     root.location = loc; root.rotation_euler[2] = rot
     return {"root": root, "head": head, "tail": tail}
+
+
+# ---------------------------------------------------------------- life: automatic blinks and glances for every character
+EYE_MATS = {"beye", "beaneye", "clayeye", "dogeye", "eyeblk"}                       # pupils (move on a glance)
+LID_MATS = EYE_MATS | {"beyew", "beanwht", "claywht", "clay_claywht", "dogwht", "eyewht"}          # everything that closes on a blink
+_LIFE = {}
+
+
+def _life_index():
+    """Group eye parts by their head (parent) once per shot."""
+    groups = {}
+    for o in bpy.data.objects:
+        if o.type != "MESH" or not o.material_slots or o.parent is None: continue
+        mname = (o.material_slots[0].material.name if o.material_slots[0].material else "").split(".")[0]
+        if mname not in LID_MATS: continue
+        g = groups.setdefault(o.parent.name, {"white": [], "black": []})
+        g["black" if mname in EYE_MATS else "white"].append(o)
+    heads = {}
+    for name, g in groups.items():
+        if not g["white"]: continue
+        h = heads.setdefault(name, {"parts": [(o, o.scale.z) for o in g["white"]], "pupils": []})
+        for o in g["black"]:                                   # a pupil sits right by an eye white; brows and mouths do not
+            d = min((Vector(o.location) - Vector(w.location)).length for w in g["white"])
+            if d < 0.8 * max(o.dimensions):
+                h["parts"].append((o, o.scale.z)); h["pupils"].append((o, Vector(o.location), max(o.dimensions.x, 0.004)))
+    return heads
+
+
+def animate_all(t):
+    """Called by anim.py after every update(t): each head blinks every 2.5 to 5 s and glances left or right now and then."""
+    key = id(bpy.context.scene), bpy.data.objects.__len__()
+    if _LIFE.get("key") != key: _LIFE["key"] = key; _LIFE["heads"] = _life_index()
+    for name, h in _LIFE["heads"].items():
+        seed = sum(ord(c) for c in name)
+        period = 2.5 + (seed % 25) / 10.0; ph = (t + seed * 0.37) % period
+        close = 1.0 - max(0.0, 1.0 - abs(ph - 0.08) / 0.08) * 0.9                    # a 0.16 s blink
+        for o, z in h["parts"]: o.scale.z = z * close
+        g = math.sin((t + seed) * 0.6) ; look = (1 if g > 0.55 else -1 if g < -0.55 else 0)
+        for o, base, w in h["pupils"]:
+            o.location = base + Vector((0.22 * w * look, 0, 0))

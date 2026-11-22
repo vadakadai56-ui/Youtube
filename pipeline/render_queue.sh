@@ -7,6 +7,7 @@ for s in "$@"; do
   while pgrep -f "pipeline/anim.py stories/" >/dev/null; do sleep 60; done
   mkdir -p "$ROOT/$s"
   echo "START $s $(date -u +%H:%M)"
-  STYLE=lowpoly ENGINE=EEVEE PCT=50 ES=12 ~/.dustlight-venv/bin/python pipeline/anim.py "stories/$s" "$ROOT/$s" all > "$ROOT/$s/render.log" 2>&1
+  PCT=50; ES=12; [ -f "stories/$s/render.env" ] && . "stories/$s/render.env"     # per-story overrides (e.g. PCT=75 for story videos)
+  STYLE=lowpoly ENGINE=EEVEE PCT=$PCT ES=$ES ~/.dustlight-venv/bin/python pipeline/anim.py "stories/$s" "$ROOT/$s" all > "$ROOT/$s/render.log" 2>&1
   echo "END $s $(date -u +%H:%M) $(grep -c SHOT_DONE "$ROOT/$s/render.log") shots, errors: $(grep -c Traceback "$ROOT/$s/render.log")"
 done

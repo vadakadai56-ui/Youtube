@@ -13,6 +13,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault("ENGINE", "EEVEE")
 import bpy
 import scene
+try:
+    from characters import animate_all as _life
+except Exception:
+    _life = None
 
 FPSA = int(os.environ.get("FPSA", "12"))
 
@@ -32,7 +36,9 @@ def run(mod, name, out_root, preview=False):
     for f in range(n):
         p = os.path.join(out, f"{f:04d}.png")
         if os.path.exists(p) and not preview: continue
-        upd(f / FPSA); scene.render(p)
+        upd(f / FPSA)
+        if _life: _life(f / FPSA)                          # blinks and glances for every character
+        scene.render(p)
     print(f"SHOT_DONE {name} frames={n} secs={time.time() - t0:.0f}", flush=True)
 
 
