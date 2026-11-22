@@ -46,6 +46,9 @@ TikTok connected 21 Nov 2026 as @divine.773, renamed @dustlight00 the same day (
 - Not rebuilt: the Lost Toy Room per-shot camera files (Parts 1 to 4 are finished and live). The set, toys, Bun-Bun, door and silhouettes are in `scene.py`.
 - Lost for good: the narration mp3s (ElevenLabs history has them), the rendered frames, and the full-quality "The Second Cup" (the phone copy exists).
 
+## Source copies in Metricool (public static links, reachable from sessions)
+Lost Toy Room: Part 1 `7551785-file-2041223862239218930.mp4`, Part 2 `...-14081602158670977575.mp4`, Part 3 `...-13700619248896578994.mp4`, Part 4 `...-7689693484360900601.mp4`; The Empty Swing `...-9944081293849703551.mp4`; Ice hotel `...-14484001482312721434.mp4`; The Second Cup `...-12646092096430351264.mp4`. Prefix: `https://static.metricool.com/planner/202611/`. Download with curl (ffmpeg does not use the proxy).
+
 ## Automation
 - **Weekly auto plan:** scheduled task "Dustlight weekly auto plan" (trig_01BsS8QAXWsFZhnnJvJ8C6cA), every Sunday 11:33 Riga, first run 22 Nov 2026. It fires into this session and runs `/yt-plan` auto plan mode: gaps, trends, formats, all scripts, then one approval message. Nothing is voiced, rendered or scheduled before the owner approves.
 - **Uploads:** `pipeline/publish_github.py` through the public repo Dustlight-Files. No tokens.
