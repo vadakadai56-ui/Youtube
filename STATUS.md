@@ -46,6 +46,10 @@ TikTok connected 21 Nov 2026 as @divine.773, renamed @dustlight00 the same day (
 - Not rebuilt: the Lost Toy Room per-shot camera files (Parts 1 to 4 are finished and live). The set, toys, Bun-Bun, door and silhouettes are in `scene.py`.
 - Lost for good: the narration mp3s (ElevenLabs history has them), the rendered frames, and the full-quality "The Second Cup" (the phone copy exists).
 
+## Automation
+- **Weekly auto plan:** scheduled task "Dustlight weekly auto plan" (trig_01BsS8QAXWsFZhnnJvJ8C6cA), every Sunday 11:33 Riga, first run 22 Nov 2026. It fires into this session and runs `/yt-plan` auto plan mode: gaps, trends, formats, all scripts, then one approval message. Nothing is voiced, rendered or scheduled before the owner approves.
+- **Uploads:** `pipeline/publish_github.py` through the public repo Dustlight-Files. No tokens.
+
 ## Open items
 - Instagram: connected in Metricool on 21 Nov 2026 as **@dustlightstories** (YouTube is @the.dustlight.stories). Reels can now be scheduled with the YouTube posts.
 - Channel: create the "The Lost Toy Room" playlist (public) and set "Related video" on each part to the next part.
