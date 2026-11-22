@@ -9,7 +9,14 @@ another ElevenLabs voice, synthesized music plus real CC0 sounds).
 | 1 | **Emotional twist** | A strange daily routine, why?, escalate across time, a twist that reframes it | 60 to 75 s | Callback to the first line; warm or bittersweet | The channel's first videos (The Second Cup did best: 1.1K views in a day) |
 | 2 | **Nothing ever happens** | First person, deadpan. Every line builds horror-style tension, then deflates into something boring, about 8 times | 55 to 65 s | "So yeah… nothing happened." | 615K-like POV video, blocky avatars, one huge caption word at a time |
 | 3 | **"You" + a power with a cost** | Second person ("You discover that…"). Wish fulfilment first, then the power hurts someone you love, you fix it, a new problem starts | 70 to 100 s | Open cliffhanger (sets up part 2) | 951K-like 2D explainer, "every lie you tell becomes true" |
+| 5 | **Trend Short** (daily extra) | One trending topic, format or hook from `channel/trends.md`, done in the Dustlight world: one idea, one payoff, no setup | 15 to 30 s | A question or "comment…" prompt | Made to be cheap: 2 or 3 shots, reused sets, 20 to 60 words of voice |
 | 4 | **Weird town rule + quirk** | A town with one strange rule, a hero with a quirk that seems useless, a crisis only the quirk can fix | 25 to 35 s | Interactive call to action ("type your name the way my town says it") | 22.6K-like blocky-town video, voice-password town, hero who can't say R |
+
+## Trend Short rules (format 5)
+- Build budget about 1 hour: 2 or 3 shots of 5 to 10 s, sets and characters already in `world.py`, no new props unless trivial.
+- Voice: 20 to 60 words (one take), the format's own voice type; captions as the trend's style recipe says.
+- Only trends that fit the cosy toy world and pass the safety check in `/yt-trends` (no real people, brands or tragedy).
+- Never a copy of a trend video: our own take on the topic, format or hook.
 
 ## What every format needs
 - A hook line in the first 2 s that is also the title.
