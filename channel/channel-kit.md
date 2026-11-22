@@ -4,7 +4,7 @@
 - **Handle:** @the.dustlight.stories (YouTube), @dustlightstories (Instagram), @dustlight00 (TikTok)
 - **Tagline:** *stories about the things we forgot*
 - **Profile picture:** Bun-Bun (a worn stuffed rabbit with a crooked stitched ear) in warm bulb light.
-- **Banner:** the toy room with Bun-Bun by the "LOST TOYS" door. "D U S T L I G H T" in cream (InterDisplay-Black), the tagline in yellow italics, dust specks, text kept inside the 1546x423 phone-safe area.
+- **Banner (22 Nov 2026):** `channel/banner-2560x1440.png`, five strips from five different looks (peg dolls, blocky, bean, clay, the night-horror silhouette), "D U S T L I G H T" in cream and "Every story gets its own world." in yellow italics, inside the 1546x423 safe area.
 
 ## Description (updated 21 Nov 2026)
 Dustlight: stories about the things we forgot. 🕯️
