@@ -13,7 +13,7 @@ T_END = round(_t + 3.6, 2)
 XFADE = {}
 CAPTION = {"words": 1, "y": 560, "size": 150}
 KEY = {"terrifying", "cat", "snowman", "snow", "dad", "grandma", "scissors", "normal"}
-END_LINES = [("Nothing ever happens here.", 64, 900, (255, 255, 255), True, 0.2),
+END_LINES = [("Just another normal night.", 64, 900, (255, 255, 255), True, 0.2),
              ("D U S T L I G H T", 56, 1100, (255, 236, 200), False, 1.0)]
 SR = 44100
 C = {n: t for t, n in CUTS}
