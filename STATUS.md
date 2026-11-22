@@ -33,7 +33,9 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
 | 21 Nov 18:00 | The Empty Swing | -5308225935741598034 |
 | 22 Nov 10:00 | The Second Cup | 6902143095151608622 |
 | 22 Nov 18:00 | Ice hotel ("Every winter, they build a hotel out of a frozen river."); YouTube at 16:00 | -7028284931705059524 |
+| 22 Nov 19:30 | Story reshare: Ice hotel | -4584513616194157131 |
 | 23 Nov 18:00 | A Normal Night (YouTube at 16:00) | 6687967837374663258 |
+| 23 Nov 19:30 | Story reshare: A Normal Night | 2995832477754606894 |
 | 25 Nov 18:00 | The Extra Plate (YouTube at 16:00) | 1428552922414664655 |
 Lost Toy Room is not posted to Instagram (owner's choice, 21 Nov). Times follow Metricool's best Instagram hours (10:00 and 18:00 Riga); YouTube stays at 16:00, its best hour.
 
