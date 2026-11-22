@@ -1,5 +1,10 @@
 # Dustlight YouTube channel
 
+## Owner's standing rule (said many times, do not drift)
+Dustlight has **no fixed world, look, character or story type**. Not a toy world, not peg dolls, not "emotional twists".
+Those were only the first videos. Every video picks the story type, setting, style and character model that fit it best
+(`channel/formats.md`). Never describe the channel as one style, and never default back to the first videos' look.
+
 Read `README.md` (pipeline, rules) and `STATUS.md` (what is live and scheduled) before channel work.
 
 ## Every session
