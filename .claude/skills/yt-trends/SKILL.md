@@ -33,6 +33,7 @@ Trends move in days. Always research live; never pitch from memory or from a tre
 ## 4. Ideal style for each top trend
 For every trend or format in the top 3, study the top 2 or 3 example videos (frame sheet + transcript when the owner shares one, or the
 pages read in step 1) and pick the Dustlight style that fits it best. Write one style recipe per trend:
+- **Character:** which model from the table in `channel/formats.md` fits best (no default; build a new model if none fits).
 - **Look:** art direction and lighting (low-poly night, bright snowy day, horror lighting, flat pastel), camera (fixed, handheld, POV).
 - **Pace:** seconds per shot, how often a new micro-hook lands.
 - **Captions:** size, position, words per caption, colour tricks (yellow keywords, red quirk letters, one huge word at a time).

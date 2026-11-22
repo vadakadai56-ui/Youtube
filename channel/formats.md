@@ -1,8 +1,20 @@
 # Dustlight story formats (21 Nov 2026)
 
 Dustlight is a channel for **all kinds of stories**. Emotional twists were only the starting point (the first videos), not the house style: no format is the default. Every script stays original: our own characters, towns,
-gags and twists, never another creator's lines. All formats use the same pipeline (peg dolls, low-poly style, George or
-another ElevenLabs voice, synthesized music plus real CC0 sounds).
+gags and twists, never another creator's lines. All formats use the same pipeline (Blender low-poly look, an ElevenLabs voice, synthesized music plus real CC0 sounds).
+
+## Character model: chosen per video (owner's rule, 22 Nov 2026)
+There is no house character. Peg dolls were the first model, not the channel look. For every new video, pick the design that best fits
+its story, format and trend, and write it in the style recipe as **Character**. Models live in `pipeline/characters.py` (same handles as
+`world.peg`, so animation code is shared); build a new one the first time a video needs it and render a test still before the shots.
+
+| Model | Status | Best for |
+|---|---|---|
+| Peg doll (`world.peg`) | built | quiet, nostalgic, wooden-toy stories |
+| Blocky (`characters.blocky`) | built 22 Nov, test `channel/style-tests/blocky-test.jpg` | comedy, trend Shorts, game-like memes, town-rule stories, anything with running or sport |
+| Round bean | idea | cute, fast comedy, kids' logic |
+| Clay / stop-motion | idea | warm handmade family stories, holidays |
+| Paper cut-out | idea | fairy-tale or storybook narration, memories |
 
 | # | Format | Shape | Length | Ending | Reference studied |
 |---|---|---|---|---|---|
