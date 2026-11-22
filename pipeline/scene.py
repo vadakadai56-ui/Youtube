@@ -108,7 +108,7 @@ LOOKS = {   # per-video grade, picked in the story's style recipe (owner: videos
     "story":  dict(view="AgX", look="AgX - Medium High Contrast", exposure=0.0, sat=1.0),
     "comedy": dict(view="Standard", look="Medium High Contrast", exposure=-0.9, sat=1.3),
     "horror": dict(view="AgX", look="AgX - High Contrast", exposure=-0.3, sat=0.8),
-    "dream":  dict(view="AgX", look="AgX - Base Contrast", exposure=0.15, sat=1.1),
+    "dream":  dict(view="Standard", look="Medium Contrast", exposure=-0.7, sat=1.3),
 }
 
 

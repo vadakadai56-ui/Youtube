@@ -10,6 +10,7 @@ scene.STYLE = os.environ["STYLE"]
 from world import *           # noqa
 from world import cam as _cam
 import bpy
+scene.LOOK = os.environ.get("LOOK") or "dream"      # per-video grade (scene.LOOKS)
 
 _D = json.load(open(os.path.join(HERE, "durations.json")))
 DRESS = (0.75, 0.3, 0.35)
@@ -22,7 +23,7 @@ def cottage(rng, season="dusk", lit=True):
     ground, foliage, sky = SEASONS[season]
     cube((0, 0, -0.05), (40, 40, 0.1), mat("ground_" + season, ground, 0.85, noise=0.3))
     cube((0, 0.4, 0.06), (8, 3.2, 0.12), mat("bank_" + season, ground, 0.85, noise=0.3))                  # the raised garden
-    wall = mat("brick", (0.62, 0.36, 0.28), 0.85, noise=0.45)
+    wall = mat("brick", (0.85, 0.45, 0.35), 0.85, noise=0.45)
     cube((-1.05, 0.0, 1.2), (1.5, 0.15, 2.4), wall); cube((1.05, 0.0, 1.2), (1.5, 0.15, 2.4), wall)          # either side of the window
     cube((0, 0.0, 0.32), (0.6, 0.15, 0.64), wall); cube((0, 0.0, 1.95), (0.6, 0.15, 0.9), wall)               # below and above it
     fm = mat("wframe", (0.95, 0.93, 0.88), 0.5)
@@ -30,7 +31,7 @@ def cottage(rng, season="dusk", lit=True):
     for x in (-0.32, 0.32): cube((x, -0.09, 1.06), (0.05, 0.06, 0.9), fm)
     cube((0, 0.0, 2.6), (3.8, 1.6, 0.25), mat("slate", (0.25, 0.22, 0.24), 0.7))
     if season == "snow": cube((0, 0.0, 2.76), (3.8, 1.6, 0.08), mat("roofsnow", (0.95, 0.96, 1.0), 0.7))
-    cube((0, 0.9, 1.2), (3.6, 0.1, 2.4), mat("inwall", (0.86, 0.74, 0.55), 0.9, noise=0.2))                  # the room behind her
+    cube((0, 0.9, 1.2), (3.6, 0.1, 2.4), mat("inwall", (0.98, 0.82, 0.5), 0.9, noise=0.2))                  # the room behind her
     cube((0, 0.45, 0.3), (3.6, 1.0, 0.04), mat("infloor", (0.4, 0.26, 0.15), 0.7))
     if lit: light("POINT", (0.3, 0.55, 1.6), 30, col=(1.0, 0.72, 0.42), size=0.3)
     for x in (-2.6, 2.6): tree((x, 0.7, 0.1), season, rng)
@@ -45,7 +46,7 @@ def cottage(rng, season="dusk", lit=True):
 def train(n=4, lit=True, waving=False, rng=None):
     """A little train on the track: an engine and n carriages. Returns (root, passengers)."""
     root = empty("train", (0, 0, 0)); P, people = [], []
-    body = mat("carriage", (0.2, 0.32, 0.28), 0.5, coat=0.3); trim = mat("ctrim", (0.85, 0.72, 0.3), 0.4, metal=0.5)
+    body = mat("carriage", (0.15, 0.45, 0.4), 0.5, coat=0.3); trim = mat("ctrim", (0.85, 0.72, 0.3), 0.4, metal=0.5)
     win = mat("cwin", (1.0, 0.85, 0.55), 0.3, emit=(1.0, 0.8, 0.5), emit_str=3 if lit else 0)
     eng = mat("engine", (0.12, 0.12, 0.14), 0.4, metal=0.4)
     P += [cube((0, 0, 0.42), (1.3, 0.6, 0.6), eng, bevel=0.03), cyl((0.45, 0, 0.82), 0.08, 0.3, eng),
