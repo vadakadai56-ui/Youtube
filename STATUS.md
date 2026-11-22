@@ -84,6 +84,7 @@ Lost Toy Room: Part 1 `7551785-file-2041223862239218930.mp4`, Part 2 `...-140816
 
 ## Automation
 - **Weekly auto plan:** scheduled task "Dustlight weekly auto plan" (trig_01BsS8QAXWsFZhnnJvJ8C6cA), every Sunday 11:33 Riga, first run 22 Nov 2026. It fires into this session and runs `/yt-plan` auto plan mode: gaps, trends, formats, all scripts, then one approval message. Nothing is voiced, rendered or scheduled before the owner approves.
+- **Friday analytics:** scheduled task "Dustlight Friday analytics" (trig_01YPHE18fFQDEwKDsYjtvnUW), Fridays 14:37 Riga: per-video stats by format, look and character model, three changes for the Sunday plan.
 - **Daily comments:** scheduled task "Dustlight daily comments" (trig_017inMtZq6y2ChGEFBKLLo6A), every day 20:34 Riga. `/yt-comments` auto-replies to normal YouTube comments through Windsor.ai (trial plan), holds spam, asks the owner about anything sensitive. Log: `channel/comment-log.md`.
 - **Tools:** Metricool publishes (YouTube, Instagram, TikTok, best times). vidIQ (free plan, 150 credits a month, 5 per research or analytics call) is connected to Dustlight YouTube, Instagram @dustlightstories and TikTok @dustlight00: trends, outliers, keywords, own-channel analytics, Instagram insights, reading Instagram and TikTok comments. Never publish from vidIQ. Windsor.ai handles comments and per-video YouTube analytics (Instagram can be added in Windsor; TikTok has no comment actions there).
 - **Uploads:** `pipeline/publish_github.py` through the public repo Dustlight-Files. No tokens.
