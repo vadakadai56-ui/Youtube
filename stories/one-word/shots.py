@@ -9,7 +9,7 @@ import scene                  # noqa
 scene.STYLE = os.environ["STYLE"]
 from world import *           # noqa
 from world import cam as _cam
-from characters import blocky, ball, _pin
+from characters import blocky, ball, dog
 import bpy
 
 _D = json.load(open(os.path.join(HERE, "durations.json")))
@@ -19,27 +19,6 @@ DAD = dict(shirt=(0.3, 0.5, 0.35), pants=(0.25, 0.22, 0.2), style="dad", skin="b
 MUM = dict(shirt=(0.95, 0.75, 0.3), pants=(0.3, 0.3, 0.45), style="mum", skin="tan", name="mum")
 SIS = dict(shirt=(0.4, 0.7, 0.85), pants=(0.5, 0.3, 0.45), style="kid", skin="tan", hair=(0.35, 0.2, 0.1), name="sis")
 SEAT = {"gran": ("HEAD", 0.0), "dad": ("L1", math.pi / 2), "mum": ("R1", -math.pi / 2), "sis": ("L2", math.pi / 2), "kid": ("R2", -math.pi / 2)}
-
-
-def dog(loc, rot=0.0, col=(0.96, 0.92, 0.84)):
-    """A blocky dog sitting up: box body, head with floppy ears, a wagging tail. Returns {root, head, tail}."""
-    m = mat("dogfur", col, 0.85, sheen=0.5, noise=0.25); dk = mat("dogdark", (0.35, 0.22, 0.12), 0.8)
-    blk = mat("dogeye", (0.02, 0.02, 0.02), 0.15, coat=0.8); wht = mat("dogwht", (1, 1, 1), 0.2)
-    P = [cube((0, 0.05, 0.16), (0.2, 0.32, 0.2), m, bevel=0.04), cube((0, -0.06, 0.3), (0.18, 0.16, 0.22), m, bevel=0.04)]
-    for sx in (-1, 1): P.append(cube((sx * 0.06, -0.12, 0.05), (0.06, 0.08, 0.1), m, bevel=0.02))
-    head = empty("doghead", (0, -0.08, 0.42))
-    H = [cube((0, -0.1, 0.48), (0.2, 0.18, 0.17), m, bevel=0.05), cube((0, -0.21, 0.45), (0.1, 0.08, 0.08), m, bevel=0.03),
-         sphere((0, -0.255, 0.47), 0.022, blk)]
-    for sx in (-1, 1):
-        H += [sphere((sx * 0.05, -0.19, 0.52), 0.022, blk), sphere((sx * 0.05 + 0.006, -0.205, 0.528), 0.007, wht),
-              cube((sx * 0.11, -0.08, 0.46), (0.04, 0.08, 0.14), dk, rot=(0, sx * 0.2, 0), bevel=0.015)]
-    _pin(H, head)
-    tail = empty("dogtail", (0, 0.2, 0.18)); _pin([cube((0, 0.28, 0.24), (0.04, 0.04, 0.16), m, rot=(0.6, 0, 0), bevel=0.015)], tail)
-    root = empty("dogroot")
-    for o in P + [head, tail]:
-        if o.parent is None: o.parent = root
-    root.location = loc; root.rotation_euler[2] = rot
-    return {"root": root, "head": head, "tail": tail}
 
 
 def dinner(rng):
