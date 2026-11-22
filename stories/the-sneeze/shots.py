@@ -11,6 +11,7 @@ from world import *           # noqa
 from world import cam as _cam
 from characters import bean, ball
 import bpy
+scene.LOOK = os.environ.get("LOOK") or "comedy"      # per-video grade (scene.LOOKS)
 
 _D = json.load(open(os.path.join(HERE, "durations.json")))
 START, _t = {}, 0.0
@@ -40,9 +41,9 @@ def sneeze(d, t, t0, big=1.0):
 
 # ---------------------------------------------------------------- sets
 def classroom(rng):
-    cube((0, 0, -0.05), (10, 10, 0.1), mat("cfloor", (0.75, 0.62, 0.45), 0.6, noise=0.3))
-    cube((0, 2.2, 1.5), (8, 0.1, 3), mat("cwall", (0.95, 0.88, 0.72), 0.9, noise=0.1))
-    cube((-3.0, 0, 1.5), (0.1, 6, 3), mat("cwall", (0.95, 0.88, 0.72), 0.9, noise=0.1))
+    cube((0, 0, -0.05), (10, 10, 0.1), mat("cfloor", (0.45, 0.62, 0.9), 0.6, noise=0.3))
+    cube((0, 2.2, 1.5), (8, 0.1, 3), mat("cwall", (0.98, 0.84, 0.42), 0.9, noise=0.1))
+    cube((-3.0, 0, 1.5), (0.1, 6, 3), mat("cwall", (0.98, 0.84, 0.42), 0.9, noise=0.1))
     cube((0, 2.14, 1.35), (2.4, 0.03, 1.0), mat("board", (0.12, 0.3, 0.22), 0.8, noise=0.2))
     text("2 + 2 = ?", (-0.4, 2.12, 1.45), 0.18, mat("chalk", (0.95, 0.95, 0.95), 0.9), rot=(math.pi / 2, 0, 0))
     h = clock((1.7, 2.12, 2.1))
@@ -87,7 +88,7 @@ def pencil(loc):
 
 def bedroom(rng, snow=True, night=False):
     cube((0, 0, -0.05), (10, 10, 0.1), mat("bfloor", (0.55, 0.38, 0.25), 0.6, noise=0.4))
-    wall = mat("bwall", (0.7, 0.8, 0.92), 0.9, noise=0.1)
+    wall = mat("bwall", (0.55, 0.78, 0.98), 0.9, noise=0.1)
     cube((-1.0, 2.0, 1.5), (2.0, 0.1, 3), wall); cube((1.6, 2.0, 1.5), (1.2, 0.1, 3), wall); cube((0.5, 2.0, 0.35), (1.0, 0.1, 0.7), wall)
     cube((0.5, 2.0, 2.6), (1.0, 0.1, 0.8), wall); cube((-2.2, 0, 1.5), (0.1, 5, 3), wall)
     cube((0.5, 2.3, 1.45), (1.0, 0.02, 1.4), mat("bsky", (0.75, 0.82, 0.95), 0.5, emit=(0.75, 0.82, 0.95), emit_str=1.2))
@@ -118,7 +119,7 @@ def bouquet(loc, s=1.0, rng=None):
 
 def front_door(rng, open_amt=0.0):
     cube((0, 0, -0.05), (10, 10, 0.1), mat("hall", (0.55, 0.38, 0.25), 0.6, noise=0.4))
-    wall = mat("hwall2", (0.92, 0.85, 0.7), 0.9)
+    wall = mat("hwall2", (0.98, 0.7, 0.55), 0.9)
     cube((-1.3, 1.0, 1.5), (2.0, 0.1, 3), wall); cube((1.3, 1.0, 1.5), (2.0, 0.1, 3), wall); cube((0, 1.0, 2.55), (0.6, 0.1, 0.9), wall)
     cube((0, 1.6, 1.0), (2, 0.05, 2), mat("outside", (0.85, 0.9, 1.0), 0.5, emit=(0.85, 0.9, 1.0), emit_str=1.0))
     hinge = empty("dhinge2", (-0.3, 1.0, 0))

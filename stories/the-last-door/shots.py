@@ -10,6 +10,7 @@ from world import *           # noqa
 from world import cam as _cam
 from characters import clay, clay_mat
 import bpy
+scene.LOOK = os.environ.get("LOOK") or "story"      # per-video grade (scene.LOOKS)
 
 _D = json.load(open(os.path.join(HERE, "durations.json")))
 GRANDAD = dict(col=(0.45, 0.35, 0.3), style="old", glasses=True, name="grandad")

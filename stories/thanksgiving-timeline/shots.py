@@ -11,6 +11,7 @@ from world import *           # noqa
 from world import cam as _cam
 from characters import blocky
 import bpy
+scene.LOOK = os.environ.get("LOOK") or "comedy"      # per-video grade (scene.LOOKS)
 
 _D = json.load(open(os.path.join(HERE, "durations.json")))
 KID = dict(shirt=(0.85, 0.2, 0.2), pants=(0.15, 0.2, 0.35), style="kid", hat=(0.2, 0.55, 0.85), name="kid")
@@ -42,8 +43,8 @@ class Smoke:
 # ---------------------------------------------------------------- set
 def home(rng, hour="morning", smoke=False, table=False, frozen=False):
     """The family kitchen-diner: counter and oven on the left, the table on the right, the front door at the back."""
-    cube((0, 0, -0.05), (10, 10, 0.1), mat("tfloor", (0.6, 0.45, 0.3), 0.6, noise=0.4))
-    wall = mat("twall", (0.95, 0.82, 0.62), 0.9, noise=0.12)
+    cube((0, 0, -0.05), (10, 10, 0.1), mat("tfloor", (0.85, 0.5, 0.38), 0.6, noise=0.4))
+    wall = mat("twall", (0.42, 0.78, 0.74), 0.9, noise=0.12)
     cube((-1.2, 2.0, 1.5), (2.6, 0.1, 3), wall); cube((1.75, 2.0, 1.5), (2.1, 0.1, 3), wall); cube((0.35, 2.0, 2.55), (0.7, 0.1, 0.9), wall)
     cube((-2.5, 0, 1.5), (0.1, 6, 3), wall); cube((2.8, 0, 1.5), (0.1, 6, 3), wall); cube((0, 0.0, 3.0), (6, 6, 0.1), wall)
     sky = {"morning": (1.0, 0.85, 0.65), "noon": (0.95, 0.95, 1.0), "dusk": (0.95, 0.55, 0.35), "night": (0.15, 0.2, 0.4)}[hour]

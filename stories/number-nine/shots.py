@@ -10,6 +10,7 @@ from world import *           # noqa
 from world import cam as _cam
 from characters import clay, clay_mat
 import bpy
+scene.LOOK = os.environ.get("LOOK") or "dream"      # per-video grade (scene.LOOKS)
 
 _D = json.load(open(os.path.join(HERE, "durations.json")))
 HOUSES = [-6.0, -3.0, 0.0, 3.0, 6.0]                                   # number nine is the one at x = 0

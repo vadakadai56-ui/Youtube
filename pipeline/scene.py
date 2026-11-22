@@ -53,8 +53,12 @@ def lowpoly_pass(ratio=0.18, min_size=0.06):
         d = o.modifiers.new("lp", "DECIMATE"); d.decimate_type = "COLLAPSE"; d.ratio = ratio; d.use_collapse_triangulate = True
 
 
+LOOK = os.environ.get("LOOK", "")
+
+
 def render(path):
     if STYLE == "lowpoly": lowpoly_pass()
+    if LOOK and not bpy.context.scene.get("look_done"): apply_look(LOOK); bpy.context.scene["look_done"] = 1
     bpy.context.view_layer.update()
     bpy.context.scene.render.filepath = path
     bpy.ops.render.render(write_still=True)
@@ -90,6 +94,34 @@ def mat(name, col, rough=0.6, sheen=0.0, metal=0.0, emit=None, emit_str=0.0, noi
 
 def bsdf(m):
     return m.node_tree.nodes["Principled BSDF"]
+
+
+def set_color(m, col):
+    """Recolour a material made by mat(), including its noise mottling."""
+    b = bsdf(m); b.inputs["Base Color"].default_value = (*col, 1)
+    for n in m.node_tree.nodes:
+        if n.type == "MIX" and getattr(n, "data_type", "") == "RGBA":
+            n.inputs[6].default_value = (*col, 1); n.inputs[7].default_value = (col[0] * 0.6, col[1] * 0.6, col[2] * 0.6, 1)
+
+
+LOOKS = {   # per-video grade, picked in the story's style recipe (owner: videos must not all look the same)
+    "story":  dict(view="AgX", look="AgX - Medium High Contrast", exposure=0.0, sat=1.0),
+    "comedy": dict(view="Standard", look="Medium High Contrast", exposure=-0.9, sat=1.3),
+    "horror": dict(view="AgX", look="AgX - High Contrast", exposure=-0.3, sat=0.8),
+    "dream":  dict(view="AgX", look="AgX - Base Contrast", exposure=0.15, sat=1.1),
+}
+
+
+def apply_look(name):
+    """Set the colour transform, contrast, exposure and a saturation boost for the whole scene (call after the set is built)."""
+    L = LOOKS.get(name or "story", LOOKS["story"]); sc = bpy.context.scene
+    sc.view_settings.view_transform = L["view"]; sc.view_settings.look = L["look"]; sc.view_settings.exposure = L["exposure"]
+    if L["sat"] != 1.0:
+        for m in bpy.data.materials:
+            if not m.use_nodes or "Principled BSDF" not in m.node_tree.nodes: continue
+            c = bsdf(m).inputs["Base Color"].default_value; mx, mn = max(c[:3]), min(c[:3])
+            if mx - mn > 0.04:
+                set_color(m, tuple(min(1.0, max(0.0, mn + (v - mn) * L["sat"])) for v in c[:3]))
 
 
 # ---------------------------------------------------------------- primitives

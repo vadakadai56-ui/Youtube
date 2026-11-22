@@ -11,6 +11,7 @@ from world import *           # noqa
 from world import cam as _cam
 from characters import bean, dog, stride
 import bpy
+scene.LOOK = os.environ.get("LOOK") or "comedy"      # per-video grade (scene.LOOKS)
 
 _D = json.load(open(os.path.join(HERE, "durations.json")))
 ME = dict(col=(0.35, 0.65, 0.95), tuft=(0.25, 0.15, 0.1), scarf=(0.95, 0.3, 0.3), name="me")

@@ -11,6 +11,7 @@ from world import *           # noqa
 from world import cam as _cam
 from characters import blocky
 import bpy
+scene.LOOK = os.environ.get("LOOK") or "dream"      # per-video grade (scene.LOOKS)
 
 _D = json.load(open(os.path.join(HERE, "durations.json")))
 KID = dict(shirt=(0.85, 0.2, 0.2), pants=(0.15, 0.2, 0.35), style="kid", hat=(0.2, 0.55, 0.85), name="kid")
