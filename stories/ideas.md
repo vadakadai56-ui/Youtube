@@ -15,3 +15,6 @@ Also pitched 21 Nov (not chosen yet): **The Doorframe** ("Mum measured my height
 5. **A Normal Night** (format 2, anticlimax POV): "In my town... a normal night is terrifying." `stories/a-normal-night/`
 6. **The Sneeze** (format 3, "you" + a power): "You discover that every time you sneeze... the world rewinds ten seconds." `stories/the-sneeze/`
 7. **Once a Day** (format 4, town rule + quirk): "In my town, you can say each word only once a day." `stories/once-a-day/`
+
+## Drafted 22 Nov 2026 for the week of 30 Nov (NOT approved, parked; owner wants this week finished first)
+december-eve, gift-glimpse, gran-wrapped, same-tree, snow-globe, sing-door, three-am, night-train, unsent-letters, wrapping-reality, jumper-contest, huss-christmas, first-frost, pause-snow (format 7, text only), slow-moment (format 6). Each has stories/<slug>/narration.txt only.
