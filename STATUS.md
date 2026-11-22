@@ -50,6 +50,8 @@ TikTok connected 21 Nov 2026 as @divine.773, renamed @dustlight00 the same day (
 - **Weekly auto plan:** scheduled task "Dustlight weekly auto plan" (trig_01BsS8QAXWsFZhnnJvJ8C6cA), every Sunday 11:33 Riga, first run 22 Nov 2026. It fires into this session and runs `/yt-plan` auto plan mode: gaps, trends, formats, all scripts, then one approval message. Nothing is voiced, rendered or scheduled before the owner approves.
 - **Uploads:** `pipeline/publish_github.py` through the public repo Dustlight-Files. No tokens.
 
+- **Render speed:** about 10 to 20 s per frame on 4 CPU cores with no GPU (about 5 h per story). Owner plans to rent cloud GPU time once the channel earns (10 to 30 times faster). Free option offered but not applied yet: 6 fps for calm shots, ES 8, cheaper shadows (about half the time).
+
 ## Open items
 - Instagram: connected in Metricool on 21 Nov 2026 as **@dustlightstories** (YouTube is @the.dustlight.stories). Reels can now be scheduled with the YouTube posts.
 - Channel: create the "The Lost Toy Room" playlist (public) and set "Related video" on each part to the next part.
