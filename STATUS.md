@@ -27,16 +27,17 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
 
 - **Huss Huss** (Trend Short, first video with the new blocky characters): script approved 22 Nov 2026 (`stories/huss-huss/narration.txt`, 48 words). Voiced 22 Nov with ElevenLabs "Lip" (DGqQmo441r9TwJq0migX), 25.9 s, 284 credits; mp3 at `audio/huss-huss.mp3` (not committed). Rendering. Planned trend slot Tue 24 Nov: YouTube 10:00, Instagram/TikTok 12:00.
 
-## Plan 23 to 29 Nov 2026 (weekly auto plan, drafted 22 Nov, awaiting owner approval)
+## Plan 23 to 29 Nov 2026 (weekly auto plan; all 10 scripts approved by the owner 22 Nov 2026)
+All 10 voiced 22 Nov (mp3s in `audio/`, not committed; ElevenLabs history keeps them): Same Window 28.7 s (George), Thanksgiving Timeline 29.4, One Word 20.2, Number Nine 21.3, A Random Tuesday 17.8, First Snow 18.7, Once a Day 49.5 (all Lip), The Sneeze 59.8 (Sheldon ujcXHLWtGPYXnqBoMBgg), Memory Timer 81.4 (Arthur), The Last Door 59.3 (George). About 5,600 credits.
 | Day | Trend slot (YT 10:00, IG/TT 12:00) | Story slot (YT 16:00, IG/TT 18:00) |
 |---|---|---|
-| Mon 23 | Same Window (draft) | A Normal Night (scheduled) |
-| Tue 24 | Huss Huss (ready, awaiting OK) | The Sneeze (draft) |
-| Wed 25 | Thanksgiving Timeline (draft) | The Extra Plate (scheduled) |
-| Thu 26 | One Word (draft) | Vol. 1 long-form (scheduled) |
-| Fri 27 | Number Nine (draft) | Once a Day (draft) |
-| Sat 28 | A Random Tuesday (draft) | Memory Timer, format 6 (draft) |
-| Sun 29 | First Snow (draft) | The Last Door (draft) |
+| Mon 23 | Same Window (approved) | A Normal Night (scheduled) |
+| Tue 24 | Huss Huss (scheduled: YT 10:00 uuid -7079588557884931580, IG 12:00 -6704071585776185936, TT 12:00 2712745511836271821) | The Sneeze (approved) |
+| Wed 25 | Thanksgiving Timeline (approved) | The Extra Plate (scheduled) |
+| Thu 26 | One Word (approved) | Vol. 1 long-form (scheduled) |
+| Fri 27 | Number Nine (approved) | Once a Day (approved) |
+| Sat 28 | A Random Tuesday (approved) | Memory Timer, format 6 (approved) |
+| Sun 29 | First Snow (approved) | The Last Door (approved) |
 
 ## Instagram Reels (@dustlightstories, via Metricool, AI label on)
 | Time (Riga) | Reel | Metricool uuid |
