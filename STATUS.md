@@ -72,7 +72,7 @@ Each pin links to its YouTube video. Times 15:00 and 21:00 Riga (Metricool has n
 | 24 Nov 15:00 | Lost Toy Room Part 2 | 897888025129141537 |
 | 24 Nov 21:00 | Lost Toy Room Part 3 | -3699234649175078871 |
 | 25 Nov 15:00 | Lost Toy Room Part 4 | -5808200110130574909 |
-To pin once live (need their YouTube ids): Ice hotel (live 22 Nov 16:00), A Normal Night (23 Nov), The Extra Plate (25 Nov), Vol. 1 (26 Nov).
+To pin once live (need their YouTube ids), 2 a day at 15:00 and 21:00 Riga, the day after each goes live: Ice hotel (live 22 Nov), Same Window and A Normal Night (23 Nov), Huss Huss and The Sneeze (24), Thanksgiving Timeline and The Extra Plate (25), One Word and Vol. 1 (26), Number Nine and Once a Day (27), A Random Tuesday and Memory Timer (28), First Snow and The Last Door (29). Each check-in pins whatever went live the day before.
 
 ## Rebuilt after the 19 Nov reset (done, tested end to end)
 - `pipeline/` toolkit, renderer, aligner, editor and Dropbox publisher. `stories/the-second-cup/` is fully re-renderable.
