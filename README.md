@@ -2,7 +2,7 @@
 
 YouTube Shorts channel **Dustlight** (@the.dustlight.stories), *stories about the things we forgot*.
 
-Short narrated 3D stories in a cosy toy-world style, with an original script, AI narration, word-by-word captions and synthesized sound.
+Short narrated animated stories in whatever style suits each story (no fixed world or look), with an original script, AI narration, word-by-word captions and synthesized sound.
 
 ## How a video gets made
 

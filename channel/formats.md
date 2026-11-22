@@ -41,7 +41,7 @@ its story, format and trend, and write it in the style recipe as **Character**. 
 ## Trend Short rules (format 5)
 - Build budget about 1 hour: 2 or 3 shots of 5 to 10 s, sets and characters already in `world.py`, no new props unless trivial.
 - Voice: 20 to 60 words (one take), the format's own voice type; captions as the trend's style recipe says.
-- Only trends that fit the cosy toy world and pass the safety check in `/yt-trends` (no real people, brands or tragedy).
+- Only trends we can make well in our own style and that pass the safety check in `/yt-trends` (no real people, brands or tragedy).
 - Never a copy of a trend video: our own take on the topic, format or hook.
 
 ## What every format needs

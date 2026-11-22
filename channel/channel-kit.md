@@ -19,7 +19,7 @@ Every story, character and scene on this channel is original, made by hand in 3D
 Narration: AI voice.
 
 ## Style
-- Warm, dusty 3D toy world. A bulb glow, floating dust, a soft vignette and grain.
+- No fixed world or look: every video picks the set, light and character model that suit its story (see `channel/formats.md`). Common thread: original stories, a twist, clear captions, real sound.
 - Narrator: ElevenLabs "George", a warm British storyteller.
 - Captions: 1 to 3 words at a time, white with a thick black outline, keywords in yellow (#FFD640), centred around y=1210 to 1240 of 1920.
 - Cut every 2 to 3 s. End card text on black.

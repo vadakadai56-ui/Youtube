@@ -7,7 +7,7 @@ October content, so it is weighted low). View and video counts are the pages' ow
 Own data (STATUS, 20 Nov): no per-video numbers yet. Re-check with /yt-analytics on 22 Nov or later.
 
 ## Ranked
-Scores 1 to 5: momentum, shelf life, fit (Blender toy-world in 2 to 3 days), originality room, safety.
+Scores 1 to 5: momentum, shelf life, fit (can our Blender pipeline make it in 2 to 3 days), originality room, safety.
 
 | # | Trend | Kind | Evidence (source, date) | Mom | Shelf | Fit | Orig | Safe | Days left |
 |---|---|---|---|---|---|---|---|---|---|

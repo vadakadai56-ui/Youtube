@@ -26,7 +26,7 @@ Trends move in days. Always research live; never pitch from memory or from a tre
 ## 3. Score each trend 1 to 5
 - **Momentum**: rising now, not peaked (sources in the last 7 days, growing counts).
 - **Shelf life**: days left before it is stale (a 3-day build needs 5+ days).
-- **Fit**: can the Blender toy-world pipeline make it in 2 to 3 days?
+- **Fit**: can our Blender pipeline make it in 2 to 3 days, in a style that suits it?
 - **Originality room**: can we make our own version, not a copy?
 - **Safety**: no tragedy-baiting, no real people's likeness, no brands, no misinformation, nothing aimed at kids for clicks.
 

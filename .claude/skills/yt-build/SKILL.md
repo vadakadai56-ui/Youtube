@@ -26,7 +26,7 @@ python3 pipeline/edit.py stories/<slug> /tmp/frames narration.mp3 out/<slug>.mp4
 
 ## Style (channel kit)
 Characters: use the model named in the story's style recipe (`pipeline/characters.py` or `world.peg`); no default model. If the model is new, build it in `characters.py` and render a test still first.
-Warm dusty toy world, bulb glow, floating dust, vignette, grain. Captions 1 to 3 words, white with a black outline, keywords #FFD640, around y=1210 to 1240. Cut every 2 to 3 s.
+Look: set by the story's style recipe (no fixed world; owner's rule, 22 Nov 2026). Captions 1 to 3 words, white with a black outline, keywords #FFD640, around y=1210 to 1240. Cut every 2 to 3 s.
 
 ## Done
 Run `/yt-qc` on `out/<slug>.mp4`. Commit the story folder (not the mp4) and update `STATUS.md`.
