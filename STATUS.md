@@ -29,6 +29,7 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
 
 ## Plan 23 to 29 Nov 2026 (weekly auto plan; all 10 scripts approved by the owner 22 Nov 2026)
 All 10 voiced 22 Nov (mp3s in `audio/`, not committed; ElevenLabs history keeps them): Same Window 28.7 s (George), Thanksgiving Timeline 29.4, One Word 20.2, Number Nine 21.3, A Random Tuesday 17.8, First Snow 18.7, Once a Day 49.5 (all Lip), The Sneeze 59.8 (Sheldon ujcXHLWtGPYXnqBoMBgg), Memory Timer 81.4 (Arthur), The Last Door 59.3 (George). About 5,600 credits.
+Built 22 Nov (shots previewed and fixed, edit configs written): all 10. Renders run one at a time in a detached queue (`pipeline/render_queue.sh`, logs in the scratchpad `frames/` folder): Same Window, The Sneeze, Thanksgiving Timeline, One Word, Number Nine, Once a Day, A Random Tuesday, Memory Timer, First Snow, The Last Door. New character models: bean (Sneeze, Once a Day, Memory Timer), clay (Number Nine, First Snow, The Last Door), blocky (huss family).
 | Day | Trend slot (YT 10:00, IG/TT 12:00) | Story slot (YT 16:00, IG/TT 18:00) |
 |---|---|---|
 | Mon 23 | Same Window (approved) | A Normal Night (scheduled) |
