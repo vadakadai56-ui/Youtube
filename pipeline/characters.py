@@ -4,6 +4,7 @@
 
 Models
 - blocky(): chunky block people (bevelled box head, box torso, hinged block limbs, mitten hands). Comedy, trend, game-like Shorts.
+- bean(): round one-colour capsule people with big glossy eyes and tiny limbs. Cute, fast comedy, "you" stories, kids logic.
 Add new models here (bean, clay, paper...) the first time a video needs one, and list them in channel/formats.md.
 """
 import math
@@ -128,3 +129,69 @@ def dribble(d, b, t, rate=2.2, side="R", floor=0.0):
     b.location = (off.x, off.y, floor + r + (d["hand_z"] * s - r) * (1 - (1 - up) ** 2))
     d[side].rotation_euler[0] = -0.55 + 0.35 * up
     return up
+
+
+def bean(loc, col, rot=0.0, h=1.0, name="bean", style="kid", mouth="smile", glasses=False, tuft=None, bow=None, hat=None,
+         scarf=None):
+    """Round bean person about 1 unit tall: one soft capsule body in a single colour, big glossy eyes, tiny arms and feet.
+    style: kid | adult | gran (changes proportions). tuft: hair colour for a little curl on top. bow: ribbon colour. hat: beanie
+    colour. Returns the same handles as blocky() (legs LL/LR are the feet)."""
+    bm = mat("bbody_" + name, col, 0.45, sheen=0.4, noise=0.05, coat=0.25)
+    blk = mat("beaneye", (0.02, 0.02, 0.03), 0.1, coat=0.8); wht = mat("beanwht", (1, 1, 1), 0.2)
+    cheek = mat("bcheek_" + name, (0.98, 0.5, 0.5), 0.6)
+    r = {"kid": 0.21, "adult": 0.23, "gran": 0.24}.get(style, 0.22)
+    tall = {"kid": 0.78, "adult": 0.95, "gran": 0.88}.get(style, 0.85)
+    feet_h = 0.06
+    body = [cyl((0, 0, feet_h + tall / 2), r, tall - 2 * r, bm, verts=40),
+            sphere((0, 0, feet_h + r), r, bm), sphere((0, 0, feet_h + tall - r), r, bm)]
+    head = empty("head_" + name, (0, 0, feet_h + tall * 0.55))
+    ez = feet_h + tall - r * 1.05; ey = -r * 0.93
+    H = []
+    for sx in (-1, 1):                                            # big glossy eyes with a highlight, cheeks
+        H += [sphere((sx * r * 0.38, ey, ez), r * 0.3, wht, scale=(0.9, 0.45, 1.05)),
+              sphere((sx * r * 0.36, ey - r * 0.1, ez - r * 0.02), r * 0.18, blk, scale=(0.9, 0.4, 1.1)),
+              sphere((sx * r * 0.32, ey - r * 0.17, ez + r * 0.07), r * 0.06, wht),
+              sphere((sx * r * 0.62, ey + r * 0.12, ez - r * 0.38), r * 0.13, cheek, scale=(1, 0.35, 0.7))]
+    mz = ez - r * 0.5; my = -r - 0.006                          # the mouth sits on the cylinder surface
+    if mouth == "flat": H.append(cube((0, my, mz), (r * 0.35, 0.01, 0.014), blk))
+    elif mouth == "open": H.append(sphere((0, my + 0.004, mz - 0.01), r * 0.14, blk, scale=(0.9, 0.3, 1.0)))
+    elif mouth == "worried":
+        for k in range(5): x = (-2 + k) * r * 0.1; H.append(sphere((x, my, mz - 0.012 * (2 - abs(k - 2))), 0.009, blk, seg=8))
+    else:
+        for k in range(5): x = (-2 + k) * r * 0.1; H.append(sphere((x, my, mz + 0.03 * (x / (r * 0.2)) ** 2), 0.009, blk, seg=8))
+    top = feet_h + tall
+    if glasses or style == "gran":
+        fm = mat("beanglass", (0.5, 0.33, 0.22), 0.3, metal=0.6)
+        for sx in (-1, 1): H.append(torus((sx * r * 0.38, ey - 0.012, ez), r * 0.33, 0.006, fm, rot=(math.pi / 2, 0, 0)))
+    if style == "gran":
+        hm = mat("beangran_" + name, (0.95, 0.94, 0.92), 0.9, sheen=0.5)
+        H += [sphere((0, r * 0.15, top - r * 0.25), r * 0.9, hm, scale=(1.08, 1.0, 0.45)), sphere((0, r * 0.55, top + 0.01), r * 0.38, hm)]
+    if tuft:
+        tm = mat("beantuft_" + name, tuft, 0.8, sheen=0.4)
+        H += [sphere((dx, 0.0, top - 0.005 + 0.02 * k), r * 0.16, tm) for k, dx in enumerate((-0.03, 0.0, 0.035))]
+    if bow:
+        bwm = mat("beanbow_" + name, bow, 0.6)
+        for sx in (-1, 1): H.append(sphere((sx * r * 0.18 + r * 0.5, 0, top - r * 0.2), r * 0.17, bwm, scale=(1.2, 0.5, 0.8)))
+    if hat:
+        km = mat("beanhat_" + name, hat, 0.95, sheen=0.9, noise=0.35)
+        H += [sphere((0, 0, top - r * 0.35), r * 1.02, km, scale=(1, 1, 0.62)), sphere((0, 0, top + r * 0.3), r * 0.25, km),
+              torus((0, 0, top - r * 0.62), r * 0.98, r * 0.12, km)]
+    _pin(H, head)
+    if scarf:
+        sm = mat("beanscarf_" + name, scarf, 0.95, sheen=0.9, noise=0.3)
+        body.append(torus((0, 0, ez - r * 0.9), r * 1.0, r * 0.16, sm))
+    arms, legs = {}, {}
+    az = feet_h + tall * 0.52
+    for side, sx in (("L", -1), ("R", 1)):
+        piv = empty(f"arm{side}_{name}", (sx * r * 0.95, 0, az))
+        _pin([sphere((sx * r * 1.02, 0, az - 0.09), 0.045, bm, scale=(0.85, 0.85, 2.2)), sphere((sx * r * 1.02, 0, az - 0.18), 0.05, bm)], piv)
+        arms[side] = piv
+        lp = empty(f"leg{side}_{name}", (sx * r * 0.45, 0, feet_h + 0.04))
+        _pin([sphere((sx * r * 0.45, -0.03, feet_h * 0.6), 0.065, bm, scale=(0.9, 1.3, 0.6))], lp)
+        legs["L" + side] = lp
+    root = empty("root_" + name)
+    for o in body + [head, arms["L"], arms["R"], legs["LL"], legs["LR"]]:
+        if o.parent is None: o.parent = root
+    root.location = loc; root.rotation_euler[2] = rot; root.scale = (h, h, h)
+    return {"root": root, "head": head, "L": arms["L"], "R": arms["R"], "LL": legs["LL"], "LR": legs["LR"],
+            "cheek": cheek, "base": Vector(loc), "hand_z": az - 0.18, "arm_x": r * 1.02}
