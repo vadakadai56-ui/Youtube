@@ -32,7 +32,7 @@ All 10 voiced 22 Nov (mp3s in `audio/`, not committed; ElevenLabs history keeps 
 Built 22 Nov (shots previewed and fixed, edit configs written): all 10. Renders run one at a time in a detached queue (it MUST run as a tracked background task, run_in_background with a 2 h timeout, relaunched when it ends: a detached setsid process does not keep the container awake, and the machine is reclaimed while idle) (`pipeline/render_queue.sh`, logs in the scratchpad `frames/` folder): Same Window, The Sneeze, Thanksgiving Timeline, One Word, Number Nine, Once a Day, A Random Tuesday, Memory Timer, First Snow, The Last Door. New character models: bean (Sneeze, Once a Day, Memory Timer), clay (Number Nine, First Snow, The Last Door), blocky (huss family).
 | Day | Trend slot (YT 10:00, IG/TT 12:00) | Story slot (YT 16:00, IG/TT 18:00) |
 |---|---|---|
-| Mon 23 | Same Window (scheduled: YT 10:00 uuid -3767051276132791506, IG 12:00 -6233062086669546750, TT 12:00 -6172103828770634222, IG Story 13:30 2165347083173970756) | A Normal Night (scheduled) |
+| Mon 23 | Same Window (re-rendered in the dream look and swapped into all 4 posts 22 Nov; media same-window-v2.mp4; scheduled: YT 10:00 uuid -3767051276132791506, IG 12:00 -6233062086669546750, TT 12:00 -6172103828770634222, IG Story 13:30 2165347083173970756) | A Normal Night (scheduled) |
 | Tue 24 | Huss Huss (scheduled: YT 10:00 uuid -7079588557884931580, IG 12:00 -6704071585776185936, TT 12:00 2712745511836271821) | The Sneeze (approved) |
 | Wed 25 | Thanksgiving Timeline (approved) | The Extra Plate (scheduled) |
 | Thu 26 | One Word (approved) | Vol. 1 long-form (scheduled) |

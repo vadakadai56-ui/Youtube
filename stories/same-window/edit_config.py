@@ -44,3 +44,4 @@ def sound(S):
     S.add(S.pad([261.6, 329.6, 392.0, 523.3], 6.0, 0.6, 2.5), C["w6"] + 0.2, 0.08)
     for j, m in enumerate([72, 76, 79, 84, 88]):
         S.add(S.bell(S.note(m), 1.8), C["w6"] + 0.6 + j * 0.3, 0.06)
+HOOK = "She waved at every train for 70 years."
