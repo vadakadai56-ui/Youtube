@@ -23,6 +23,13 @@ its story, format and trend, and write it in the style recipe as **Character**. 
 | 3 | **"You" + a power with a cost** | Second person ("You discover that…"). Wish fulfilment first, then the power hurts someone you love, you fix it, a new problem starts | 70 to 100 s | Open cliffhanger (sets up part 2) | 951K-like 2D explainer, "every lie you tell becomes true" |
 | 5 | **Trend Short** (daily extra) | One trending topic, format or hook from `channel/trends.md`, done in the Dustlight world: one idea, one payoff, no setup | 15 to 30 s | A question or "comment…" prompt | Made to be cheap: 2 or 3 shots, reused sets, 20 to 60 words of voice |
 | 4 | **Weird town rule + quirk** | A town with one strange rule, a hero with a quirk that seems useless, a crisis only the quirk can fix | 25 to 35 s | Interactive call to action ("type your name the way my town says it") | 22.6K-like blocky-town video, voice-password town, hero who can't say R |
+| 6 | **"What if" + real science** | Second person ("What if you could see…"). A power shown as a live on-screen number or meter, a real study or fact every 20 to 30 s, the power backfires, being real fixes it, twist in the last beat | 75 to 100 s | Twist ("…you can see them too?"), then a comment question and a series hook | 1:53 flat-2D "see how much people like you" video (liking gap study, 1966 pratfall effect), studied 22 Nov 2026 |
+
+## "What if" + real science rules (format 6)
+- Every fact is real and checkable: name the study or year on screen ("1966 · ARONSON"). Look it up before the script; no made-up numbers.
+- The power is visual and cheap to animate: a number, meter or timer over heads that changes live (34 → 33 → 30).
+- Our own power, studies and twist every time; never the reference's "like meter" or its lines. Vertical 9:16.
+- Look: flat 2D or simple 3D, picked per video like every other format. Flat 2D renders in seconds a frame, so it suits a weekly series.
 
 ## Trend Short rules (format 5)
 - Build budget about 1 hour: 2 or 3 shots of 5 to 10 s, sets and characters already in `world.py`, no new props unless trivial.
@@ -40,12 +47,12 @@ its story, format and trend, and write it in the style recipe as **Character**. 
 Rotate through all four formats with equal slots, plus new formats as they appear in trends. After 2 weeks, give more slots to whichever formats earn the most subscribers per 1,000 views.
 
 ## Style recipe per format (from the references studied on 21 Nov 2026)
-| | 1 Emotional twist | 2 Anticlimax POV | 3 "You" + a power | 4 Town rule + quirk |
-|---|---|---|---|---|
-| **Look** | Low-poly night, candle warm against moonlight blue, shallow focus | Two looks per beat: the scare in horror lighting (dark, one cold light, low angle), the reveal in flat, bright, normal light | Bright, clean daylight, saturated colours; phone and clock inserts as motion graphics | Bright snowy town, chunky shapes, crowds of peg dolls |
-| **Camera** | Slow push-ins, fixed "same spot" frames | Creeping push-in for the scare, hard cut to a static wide for the reveal | Medium shots on "you", quick inserts on objects | Wide town shots, close-ups on the hero |
-| **Pace** | 2 to 3 s per shot | about 1 s per shot; a scare and its reveal every 5 to 7 s | 2 s per shot; a new rule or escalation every 6 to 8 s | 1.5 s per shot; whole story in about 30 s |
-| **Captions** | 1 to 3 words, yellow keywords, typed hook headline | One huge word at a time, top third, white with black outline | 1 to 3 words, yellow keywords | 1 to 3 words; the quirk-related words coloured (red) |
-| **Voice** | George, warm storyteller, slow | Young, flat, deadpan first person; no drama in the voice | Energetic second-person narrator, quick | Young first person, cheerful, a bit proud |
-| **Music** | Piano and pads, minor to major | Silence or low drone under the scare, a horror sting, then a dry comic "deflate" sound on the reveal | Bouncy plucks, a "rewind" whoosh on each use of the power, darker at the cost | Plucky upbeat music, a triumphant hit at the payoff |
-| **Ending** | Callback to the first line | "So yeah…" deadpan sign-off | Open cliffhanger | "Comment / type your…" prompt |
+| | 1 Emotional twist | 2 Anticlimax POV | 3 "You" + a power | 4 Town rule + quirk | 6 What if + science |
+|---|---|---|---|---|---|
+| **Look** | Low-poly night, candle warm against moonlight blue, shallow focus | Two looks per beat: the scare in horror lighting (dark, one cold light, low angle), the reveal in flat, bright, normal light | Bright, clean daylight, saturated colours; phone and clock inserts as motion graphics | Bright snowy town, chunky shapes, crowds of peg dolls | Dark, moody rooms, flat colours, one accent colour for the numbers; bright for the fact cards |
+| **Camera** | Slow push-ins, fixed "same spot" frames | Creeping push-in for the scare, hard cut to a static wide for the reveal | Medium shots on "you", quick inserts on objects | Wide town shots, close-ups on the hero | Static wides of the scene, punch-in on faces and the number when it changes |
+| **Pace** | 2 to 3 s per shot | about 1 s per shot; a scare and its reveal every 5 to 7 s | 2 s per shot; a new rule or escalation every 6 to 8 s | 1.5 s per shot; whole story in about 30 s | 2 to 3 s per shot; a number change every 5 s, a fact every 20 to 30 s |
+| **Captions** | 1 to 3 words, yellow keywords, typed hook headline | One huge word at a time, top third, white with black outline | 1 to 3 words, yellow keywords | 1 to 3 words; the quirk-related words coloured (red) | Light; on-screen labels carry the story (numbers over heads, study name and year, LIKED MORE ▲) |
+| **Voice** | George, warm storyteller, slow | Young, flat, deadpan first person; no drama in the voice | Energetic second-person narrator, quick | Young first person, cheerful, a bit proud | Calm, curious second-person narrator, a little dry |
+| **Music** | Piano and pads, minor to major | Silence or low drone under the scare, a horror sting, then a dry comic "deflate" sound on the reveal | Bouncy plucks, a "rewind" whoosh on each use of the power, darker at the cost | Plucky upbeat music, a triumphant hit at the payoff | Soft ambient pulse, a tick or pop on every number change, a rise at the twist |
+| **Ending** | Callback to the first line | "So yeah…" deadpan sign-off | Open cliffhanger | "Comment / type your…" prompt | Twist line, "What number… tell me in the comments", "follow for the next what if" |
