@@ -48,3 +48,13 @@ Sources: [newengen.com](https://newengen.com/insights/tiktok-trends/), [virlo.ai
 | Weird town rule + "type your name" ending | Comment-your-name and type-your-name posts are a long-running pattern, not new this week (tiktok.com discover pages, last updated Jun to Aug 2026) | **Evergreen comment driver**, not a trend. Use the ending on any format |
 
 Sources: [what-if superpowers](https://www.tiktok.com/discover/what-would-you-do-if-you-had-superpowers), [what if 1000x stronger](https://www.youtube.com/shorts/bWjDs2fb1Bk), [#nothingeverhappens](https://www.tiktok.com/tag/nothingeverhappens), [pov nothing happened](https://www.tiktok.com/discover/pov-nothing-happened), [type your name trend](https://www.tiktok.com/discover/type-your-name-trend)
+
+## vidIQ outliers check (22 Nov 2026, Shorts, this month, "animated story shorts emotional twist", 5 credits)
+Real breakout data (views relative to each channel's usual):
+| Signal | Example (channel, views, breakout) | What it means for Dustlight |
+|---|---|---|
+| **Family love, especially mothers and grandparents** | "Koi ni le skda jag te tha Maa di" (Ai Kahani Studio, 1.2K subs) 63.9K views, **392x**; "Gareeb Bachchi aur Bechaari Dadi" (Storyverse) 9.6x | Our grandma / mother / grandad stories fit the strongest pattern. The Extra Plate (a mother) is well placed |
+| **3D cartoon "psychology story" explainers** | "How Rejection Shapes Future Relationships" (Zack D. Films, 29.8M subs) **15.7M views**, 1.6x | A fact-with-feeling story format works at scale: "why we…" told through one character. Candidate format 6 |
+| **Heartbreak / "true love" shorts** | "true love… #hearttouching" (Ur satish) 394.7K, **83x** in 1 day | Short emotional love stories travel fast; keep under 30 s for the trend slot |
+| **Numbered parts** | "{part 1 💔}" (Pink gacha story) 865K; "part 2" gacha 3.4x | Series with a part number still pull; format 3 cliffhangers can carry "Part 1" |
+Most of the list is fandom and gacha content, which is not our lane. Sources: vidIQ outliers, videos published 27 Oct to 20 Nov 2026.

@@ -7,6 +7,7 @@ description: Find what is trending on YouTube Shorts right now (topics, formats,
 Trends move in days. Always research live; never pitch from memory or from a trends file older than 7 days.
 
 ## 1. Research (live)
+- **vidIQ first (connected 22 Nov 2026).** Free plan: 150 credits a month, 5 per research call. Budget: at most 3 calls a week (check `vidiq_balance` first; stop at 20 credits left). Use `vidiq_outliers` (contentType short, publishedWithin thisMonth, minEngagementRate 0.02) for our niche keywords, `vidiq_trending_videos` (videoFormat short, sortBy recentVph) for what is rising now, and `vidiq_keyword_research` for title wording. Ignore fandom, gacha and reupload channels.
 - Load `WebSearch` with ToolSearch. Run several searches in one turn, `mode` "extended":
   - "trending YouTube Shorts this week <month year>"
   - "viral Shorts format <month year>", "TikTok trend <month year>" (TikTok trends reach Shorts within days)
