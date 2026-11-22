@@ -4,6 +4,7 @@
 
 Models
 - blocky(): chunky block people (bevelled box head, box torso, hinged block limbs, mitten hands). Comedy, trend, game-like Shorts.
+- clay(): plasticine people (lumpy, matte fingerprint texture, ball nose, button eyes). Warm family and holiday stories; render without STYLE=lowpoly.
 - bean(): round one-colour capsule people with big glossy eyes and tiny limbs. Cute, fast comedy, "you" stories, kids logic.
 Add new models here (bean, clay, paper...) the first time a video needs one, and list them in channel/formats.md.
 """
@@ -195,3 +196,85 @@ def bean(loc, col, rot=0.0, h=1.0, name="bean", style="kid", mouth="smile", glas
     root.location = loc; root.rotation_euler[2] = rot; root.scale = (h, h, h)
     return {"root": root, "head": head, "L": arms["L"], "R": arms["R"], "LL": legs["LL"], "LR": legs["LR"],
             "cheek": cheek, "base": Vector(loc), "hand_z": az - 0.18, "arm_x": r * 1.02}
+
+
+def clay_mat(name, col, rough=0.75):
+    """Plasticine: matte, a little sheen, fine fingerprint-like bumps."""
+    m = mat("clay_" + name, col, rough, sheen=0.25, noise=0.0)
+    nt = m.node_tree; b = bsdf(m)
+    tex = nt.nodes.new("ShaderNodeTexNoise"); tex.inputs["Scale"].default_value = 140.0; tex.inputs["Detail"].default_value = 6.0
+    bump = nt.nodes.new("ShaderNodeBump"); bump.inputs["Strength"].default_value = 0.18
+    nt.links.new(tex.outputs["Fac"], bump.inputs["Height"]); nt.links.new(bump.outputs["Normal"], b.inputs["Normal"])
+    return m
+
+
+def lumpy(objs, strength=0.012, seed=0):
+    """Hand-pressed unevenness: a soft noise displacement on every part (needs smooth shading, so no low-poly pass)."""
+    tex = bpy.data.textures.get("claylump") or bpy.data.textures.new("claylump", "CLOUDS")
+    tex.noise_scale = 0.08
+    for o in objs:
+        if o.type != "MESH": continue
+        o["lowpoly"] = 1                                           # keep the low-poly pass away from clay
+        for p in o.data.polygons: p.use_smooth = True
+        d = o.modifiers.new("lump", "DISPLACE"); d.texture = tex; d.strength = strength; d.mid_level = 0.5
+        d.texture_coords = "GLOBAL"
+
+
+def clay(loc, col, rot=0.0, h=1.0, name="clay", style="kid", hair=None, skin=(0.96, 0.78, 0.62), mouth="smile", glasses=False,
+         scarf=None, hat=None, apron=None):
+    """Plasticine person about 1 unit tall: pear body, round head with a ball nose, button eyes, sausage arms, stubby legs.
+    style: kid | adult | old (old = stooped, white hair). Returns the same handles as blocky()."""
+    sk = clay_mat("skin_" + name, skin); bm = clay_mat("body_" + name, col)
+    blk = mat("clayeye", (0.02, 0.02, 0.02), 0.25); wht = clay_mat("claywht", (0.97, 0.96, 0.93), 0.6)
+    cheek = clay_mat("cheek_" + name, (0.95, 0.55, 0.5))
+    tall = {"kid": 0.42, "adult": 0.52, "old": 0.48}.get(style, 0.5); hr = {"kid": 0.17, "adult": 0.15, "old": 0.15}.get(style, 0.15)
+    leg_h = 0.14 if style == "kid" else 0.18
+    parts = []
+    body = [sphere((0, 0, leg_h + tall * 0.42), 0.2, bm, scale=(1.0, 0.85, 1.25)),
+            sphere((0, 0, leg_h + tall * 0.85), 0.14, bm, scale=(1.05, 0.9, 0.8))]
+    if apron: body.append(sphere((0, -0.08, leg_h + tall * 0.4), 0.17, clay_mat("apron_" + name, apron), scale=(0.95, 0.5, 1.1)))
+    if scarf: body.append(torus((0, 0, leg_h + tall * 0.98), 0.1, 0.045, clay_mat("scarf_" + name, scarf)))
+    hz = leg_h + tall + hr * 0.85
+    head = empty("head_" + name, (0, 0, leg_h + tall))
+    H = [sphere((0, 0, hz), hr, sk, scale=(1, 0.95, 1.02)), sphere((0, -hr * 0.98, hz - hr * 0.08), hr * 0.24, sk)]
+    for sx in (-1, 1):
+        H += [sphere((sx * hr * 0.38, -hr * 0.86, hz + hr * 0.12), hr * 0.2, wht, scale=(1, 0.5, 1.15)),
+              sphere((sx * hr * 0.38, -hr * 0.95, hz + hr * 0.1), hr * 0.11, blk, scale=(1, 0.5, 1.1)),
+              sphere((sx * hr * 0.62, -hr * 0.75, hz - hr * 0.22), hr * 0.16, cheek, scale=(1, 0.4, 0.75))]
+    my = -hr * 0.9; mz = hz - hr * 0.42
+    if mouth == "open": H.append(sphere((0, my, mz), hr * 0.16, blk, scale=(1, 0.4, 0.8)))
+    elif mouth == "flat": H.append(cyl((0, my, mz), 0.012, hr * 0.4, blk, rot=(0, math.pi / 2, 0)))
+    else: H.append(torus((0, my + 0.01, mz + hr * 0.08), hr * 0.22, 0.011, blk, rot=(math.pi / 2 - 0.25, 0, 0)))
+    hcol = hair or {"kid": (0.4, 0.25, 0.12), "adult": (0.3, 0.2, 0.12), "old": (0.95, 0.94, 0.92)}[style]
+    hm = clay_mat("hair_" + name, hcol)
+    if hat:
+        km = clay_mat("hat_" + name, hat)
+        H += [sphere((0, 0.01, hz + hr * 0.5), hr * 1.02, km, scale=(1, 1, 0.6)), sphere((0, 0, hz + hr * 1.15), hr * 0.28, km)]
+    elif style == "old":
+        H += [sphere((sx * hr * 0.85, 0.02, hz + hr * 0.05), hr * 0.38, hm, scale=(0.7, 1, 0.9)) for sx in (-1, 1)]
+        H += [sphere((0, hr * 0.1, hz + hr * 0.75), hr * 0.5, hm, scale=(1.3, 1, 0.35))]
+    else:
+        H += [sphere((0, hr * 0.12, hz + hr * 0.42), hr * 0.98, hm, scale=(1.05, 1, 0.72)),
+              sphere((-hr * 0.3, -hr * 0.6, hz + hr * 0.65), hr * 0.3, hm, scale=(1.2, 0.8, 0.6))]
+    if glasses:
+        fm = mat("clayglass", (0.3, 0.2, 0.15), 0.3, metal=0.5)
+        for sx in (-1, 1): H.append(torus((sx * hr * 0.38, -hr * 0.98, hz + hr * 0.12), hr * 0.26, 0.008, fm, rot=(math.pi / 2, 0, 0)))
+    _pin(H, head)
+    arms, legs = {}, {}
+    az = leg_h + tall * 0.85
+    for side, sx in (("L", -1), ("R", 1)):
+        piv = empty(f"arm{side}_{name}", (sx * 0.17, 0, az))
+        _pin([sphere((sx * 0.2, 0, az - 0.12), 0.05, bm, scale=(0.9, 0.9, 2.6)), sphere((sx * 0.2, 0, az - 0.26), 0.05, sk)], piv)
+        arms[side] = piv
+        lp = empty(f"leg{side}_{name}", (sx * 0.08, 0, leg_h))
+        _pin([sphere((sx * 0.08, 0, leg_h * 0.55), 0.06, clay_mat("legs_" + name, (0.3, 0.28, 0.35)), scale=(1, 1, 1.4)),
+              sphere((sx * 0.08, -0.03, 0.03), 0.065, clay_mat("shoe_" + name, (0.2, 0.15, 0.12)), scale=(1, 1.4, 0.6))], lp)
+        legs["L" + side] = lp
+    root = empty("root_" + name)
+    for o in body + [head, arms["L"], arms["R"], legs["LL"], legs["LR"]]:
+        if o.parent is None: o.parent = root
+    lumpy([o for o in body + H] + [c for a in list(arms.values()) + list(legs.values()) for c in a.children])
+    root.location = loc; root.rotation_euler[2] = rot; root.scale = (h, h, h)
+    if style == "old": root.rotation_euler[0] = 0.08
+    return {"root": root, "head": head, "L": arms["L"], "R": arms["R"], "LL": legs["LL"], "LR": legs["LR"],
+            "cheek": cheek, "base": Vector(loc), "hand_z": az - 0.26, "arm_x": 0.2}

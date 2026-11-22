@@ -13,7 +13,7 @@ its story, format and trend, and write it in the style recipe as **Character**. 
 | Peg doll (`world.peg`) | built | quiet, nostalgic, wooden-toy stories |
 | Blocky (`characters.blocky`) | built 22 Nov, test `channel/style-tests/blocky-test.jpg` | comedy, trend Shorts, game-like memes, town-rule stories, anything with running or sport |
 | Round bean (`characters.bean`) | built 22 Nov, test `channel/style-tests/bean-test.jpg` | cute, fast comedy, "you" stories, kids' logic |
-| Clay / stop-motion | idea | warm handmade family stories, holidays |
+| Clay (`characters.clay`) | built 22 Nov, test `channel/style-tests/clay-test.jpg`; render without STYLE=lowpoly | warm handmade family stories, holidays |
 | Paper cut-out | idea | fairy-tale or storybook narration, memories |
 
 | # | Format | Shape | Length | Ending | Reference studied |
