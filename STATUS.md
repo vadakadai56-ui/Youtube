@@ -49,6 +49,18 @@ Lost Toy Room is not posted to Instagram (owner's choice, 21 Nov). Times follow 
 | 25 Nov 18:00 | The Extra Plate | -7868610168081003976 |
 TikTok connected 21 Nov 2026 as @divine.773, renamed @dustlight00 the same day (next rename allowed after 30 days). The account already had 1,197 followers from older content. TikTok's best hours match Instagram's (10:00, 12:00, 18:00).
 
+## Pinterest (board "Dustlight", id 907123618635179948, via Metricool; connected 22 Nov 2026)
+Each pin links to its YouTube video. Times 15:00 and 21:00 Riga (Metricool has no Pinterest best-time data).
+| Time (Riga) | Pin | Metricool uuid |
+|---|---|---|
+| 22 Nov 21:00 | The Empty Swing | 1301149360842755431 |
+| 23 Nov 15:00 | The Second Cup | 2056834738756208093 |
+| 23 Nov 21:00 | Lost Toy Room Part 1 | 7649888654424949990 |
+| 24 Nov 15:00 | Lost Toy Room Part 2 | 897888025129141537 |
+| 24 Nov 21:00 | Lost Toy Room Part 3 | -3699234649175078871 |
+| 25 Nov 15:00 | Lost Toy Room Part 4 | -5808200110130574909 |
+To pin once live (need their YouTube ids): Ice hotel (live 22 Nov 16:00), A Normal Night (23 Nov), The Extra Plate (25 Nov), Vol. 1 (26 Nov).
+
 ## Rebuilt after the 19 Nov reset (done, tested end to end)
 - `pipeline/` toolkit, renderer, aligner, editor and Dropbox publisher. `stories/the-second-cup/` is fully re-renderable.
 - Not rebuilt: the Lost Toy Room per-shot camera files (Parts 1 to 4 are finished and live). The set, toys, Bun-Bun, door and silhouettes are in `scene.py`.

@@ -11,6 +11,7 @@ What the algorithms reward: people watching to the end, rewatching, commenting, 
 | Pinned question comment | first comment on every YouTube post | every upload |
 | Best hours only | YouTube 16:00, Instagram/TikTok 10:00, 12:00, 18:00 (Metricool best times) | every schedule |
 | Keyword titles on new posts | vidIQ keyword check before scheduling (5 credits) | new uploads only |
+| Pinterest video pins | Metricool, board "Dustlight" (907123618635179948), pin links to the YouTube video; pin each story the day after it is live, 15:00 or 21:00 Riga, at most 2 a day | every upload |
 | Add videos to playlists | Windsor `add_video_to_playlist`, once the owner has created the playlists | after each upload |
 
 Rules: never edit or repost a published video without the owner's yes; no fake engagement, no follow-for-follow, no buying views.
