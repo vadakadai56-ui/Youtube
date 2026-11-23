@@ -1,6 +1,8 @@
-"""Once a Day (format 4, weird town rule + quirk, round bean characters): in my town each word can be said only once a day;
+"""Once a Day (format 4, weird town rule + quirk): in my town each word can be said only once a day;
 my words never run out, which seems useless until Biscuit the dog only comes when you call him three times.
-Speech bubbles are drawn in edit_config.overlay. Render: STYLE=lowpoly ENGINE=EEVEE PCT=50 ES=12 ... pipeline/anim.py stories/once-a-day OUT all"""
+v2 (24 Nov 2026): the townsfolk are the ready-made Quaternius people (owner: human-like people in every video); the old bean
+version is shots_v1_bean.py. Speech bubbles are drawn in edit_config.overlay.
+Render: STYLE=lowpoly ENGINE=EEVEE PCT=50 ES=8 ... pipeline/anim.py stories/once-a-day OUT all"""
 import json, math, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "..", "pipeline"))
@@ -9,16 +11,21 @@ import scene                  # noqa
 scene.STYLE = os.environ["STYLE"]
 from world import *           # noqa
 from world import cam as _cam
-from characters import bean, dog, stride
+from characters import dog, person, play
 import bpy
 scene.LOOK = os.environ.get("LOOK") or "comedy"      # per-video grade (scene.LOOKS)
 
 _D = json.load(open(os.path.join(HERE, "durations.json")))
-ME = dict(col=(0.35, 0.65, 0.95), tuft=(0.25, 0.15, 0.1), scarf=(0.95, 0.3, 0.3), name="me")
-FOLK = [dict(col=(0.98, 0.62, 0.35), name="f1"), dict(col=(0.6, 0.85, 0.55), style="adult", name="f2", hat=(0.8, 0.2, 0.25)),
-        dict(col=(0.95, 0.6, 0.75), bow=(1, 1, 1), name="f3"), dict(col=(0.75, 0.6, 0.9), style="gran", name="f4"),
-        dict(col=(0.95, 0.85, 0.4), style="adult", name="f5", scarf=(0.3, 0.5, 0.9)), dict(col=(0.55, 0.75, 0.85), name="f6", hat=(0.3, 0.7, 0.4))]
-PELL = dict(col=(0.85, 0.5, 0.55), style="gran", name="pell", scarf=(0.4, 0.6, 0.4))
+FAST = {"a1", "a3", "a5", "a8", "a10"}      # walking, waving and calling: 30 fps so limbs never blur into ghosts
+# (model, age, h): h sized so the people match the old bean scale (me about 0.7 tall, grown-ups about 0.85)
+ME = ("M_Casual_Hoodie", "kid", 0.58)
+FOLK = [("W_Casual", "adult", 0.47), ("M_Worker", "adult", 0.47), ("W_Adventurer", "kid", 0.58), ("M_Farmer", "old", 0.47),
+        ("W_Suit", "adult", 0.47), ("M_Beach", "kid", 0.58)]
+PELL = ("W_Worker", "old", 0.47)                                   # Mrs Pell, Biscuit's owner
+
+
+def who(c, loc, rot=0.0, action="Idle", offset=0.0):
+    return person(c[0], loc, rot=rot, age=c[1], h=c[2], action=action, offset=offset)
 
 
 def town(rng, night=False):
@@ -53,6 +60,8 @@ def woods(rng):
         o.data.materials.append(mat("pine", (0.12, 0.3, 0.2), 0.8))
     world_color((0.02, 0.03, 0.08))
     light("SUN", (0, 0, 5), 0.35, col=(0.55, 0.65, 1.0), rot=(0.9, 0.2, 0.4))
+    light("AREA", (0.3, -2.6, 2.0), 55, col=(1.0, 0.78, 0.55), size=3, target=(0, 0.4, 0.45))   # the crowd's lanterns, from the front
+    light("AREA", (0.0, 2.6, 1.6), 25, col=(0.7, 0.8, 1.0), size=3, target=(0, 0.3, 0.45))      # moonlight on faces seen from the woods
 
 
 def lantern(loc):
@@ -60,74 +69,68 @@ def lantern(loc):
     light("POINT", loc, 6, col=(1.0, 0.75, 0.45), size=0.05)
 
 
-def crowd(rng, n=6, y0=0.6, spread=2.4, face=math.pi, lanterns=False):
+def crowd(rng, n=6, y0=0.6, spread=2.4, face=math.pi, lanterns=False, action="Idle"):
     out = []
     for i in range(n):
-        kw = FOLK[i % len(FOLK)]; x = -spread / 2 + spread * i / max(1, n - 1) + rng.uniform(-0.1, 0.1)
-        b = bean((x, y0 + rng.uniform(-0.2, 0.2), 0), rot=face + rng.uniform(-0.3, 0.3), **dict(kw, name=kw["name"] + str(i)))
-        if lanterns: lantern((x + 0.18, y0 - 0.1, 0.55))
-        out.append(b)
+        x = -spread / 2 + spread * i / max(1, n - 1) + rng.uniform(-0.1, 0.1)
+        out.append(who(FOLK[i % len(FOLK)], (x, y0 + rng.uniform(-0.2, 0.2), 0), rot=face + rng.uniform(-0.3, 0.3), action=action, offset=i * 0.31))
+        if lanterns: lantern((x + 0.18, y0 - 0.1, 0.45))
     return out
 
 
 # ---------------------------------------------------------------- shots
 def a1(rng):            # In my town, you can say each word only once a day.: the bright square, folk strolling
-    town(rng); folk = crowd(rng, 5, y0=1.4, spread=5.0, face=0.0)
+    town(rng); folk = crowd(rng, 5, y0=1.4, spread=5.0, action="Walk")
+    for i, f in enumerate(folk): f["root"].rotation_euler[2] = math.pi / 2 if i % 2 else -math.pi / 2   # half walk right, half left
     c = _cam((0.0, -3.2, 1.2), (0, 1.5, 0.7), lens=30, fstop=6)
     def upd(t):
-        for i, f in enumerate(folk):
-            f["root"].location.x = f["base"].x + 0.25 * t * (1 if i % 2 else -1); f["root"].rotation_euler[2] = (-1.4 if i % 2 else 1.4)
-            f["root"].location.z = 0.02 * abs(math.sin(t * 8 + i))
+        for i, f in enumerate(folk): f["root"].location.x = f["base"].x + 0.3 * t * (1 if i % 2 else -1)
         c.location.y = -3.2 + 0.15 * t
     return upd
 
 
-def a2(rng):            # Say it twice... and nothing comes out.: a bean opens its mouth, nothing (an empty bubble)
-    town(rng); f = bean((0.0, 0.4, 0), mouth="open", **FOLK[0])
-    c = _cam((0.1, -0.85, 0.65), (0, 0.4, 0.6), lens=42, fstop=2.4)
-    def upd(t): breathe(f, t); f["head"].rotation_euler[0] = 0.08 * math.sin(t * 3)
+def a2(rng):            # Say it twice... and nothing comes out.: she tries to speak, nothing (an empty bubble)
+    town(rng); f = who(FOLK[0], (0.0, 0.4, 0), action="Interact")
+    c = _cam((0.1, -0.85, 0.75), (0, 0.4, 0.68), lens=42, fstop=2.4)
+    def upd(t): pass
     return upd
 
 
 def a3(rng):            # So everyone talks very carefully. "Morning." "Hello." "Greetings." "Hiya.": four greetings in the square
-    town(rng); folk = [bean((x, 0.6, 0), rot=r, **FOLK[i]) for i, (x, r) in enumerate([(-0.9, -0.5), (-0.3, 0.4), (0.3, -0.4), (0.9, 0.5)])]
-    c = _cam((0.0, -2.2, 0.95), (0, 0.6, 0.6), lens=32, fstop=4)
-    starts = [2.6, 3.6, 4.5, 5.5]                                          # local times of each greeting
-    def upd(t):
-        for i, f in enumerate(folk):
-            k = math.sin(math.pi * min(1, max(0, (t - starts[i]) / 0.5))); f["root"].location.z = 0.04 * k
-            f["R"].rotation_euler[1] = -1.8 * k
+    town(rng)
+    folk = [who(FOLK[i], (x, 0.6, 0), rot=r, action="Wave", offset=i * 0.45) for i, (x, r) in enumerate([(-0.9, -0.5), (-0.3, 0.4), (0.3, -0.4), (0.9, 0.5)])]
+    c = _cam((0.0, -3.0, 0.95), (0, 0.6, 0.5), lens=30, fstop=4)
+    def upd(t): pass
     return upd
 
 
 def a4(rng):            # Except me. My words never run out.: me, chattering away, a bubble full of words
-    town(rng); m = bean((0.0, 0.4, 0), mouth="open", **ME)
-    c = _cam((0.0, -1.0, 0.68), (0, 0.4, 0.62), lens=40, fstop=2.4)
-    def upd(t):
-        m["head"].rotation_euler[0] = 0.06 * math.sin(t * 14); m["R"].rotation_euler[1] = -1.2 - 0.4 * math.sin(t * 6)
-        m["L"].rotation_euler[1] = 1.2 + 0.4 * math.sin(t * 6 + 1)
+    town(rng); m = who(ME, (0.0, 0.4, 0), action="Interact")
+    c = _cam((0.0, -1.0, 0.68), (0, 0.4, 0.6), lens=40, fstop=2.4)
+    def upd(t): pass
     return upd
 
 
-def a5(rng):            # I say "sorry" about fifty times a day. People think I'm showing off.: bumping into everyone, side-eye
-    town(rng); m = bean((-1.2, 0.5, 0), rot=-1.5, **ME)
-    folk = [bean((x, 0.5, 0), rot=math.pi * 0.0, mouth="flat", **dict(FOLK[i], name="s%d" % i)) for i, x in enumerate([-0.3, 0.4, 1.1])]
+def a5(rng):            # I say "sorry" about fifty times a day. People think I'm showing off.: bumping past everyone, side-eye
+    town(rng); m = who(ME, (-1.2, 0.5, 0), rot=math.pi / 2, action="Walk")
+    folk = [who(FOLK[i], (x, 0.62, 0)) for i, x in enumerate([-0.3, 0.4, 1.1])]
     c = _cam((0.0, -2.0, 0.85), (0, 0.5, 0.55), lens=30, fstop=5)
     def upd(t):
-        x = -1.2 + 0.55 * t; m["root"].location.x = x; m["root"].location.z = 0.02 * abs(math.sin(t * 10))
+        x = -1.2 + 0.5 * t; m["root"].location.x = x
         for f in folk:
             near = max(0.0, 1 - abs(f["base"].x - x) / 0.25)
-            f["root"].location.x = f["base"].x + 0.08 * near; f["head"].rotation_euler[2] = 0.4 * smooth((x - f["base"].x) / 0.3)
+            f["root"].location.y = f["base"].y + 0.08 * near                        # stepping back as I squeeze past
+            f["root"].rotation_euler[2] = -0.9 * smooth((x - f["base"].x) / 0.3)     # then turning to stare after me
     return upd
 
 
 def a6(rng):            # Then one snowy night, Mrs Pell's dog ran into the woods.: Biscuit bolts for the trees
-    woods(rng); d = dog((0.4, -0.2, 0), rot=math.pi); p = bean((-0.6, -0.4, 0), rot=-0.6, mouth="open", **PELL)
-    lantern((-0.42, -0.55, 0.55)); sn = Snow((0, 0.5, 0.2), size=(6, 4, 3), n=260, rng=rng)
+    woods(rng); d = dog((0.4, -0.2, 0), rot=math.pi); p = who(PELL, (-0.35, -0.6, 0), rot=math.pi - 0.6, action="Idle_Gun_Pointing")
+    lantern((-0.17, -0.75, 0.45)); sn = Snow((0, 0.5, 0.2), size=(6, 4, 3), n=260, rng=rng)
     c = _cam((0.0, -2.6, 0.8), (0, 1.2, 0.5), lens=30, fstop=5)
     def upd(t):
         sn.update(t); y = -0.2 + 1.2 * t; d["root"].location = Vector((0.4, y, 0.04 * abs(math.sin(t * 14))))
-        d["tail"].rotation_euler[1] = 0.6 * math.sin(t * 18); p["R"].rotation_euler[1] = -2.0
+        d["tail"].rotation_euler[1] = 0.6 * math.sin(t * 18)
     return upd
 
 
@@ -135,21 +138,18 @@ def a7(rng):            # Biscuit only comes when you call him three times. The 
     woods(rng); folk = crowd(rng, 6, y0=0.2, spread=3.0, face=math.pi, lanterns=True)
     sn = Snow((0, 0.5, 0.2), size=(6, 4, 3), n=260, rng=rng)
     c = _cam((0.4, -1.6, 0.8), (0, 2.0, 0.6), lens=28, fstop=5)
-    def upd(t):
-        sn.update(t); c.location.y = -1.6 + 0.08 * t
-        for i, f in enumerate(folk): f["head"].rotation_euler[0] = 0.1 * math.sin(t * 2 + i)
+    def upd(t): sn.update(t); c.location.y = -1.6 + 0.08 * t
     return upd
 
 
-def a8(rng):            # So I stepped forward. "Biscuit! Biscuit! BISCUIT!": me in front of the crowd, shouting, the camera shakes
+def a8(rng):            # So I stepped forward. "Biscuit! Biscuit! BISCUIT!": me in front of the crowd, calling, the camera shakes
     woods(rng); folk = crowd(rng, 5, y0=-0.6, spread=3.0, face=math.pi, lanterns=True)
-    m = bean((0.0, 0.3, 0), rot=math.pi, mouth="open", **ME); sn = Snow((0, 0.5, 0.2), size=(6, 4, 3), n=260, rng=rng)
-    c = _cam((0.35, 1.5, 0.65), (0.0, 0.3, 0.62), lens=36, fstop=2.8)          # from the woods side, looking at my face
+    m = who(ME, (0.0, 0.3, 0), rot=math.pi, action="Wave"); sn = Snow((0, 0.5, 0.2), size=(6, 4, 3), n=260, rng=rng)
+    c = _cam((0.35, 1.5, 0.65), (0.0, 0.3, 0.55), lens=36, fstop=2.8)          # from the woods side, looking at my face
     shouts = [1.6, 2.6, 3.5]
     def upd(t):
         sn.update(t); m["root"].location.y = 0.3 + 0.25 * smooth(t / 0.8)
         k = max([math.sin(math.pi * min(1, max(0, (t - s) / 0.5))) * (1.3 if i == 2 else 1) for i, s in enumerate(shouts)])
-        m["L"].rotation_euler[1] = 1.0 * k; m["R"].rotation_euler[1] = -1.0 * k; m["head"].rotation_euler[0] = -0.15 * k
         c.location.x = 0.35 + 0.02 * math.sin(t * 50) * k
     return upd
 
@@ -166,21 +166,20 @@ def a9(rng):            # Out of the snow... came one very cold dog.: Biscuit bu
     return upd
 
 
-def a10(rng):           # Now the whole town lets me say "good boy" as many times as I like.: the town cheering, me hugging Biscuit
-    town(rng, night=True); folk = crowd(rng, 6, y0=0.9, spread=3.4, face=0.0, lanterns=True)
-    m = bean((0.0, 0.0, 0), mouth="smile", **ME); d = dog((0.25, -0.1, 0), rot=0.5)
+def a10(rng):           # Now the whole town lets me say "good boy" as many times as I like.: the town cheering, me with Biscuit
+    town(rng, night=True); folk = crowd(rng, 6, y0=0.9, spread=3.4, face=0.0, lanterns=True, action="Wave")
+    m = who(ME, (0.0, 0.0, 0), action="Interact"); d = dog((0.25, -0.1, 0), rot=0.5)
     sn = Snow((0, 0.5, 0.2), size=(6, 4, 3), n=200, rng=rng)
     c = _cam((0.0, -1.9, 0.9), (0.05, 0.3, 0.55), lens=30, fstop=4)
     def upd(t):
-        sn.update(t); m["R"].rotation_euler[1] = -1.4; d["tail"].rotation_euler[1] = 0.6 * math.sin(t * 16)
-        for i, f in enumerate(folk):
-            k = abs(math.sin(t * 6 + i)); f["root"].location.z = 0.03 * k; f["L"].rotation_euler[1] = 2.2 * (i % 2); f["R"].rotation_euler[1] = -2.2 * ((i + 1) % 2)
+        sn.update(t); d["tail"].rotation_euler[1] = 0.6 * math.sin(t * 16)
+        for i, f in enumerate(folk): f["root"].location.z = 0.03 * abs(math.sin(t * 6 + i))   # a little bounce
     return upd
 
 
 def a11(rng):           # Comment the one word you'd save for the whole day.: the snowy town at night, wide
     town(rng, night=True); folk = crowd(rng, 6, y0=0.9, spread=3.4, face=0.0, lanterns=True)
-    m = bean((0.0, 0.0, 0), **ME); d = dog((0.25, -0.1, 0), rot=0.5); sn = Snow((0, 0.5, 0.2), size=(8, 5, 3), n=260, rng=rng)
+    m = who(ME, (0.0, 0.0, 0)); d = dog((0.25, -0.1, 0), rot=0.5); sn = Snow((0, 0.5, 0.2), size=(8, 5, 3), n=260, rng=rng)
     c = _cam((0.0, -3.4, 1.4), (0, 1.0, 0.8), lens=30, fstop=6)
     def upd(t): sn.update(t); c.location.y = -3.4 - 0.15 * t; d["tail"].rotation_euler[1] = 0.6 * math.sin(t * 16)
     return upd
