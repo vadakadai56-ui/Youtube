@@ -1,6 +1,6 @@
 """One Word (Trend Short, Thanksgiving Day): everyone says what they are thankful for in one word; the dog just looks at
 the turkey. v2 (23 Nov 2026): the family are the ready-made Quaternius people (owner: human-like people in every video), toon look.
-Render: STYLE=toon TOON_STEP=0.03 ENGINE=EEVEE PCT=50 ES=8 $VENV/bin/python pipeline/anim.py stories/one-word OUT all"""
+Render: STYLE=toon TOON_STEP=0.03 TOON_LINES=0 ENGINE=EEVEE PCT=50 ES=8 $VENV/bin/python pipeline/anim.py stories/one-word OUT all"""
 import json, math, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "..", "pipeline"))

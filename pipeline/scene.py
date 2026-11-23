@@ -77,6 +77,9 @@ def toon_pass(line_px=None):
         else: mul.inputs[6].default_value = col_in.default_value
         nt.links.new(ramp.outputs["Color"], mul.inputs[7]); nt.links.new(mul.outputs[2], emit.inputs["Color"])
         out = next(n for n in nt.nodes if n.type == "OUTPUT_MATERIAL"); nt.links.new(emit.outputs[0], out.inputs["Surface"])
+    if os.environ.get("TOON_LINES", "1") == "0":            # flat toon colour without outlines (owner: warm stories)
+        sc.view_settings.view_transform = "Standard"; sc.view_settings.look = "None"; sc.view_settings.exposure = 0
+        return
     sc.render.use_freestyle = True; sc.render.line_thickness_mode = "ABSOLUTE"
     sc.render.line_thickness = line_px or max(1.5, 4.0 * sc.render.resolution_percentage / 100)
     ls = sc.view_layers[0].freestyle_settings.linesets
