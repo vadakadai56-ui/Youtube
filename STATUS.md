@@ -1,4 +1,4 @@
-# Status (19 Nov 2026)
+# Status (23 Nov 2026)
 
 ## Published / scheduled (YouTube via Metricool)
 | Time (Riga) | Video | Dropbox file |
@@ -29,16 +29,19 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
 
 ## Plan 23 to 29 Nov 2026 (weekly auto plan; all 10 scripts approved by the owner 22 Nov 2026)
 All 10 voiced 22 Nov (mp3s in `audio/`, not committed; ElevenLabs history keeps them): Same Window 28.7 s (George), Thanksgiving Timeline 29.4, One Word 20.2, Number Nine 21.3, A Random Tuesday 17.8, First Snow 18.7, Once a Day 49.5 (all Lip), The Sneeze 59.8 (Sheldon ujcXHLWtGPYXnqBoMBgg), Memory Timer 81.4 (Arthur), The Last Door 59.3 (George). About 5,600 credits.
+Metricool brand 7551785. All times Europe/Riga. Updated 23 Nov: Same Window v3, The Sneeze v2 and the weekly Instagram Trial Reels and Carousels are scheduled (see table and Instagram section).
 Built 22 Nov (shots previewed and fixed, edit configs written): all 10. Renders run one at a time in a detached queue (it MUST run as a tracked background task, run_in_background with a 2 h timeout, relaunched when it ends: a detached setsid process does not keep the container awake, and the machine is reclaimed while idle) (`pipeline/render_queue.sh`, logs in the scratchpad `frames/` folder): Same Window, The Sneeze, Thanksgiving Timeline, One Word, Number Nine, Once a Day, A Random Tuesday, Memory Timer, First Snow, The Last Door. New character models: bean (Sneeze, Once a Day, Memory Timer), clay (Number Nine, First Snow, The Last Door), blocky (huss family).
 | Day | Trend slot (YT 10:00, IG/TT 12:00) | Story slot (YT 16:00, IG/TT 18:00) |
 |---|---|---|
-| Mon 23 | Same Window (re-rendered in the dream look and swapped into all 4 posts 22 Nov; media same-window-v2.mp4; scheduled: YT 10:00 uuid -3767051276132791506, IG 12:00 -6233062086669546750, TT 12:00 -6172103828770634222, IG Story 13:30 2165347083173970756) | A Normal Night (scheduled) |
-| Tue 24 | Huss Huss (scheduled: YT 10:00 uuid -7079588557884931580, IG 12:00 -6704071585776185936, TT 12:00 2712745511836271821) | The Sneeze (approved) |
-| Wed 25 | Thanksgiving Timeline (approved) | The Extra Plate (scheduled) |
-| Thu 26 | One Word (approved) | Vol. 1 long-form (scheduled) |
-| Fri 27 | Number Nine (approved) | Once a Day (approved) |
+| Mon 23 | Same Window, v3 cut (quick end + re-hook; media videos/same-window-v3.mp4; now in all 4 posts; scheduled: YT 10:00 uuid -3767051276132791506, IG 12:00 -6233062086669546750, TT 12:00 -6172103828770634222, IG Story 13:30 2165347083173970756) | A Normal Night (scheduled) |
+| Tue 24 | Huss Huss (scheduled: YT 10:00 uuid -7079588557884931580, IG 12:00 -6704071585776185936, TT 12:00 2712745511836271821) | The Sneeze v2, new hook (scheduled: YT 16:00 id 438549787, IG Reel 18:00 id 438549874, TT 18:00 id 438549972; no Story; 61 s; media videos/the-sneeze-v2.mp4) |
+| Wed 25 | Thanksgiving Timeline (scheduled: YT 10:00 id 438550882, IG Reel 12:00 id 438551053, TT 12:00 id 438551218, IG Story 13:30 id 438551591) | The Extra Plate (scheduled) |
+| Thu 26 | One Word (scheduled: YT 10:00 id 438551712, IG Reel 12:00 id 438551814, TT 12:00 id 438551900, IG Story 13:30 id 438551986) | Vol. 1 long-form (scheduled) |
+| Fri 27 | Number Nine (scheduled: YT 10:00 id 438552101, IG Reel 12:00 id 438552182, TT 12:00 id 438552246, IG Story 13:30 id 438552343) | Once a Day (approved) |
 | Sat 28 | A Random Tuesday (approved) | Memory Timer, format 6 (approved) |
 | Sun 29 | First Snow (approved) | The Last Door (approved) |
+
+Render queue restarted 23 Nov: once-a-day (partly done), random-tuesday, memory-timer, first-snow, the-last-door. Each run stops at the 2 h cap and is restarted.
 
 ## Instagram Reels (@dustlightstories, via Metricool, AI label on)
 | Time (Riga) | Reel | Metricool uuid |
@@ -49,7 +52,11 @@ Built 22 Nov (shots previewed and fixed, edit configs written): all 10. Renders 
 | 22 Nov 19:30 | Story reshare: Ice hotel | -4584513616194157131 |
 | 23 Nov 18:00 | A Normal Night (YouTube at 16:00) | 6687967837374663258 |
 | 23 Nov 19:30 | Story reshare: A Normal Night | 2995832477754606894 |
+| 24 Nov 20:00 | Trial Reel, The Second Cup, new hook "Where does he take the second cup?" (media videos/trial-second-cup.mp4) | id 438581507 |
 | 25 Nov 18:00 | The Extra Plate (YouTube at 16:00) | 1428552922414664655 |
+| 25 Nov 20:00 | Carousel, Same Window, 6 slides (Dustlight-Files carousels/same-window/) | id 438554030 |
+| 27 Nov 20:00 | Trial Reel, The Empty Swing, new hook "Why does he push an empty swing every night?" (media videos/trial-empty-swing.mp4) | id 438581674 |
+Weekly Instagram rhythm from 23 Nov: Trial Reels Tue and Fri 20:00, Carousels Wed and Sun 20:00 (Sun 29 carousel not made yet).
 Lost Toy Room is not posted to Instagram (owner's choice, 21 Nov). Times follow Metricool's best Instagram hours (10:00 and 18:00 Riga); YouTube stays at 16:00, its best hour.
 
 ## TikTok (@dustlight00, formerly @divine.773, via Metricool, AI label on)
@@ -88,6 +95,7 @@ Lost Toy Room: Part 1 `7551785-file-2041223862239218930.mp4`, Part 2 `...-140816
 - **Daily comments:** scheduled task "Dustlight daily comments" (trig_017inMtZq6y2ChGEFBKLLo6A), every day 20:34 Riga. `/yt-comments` auto-replies to normal YouTube comments through Windsor.ai (trial plan), holds spam, asks the owner about anything sensitive. Log: `channel/comment-log.md`.
 - **Tools:** Metricool publishes (YouTube, Instagram, TikTok, best times). vidIQ (free plan, 150 credits a month, 5 per research or analytics call) is connected to Dustlight YouTube, Instagram @dustlightstories and TikTok @dustlight00: trends, outliers, keywords, own-channel analytics, Instagram insights, reading Instagram and TikTok comments. Never publish from vidIQ. Windsor.ai handles comments and per-video YouTube analytics (Instagram can be added in Windsor; TikTok has no comment actions there).
 - **Uploads:** `pipeline/publish_github.py` through the public repo Dustlight-Files. No tokens.
+- **New tools (23 Nov):** `pipeline/carousel.py` (carousel slides); `qc.py` pacing checks (cuts per minute, longest shot, motion in the first 3 s, words per minute). Higgsfield Virality Predictor needs a paid plan, so it was skipped; free hook scores are in `channel/hook-scores.md`.
 
 - **Render speed:** about 10 to 20 s per frame on 4 CPU cores with no GPU (about 5 h per story). Owner plans to rent cloud GPU time once the channel earns (10 to 30 times faster). Free option offered but not applied yet: 6 fps for calm shots, ES 8, cheaper shadows (about half the time).
 
