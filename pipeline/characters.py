@@ -145,8 +145,7 @@ def bean(loc, col, rot=0.0, h=1.0, name="bean", style="kid", mouth="smile", glas
     r = {"kid": 0.21, "adult": 0.23, "gran": 0.24}.get(style, 0.22)
     tall = {"kid": 0.78, "adult": 0.95, "gran": 0.88}.get(style, 0.85)
     feet_h = 0.06
-    body = [cyl((0, 0, feet_h + tall / 2), r, tall - 2 * r, bm, verts=40),
-            sphere((0, 0, feet_h + r), r, bm), sphere((0, 0, feet_h + tall - r), r, bm)]
+    body = [capsule((0, 0, feet_h + tall / 2), r, tall - 2 * r, bm)]
     head = empty("head_" + name, (0, 0, feet_h + tall * 0.55))
     ez = feet_h + tall - r * 1.05; ey = -r * 0.93
     H = []

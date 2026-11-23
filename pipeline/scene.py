@@ -54,12 +54,53 @@ def lowpoly_pass(ratio=0.18, min_size=0.06):
         d = o.modifiers.new("lp", "DECIMATE"); d.decimate_type = "COLLAPSE"; d.ratio = ratio; d.use_collapse_triangulate = True
 
 
+def toon_pass(line_px=None):
+    """Cartoon look: every lit material becomes flat colour in two tones (a hard light/shadow step), plus dark outlines
+    (Freestyle) around silhouettes and creases. Emissive and see-through materials are left as they are."""
+    sc = bpy.context.scene
+    if sc.get("toon_done"): return
+    sc["toon_done"] = 1
+    for m in bpy.data.materials:
+        if not m.use_nodes or "Principled BSDF" not in m.node_tree.nodes: continue
+        nt = m.node_tree; b = nt.nodes["Principled BSDF"]
+        if b.inputs["Emission Strength"].default_value > 0 or b.inputs["Alpha"].default_value < 1: continue
+        col_in = b.inputs["Base Color"]
+        dif = nt.nodes.new("ShaderNodeBsdfDiffuse"); s2r = nt.nodes.new("ShaderNodeShaderToRGB")
+        ramp = nt.nodes.new("ShaderNodeValToRGB"); ramp.color_ramp.interpolation = "CONSTANT"
+        e = ramp.color_ramp.elements; e[0].color = (0.62, 0.6, 0.7, 1); e[1].position = 0.12; e[1].color = (1, 1, 1, 1)
+        mul = nt.nodes.new("ShaderNodeMix"); mul.data_type = "RGBA"; mul.blend_type = "MULTIPLY"; mul.inputs["Factor"].default_value = 1
+        emit = nt.nodes.new("ShaderNodeEmission")
+        nt.links.new(dif.outputs[0], s2r.inputs[0]); nt.links.new(s2r.outputs["Color"], ramp.inputs["Fac"])
+        src = col_in.links[0].from_node if col_in.is_linked else None
+        if src is not None and src.type == "MIX": mul.inputs[6].default_value = src.inputs[6].default_value   # flat colour, no mottling
+        elif src is not None: nt.links.new(col_in.links[0].from_socket, mul.inputs[6])   # a real texture (e.g. a picture): keep it
+        else: mul.inputs[6].default_value = col_in.default_value
+        nt.links.new(ramp.outputs["Color"], mul.inputs[7]); nt.links.new(mul.outputs[2], emit.inputs["Color"])
+        out = next(n for n in nt.nodes if n.type == "OUTPUT_MATERIAL"); nt.links.new(emit.outputs[0], out.inputs["Surface"])
+    sc.render.use_freestyle = True; sc.render.line_thickness_mode = "ABSOLUTE"
+    sc.render.line_thickness = line_px or max(1.5, 4.0 * sc.render.resolution_percentage / 100)
+    ls = sc.view_layers[0].freestyle_settings.linesets
+    lset = ls[0] if len(ls) else ls.new("toon")
+    if lset.linestyle is None: lset.linestyle = bpy.data.linestyles.new("toon")
+    lset.linestyle.color = (0.08, 0.06, 0.07)
+    lset.linestyle.use_length_min = True; lset.linestyle.length_min = 40 * sc.render.resolution_percentage / 100   # drop seam dashes
+    lset.select_silhouette = False; lset.select_contour = True; lset.select_external_contour = True   # each object's outer edge only
+    lset.select_border = False; lset.select_crease = False
+    small = bpy.data.collections.new("toon_noline")                          # snowflakes, eyes, smile dots, glasses: no outline
+    sc.collection.children.link(small)
+    for o in bpy.data.objects:
+        if o.type == "MESH" and (max(o.dimensions) < 0.05 or min(o.dimensions) < 0.002): small.objects.link(o)   # tiny or paper-flat
+    lset.select_by_collection = True; lset.collection = small; lset.collection_negation = "EXCLUSIVE"
+    sc.view_settings.view_transform = "Standard"; sc.view_settings.look = "None"; sc.view_settings.exposure = 0
+
+
 LOOK = os.environ.get("LOOK", "")
 
 
 def render(path):
     if STYLE == "lowpoly": lowpoly_pass()
     if LOOK and not bpy.context.scene.get("look_done"): apply_look(LOOK); bpy.context.scene["look_done"] = 1
+    if STYLE == "toon": toon_pass()
     bpy.context.view_layer.update()
     bpy.context.scene.render.filepath = path
     bpy.ops.render.render(write_still=True)
@@ -145,6 +186,16 @@ def cube(loc, size, m, rot=(0, 0, 0), bevel=0.0, name="cube"):
 def sphere(loc, r, m, scale=(1, 1, 1), rot=(0, 0, 0), name="sph", seg=32):
     bpy.ops.mesh.primitive_uv_sphere_add(location=loc, radius=r, rotation=rot, segments=seg, ring_count=seg // 2)
     o = bpy.context.object; o.name = name; o.scale = scale
+    return _finish(o, m)
+
+
+def capsule(loc, r, length, m, name="capsule", seg=40):
+    """One closed mesh: a sphere whose top and bottom halves are pushed apart by length (no seams for toon outlines)."""
+    bpy.ops.mesh.primitive_uv_sphere_add(location=loc, radius=r, segments=seg, ring_count=seg // 2 + 1)   # odd rings: an equator row
+    o = bpy.context.object; o.name = name
+    for v in o.data.vertices:
+        if abs(v.co.z) < 1e-6: v.co.z = 0
+        v.co.z += length / 2 if v.co.z > 0 else -length / 2 if v.co.z < 0 else 0
     return _finish(o, m)
 
 
