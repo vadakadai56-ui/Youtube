@@ -430,8 +430,10 @@ def _pose_action(arm, name):
     return act
 
 
-def pose(d, name):
-    """Add a held pose layer ("sit", "stoop") to a person; it combines with whatever clip play() gives them."""
+def pose(d, name, seat=0.32):
+    """Add a held pose layer ("sit", "stoop") to a person; it combines with whatever clip play() gives them.
+    sit: seat is the seat height (chair() is 0.32); smaller people are lifted so they sit on it, not in it."""
+    if name == "sit": d["root"].location.z = d["base"].z = seat - 0.58 * d["root"].scale.z   # 0.58: the sit pose's seat in model metres
     d.setdefault("layers", [])
     if name not in d["layers"]: d["layers"].append(name)
     play(d, d.get("clip", "Idle"), d.get("speed", 1.0), d.get("offset", 0.0))

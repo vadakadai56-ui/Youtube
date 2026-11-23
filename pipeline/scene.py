@@ -67,7 +67,7 @@ def toon_pass(line_px=None):
         col_in = b.inputs["Base Color"]
         dif = nt.nodes.new("ShaderNodeBsdfDiffuse"); s2r = nt.nodes.new("ShaderNodeShaderToRGB")
         ramp = nt.nodes.new("ShaderNodeValToRGB"); ramp.color_ramp.interpolation = "CONSTANT"
-        e = ramp.color_ramp.elements; e[0].color = (0.62, 0.6, 0.7, 1); e[1].position = 0.12; e[1].color = (1, 1, 1, 1)
+        e = ramp.color_ramp.elements; e[0].color = (0.62, 0.6, 0.7, 1); e[1].position = float(os.environ.get("TOON_STEP", "0.12")); e[1].color = (1, 1, 1, 1)   # lower for dim rooms
         mul = nt.nodes.new("ShaderNodeMix"); mul.data_type = "RGBA"; mul.blend_type = "MULTIPLY"; mul.inputs["Factor"].default_value = 1
         emit = nt.nodes.new("ShaderNodeEmission")
         nt.links.new(dif.outputs[0], s2r.inputs[0]); nt.links.new(s2r.outputs["Color"], ramp.inputs["Fac"])
@@ -100,6 +100,7 @@ def toon_pass(line_px=None):
         o.data.materials.append(ink)
         thick = 0.005 if "Head" in o.name or "Formad" in o.name else 0.012     # thin on heads: hair strands would stripe
         sol = o.modifiers.new("toon_hull", "SOLIDIFY"); sol.thickness = thick / max(o.matrix_world.to_scale())
+        sol.offset = 1.0                                       # grow outward: inward (the default) speckles through the body
         sol.use_flip_normals = True; sol.material_offset = len(o.data.materials) - 1; sol.use_rim = False
     sc.view_settings.view_transform = "Standard"; sc.view_settings.look = "None"; sc.view_settings.exposure = 0
 
