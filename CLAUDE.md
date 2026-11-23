@@ -5,6 +5,10 @@ Dustlight has **no fixed world, look, character or story type**. Not a toy world
 Those were only the first videos. Every video picks the story type, setting, style and character model that fit it best
 (`channel/formats.md`). Never describe the channel as one style, and never default back to the first videos' look.
 
+**Characters (owner, 23 Nov 2026):** every video uses human-like people, not dolls. Use the ready-made CC0 Quaternius
+people (`characters.person()`, see `pipeline/characters.py`) for 3D, or human-proportioned drawings in 2D. Each video
+still picks its own look, setting, outfits and story. Stories rendered or scheduled before this date keep their figures.
+
 Read `README.md` (pipeline, rules) and `STATUS.md` (what is live and scheduled) before channel work.
 
 ## Every session
