@@ -93,7 +93,8 @@ class Sound:
     def sample(self, cat, at, dur=None, g=0.3, pick=0, fade=0.4, offset=0.0):
         """A real recording from the sound library: the pick-th file in LIB/cat, trimmed to dur seconds, faded in and out."""
         lib = os.path.expanduser(os.environ.get("SFX_LIB", "~/dustlight-sfx")); d = os.path.join(lib, cat)
-        fs = sorted(f for f in os.listdir(d) if not f.startswith(".")) if os.path.isdir(d) else []
+        if os.path.isfile(cat): d, fs = os.path.dirname(cat), [os.path.basename(cat)]      # a file path (e.g. the edit kit)
+        else: fs = sorted(f for f in os.listdir(d) if not f.startswith(".")) if os.path.isdir(d) else []
         if not fs: print(f"! no sound in {d}, skipped"); return
         raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", str(offset), "-i", os.path.join(d, fs[pick % len(fs)])] + (["-t", str(dur)] if dur else []) +
                              ["-ac", "1", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout

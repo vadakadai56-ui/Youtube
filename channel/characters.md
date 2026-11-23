@@ -29,3 +29,5 @@ How to name them:
 | Mrs Kowalski | the widow whose window gets the snowman | The Snowman | 1 Dec 2026 |
 | Danny | the bin man who builds it | The Snowman | 1 Dec 2026 |
 | Oscar | the narrator's brother with the camera | The Snowman | 1 Dec 2026 |
+| Maya | Stan's granddaughter, the narrator | Remember November (meme) | 30 Nov 2026 |
+| Ava | the narrator who stays up at 4 a.m. | The Snowman | 1 Dec 2026 |

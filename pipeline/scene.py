@@ -116,6 +116,7 @@ def render(path):
     if STYLE == "lowpoly": lowpoly_pass()
     if LOOK and not bpy.context.scene.get("look_done"): apply_look(LOOK); bpy.context.scene["look_done"] = 1
     if STYLE == "toon": toon_pass()
+    if "exposure" in bpy.context.scene: bpy.context.scene.view_settings.exposure = bpy.context.scene["exposure"]   # a shot's own (e.g. night)
     bpy.context.view_layer.update()
     bpy.context.scene.render.filepath = path
     bpy.ops.render.render(write_still=True)
