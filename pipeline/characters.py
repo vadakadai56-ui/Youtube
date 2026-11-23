@@ -339,3 +339,45 @@ def animate_all(t):
         g = math.sin((t + seed) * 0.6) ; look = (1 if g > 0.55 else -1 if g < -0.55 else 0)
         for o, base, w in h["pupils"]:
             o.location = base + Vector((0.22 * w * look, 0, 0))
+    _weight(t)
+
+
+# ---------------------------------------------------------------- weight: lean into moves, head trails a beat behind
+def _add(obj, axis, key, off):
+    """Add off to obj.rotation_euler[axis] on top of whatever the shot set this frame (never accumulates)."""
+    st = _LIFE.setdefault("applied", {}); k = (obj.name, axis, key); cur = obj.rotation_euler[axis]
+    last_val, last_off = st.get(k, (None, 0.0))
+    base = cur - last_off if last_val is not None and abs(cur - last_val) < 1e-6 else cur   # the shot rewrote it: new base
+    obj.rotation_euler[axis] = base + off; st[k] = (base + off, off)
+
+
+def _weight(t):
+    """Each character root: smoothed world velocity -> body lean toward the move; head lag = fast minus slow velocity,
+    so the head tips back when a move starts and nods forward when it stops."""
+    W = _LIFE.setdefault("w", {})
+    for name in _LIFE["heads"]:
+        head = bpy.data.objects.get(name)
+        if head is None or head.parent is None: continue
+        root = head.parent                                   # every character model parents its head straight to its root
+        pos = root.location.copy()                           # in the parent's space: riding in a moving car is not a lean
+        s = W.get(root.name)
+        dt = t - s["t"] if s else 0.0
+        if not s or dt <= 0 or dt > 0.5:                      # first frame, a resumed render or a jump in time: start at rest
+            s = W[root.name] = {"t": t, "p": pos, "f": Vector((0, 0, 0)), "s": Vector((0, 0, 0))}; continue
+        v = (pos - s["p"]) / dt
+        if v.length > 5: v = Vector((0, 0, 0))                 # the shot teleported the character: no lean for that
+        s["f"] += (v - s["f"]) * min(1.0, dt / 0.12); s["s"] += (v - s["s"]) * min(1.0, dt / 0.35)
+        s["t"], s["p"] = t, pos
+        rz = root.rotation_euler[2]; c, sn = math.cos(-rz), math.sin(-rz)
+        loc_v = lambda w: (w.x * c - w.y * sn, w.x * sn + w.y * c)     # world velocity -> the root's own x, y
+        fx, fy = loc_v(s["f"]); lx, ly = loc_v(s["f"] - s["s"])
+        clamp = lambda a, m: max(-m, min(m, a))
+        _add(root, 0, "lean", clamp(-0.18 * fy, 0.12)); _add(root, 1, "lean", clamp(0.18 * fx, 0.12))
+        _add(head, 0, "lag", clamp(0.5 * ly, 0.15)); _add(head, 1, "lag", clamp(-0.5 * lx, 0.15))
+
+
+def _selfcheck():
+    """Assert-based check of the math pieces that need no Blender scene."""
+    a = Vector((0, -1.0, 0)); c, sn = math.cos(0), math.sin(0)
+    assert (a.x * c - a.y * sn, a.x * sn + a.y * c) == (0.0, -1.0)
+    assert max(-0.12, min(0.12, -0.18 * -1.0)) == 0.12          # moving toward -y leans the top toward -y (positive x rotation)
