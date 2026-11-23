@@ -50,6 +50,7 @@ def lowpoly_pass(ratio=0.18, min_size=0.06):
         if o.type != "MESH" or "lowpoly" in o: continue
         o["lowpoly"] = 1
         if max(o.dimensions) < min_size or len(o.data.polygons) < 40: continue
+        if o.find_armature(): continue                       # rigged people are already low-poly: decimating shreds faces and hair
         for p in o.data.polygons: p.use_smooth = False
         d = o.modifiers.new("lp", "DECIMATE"); d.decimate_type = "COLLAPSE"; d.ratio = ratio; d.use_collapse_triangulate = True
 

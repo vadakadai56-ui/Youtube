@@ -13,7 +13,7 @@ Models
 Add new models here (bean, clay, paper...) the first time a video needs one, and list them in channel/formats.md.
 """
 import math, os
-from mathutils import Quaternion
+from mathutils import Euler, Quaternion
 from scene import *          # noqa
 
 SKINS = {"light": (0.98, 0.82, 0.66), "tan": (0.85, 0.62, 0.45), "brown": (0.55, 0.36, 0.24), "dark": (0.33, 0.21, 0.14)}
@@ -409,6 +409,7 @@ POSES = {   # one-frame offsets layered on top of any clip: a number bends the b
     "stoop": (("Abdomen", 0.22), ("Chest", 0.16), ("Neck", 0.2)),
     # sit: the legs are IK (feet and knee targets drive them), so move the hips down and back and the feet forward;
     # offsets are metres in the 1.8 m model's own space (x right, y back, z up), sized for chair() at h=0.55
+    "phone": (("UpperArm.R", [-1.6, 0, -1.0]), ("LowerArm.R", -2.4)),   # right hand at the ear (phone at Wrist.R); film kids from their right
     "sit": (("Body", (0, 0.12, -0.38)), ("Foot.L", (0, -0.32, 0)), ("Foot.R", (0, -0.32, 0)),
             ("PT.L", (0, -0.6, 0.1)), ("PT.R", (0, -0.6, 0.1))),
 }
@@ -423,6 +424,9 @@ def _pose_action(arm, name):
         pb = arm.pose.bones[bone]
         if isinstance(v, tuple):                               # a move in model space, turned into the bone's own axes
             pb.location = pb.bone.matrix_local.to_3x3().inverted() @ Vector(v); pb.keyframe_insert("location", frame=0)
+        elif isinstance(v, list):                              # a turn [x, y, z] (radians, the bone's own axes)
+            pb.rotation_mode = "QUATERNION"; pb.rotation_quaternion = Euler(v).to_quaternion()
+            pb.keyframe_insert("rotation_quaternion", frame=0)
         else:                                                  # a bend (radians) about the bone's own x axis
             pb.rotation_mode = "QUATERNION"; pb.rotation_quaternion = Quaternion((1, 0, 0), v)
             pb.keyframe_insert("rotation_quaternion", frame=0)
