@@ -4,8 +4,11 @@ usage:  python3 pipeline/qc.py VIDEO.mp4 [--json]
 Checks: vertical 9:16, resolution, frame rate, length (Shorts limit 180 s, Dustlight target 55-75 s),
 audio present, loudness (-14 LUFS +/- 1, true peak <= -1 dBTP), silence or black at the very start
 (the first 3 s are the hook), and file size. Exit code 1 if any check FAILs (WARNs do not fail).
+Pacing (WARN only): cuts per minute and the longest shot, picture motion in the first 3 s, and speaking speed
+(words per minute, from stories/<slug>/narration.txt when it exists). These are plain measurements, no prediction model.
 """
-import json, re, subprocess, sys
+import json, os, re, subprocess, sys
+import numpy as np
 
 
 def run(cmd):
@@ -39,6 +42,45 @@ def start_gaps(path):
     return sil, blk
 
 
+def story_dir(path):
+    slug = re.sub(r"-v\d+$", "", os.path.splitext(os.path.basename(path))[0])
+    d = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "stories", slug)
+    return d if os.path.isdir(d) else None
+
+
+def cuts(path, dur):
+    """Cut times and the longest shot. Uses the story's own CUTS (edit_config.py) when it exists, because picture-based
+    detection misses soft crossfades between near-identical shots; otherwise falls back to the ffmpeg scene score."""
+    d = story_dir(path)
+    if d and os.path.exists(os.path.join(d, "edit_config.py")):
+        import runpy
+        C = runpy.run_path(os.path.join(d, "edit_config.py"))
+        ts = [t for t, n in C["CUTS"] if 0 < t < dur and n != "END"]
+        edges = [0.0] + ts + [dur]
+        return ts, max(b - a for a, b in zip(edges, edges[1:]))
+    err = run(["ffmpeg", "-hide_banner", "-nostats", "-i", path, "-an", "-vf",
+               "scale=270:480,select='gt(scene,0.22)',showinfo", "-f", "null", "-"]).stderr
+    ts = [float(t) for t in re.findall(r"pts_time:([\d.]+)", err)]
+    ts = [t for i, t in enumerate(ts) if not i or t - ts[i - 1] > 0.4]        # one crossfade = one cut
+    edges = [0.0] + ts + [dur]
+    return ts, max(b - a for a, b in zip(edges, edges[1:]))
+
+
+def hook_motion(path, secs=3.0):
+    """Mean frame-to-frame change (0-255 grey) over the first secs, at 12 fps, 135x240."""
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-t", str(secs), "-i", path, "-vf", "fps=12,scale=135:240,format=gray",
+                          "-f", "rawvideo", "-"], capture_output=True).stdout
+    f = np.frombuffer(raw, np.uint8).reshape(-1, 240, 135).astype(np.float32)
+    return float(np.abs(np.diff(f, axis=0)).mean()) if len(f) > 1 else 0.0
+
+
+def wpm(path, dur):
+    d = story_dir(path); txt = d and os.path.join(d, "narration.txt")
+    if not txt or not os.path.exists(txt): return None
+    words = re.sub(r"\[[^\]]*\]", " ", open(txt).read()).split()
+    return len(words) / (dur / 60)
+
+
 def check(path):
     p = probe(path)
     v = next((s for s in p["streams"] if s["codec_type"] == "video"), None)
@@ -69,6 +111,13 @@ def check(path):
         sil, blk = start_gaps(path)
         add("PASS" if sil < 0.5 else "WARN", "hook audio", f"{sil:.2f} s of silence at the start" if sil else "sound from frame 1")
         add("PASS" if blk < 0.3 else "WARN", "hook picture", f"{blk:.2f} s of black at the start" if blk else "picture from frame 1")
+    ts, longest = cuts(path, dur); cpm = len(ts) / (dur / 60)
+    add("PASS" if cpm >= 6 else "WARN", "cut pace", f"{len(ts)} cuts, {cpm:.1f} per minute (want 6+)")
+    add("PASS" if longest <= 8 else "WARN", "longest shot", f"{longest:.1f} s (want 8 s or less)")
+    m = hook_motion(path)
+    add("PASS" if m >= 1.5 else "WARN", "hook motion", f"{m:.1f} frame change in 0-3 s (want 1.5+, a still opening loses swipers)")
+    r = wpm(path, dur)
+    if r: add("PASS" if 130 <= r <= 190 else "WARN", "speech pace", f"{r:.0f} words per minute (want 130-190)")
     return res
 
 
