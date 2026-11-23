@@ -90,6 +90,20 @@ When two skills do the same job, keep the one named here. Skills that do differe
 | Understanding how something works | `anthropic-skills:learn` | |
 | Making or improving a skill | `anthropic-skills:skill-creator` | |
 | Short replies | `anthropic-skills:caveman` (when the owner asks) | |
+| Instagram caption for a Reel or carousel | `ig-caption` | `yt-title` (that is YouTube) |
+| Instagram carousel copy and slides | `ig-carousel` for the copy, then `pipeline/carousel.py` for the 1080x1350 files | |
+| Instagram profile, bio, highlights | `ig-profile` | |
+| Instagram Stories sequence, stickers | `ig-story` | |
+| Instagram comments on our posts | `ig-reply` (drafts) | `yt-comments` (YouTube auto-replies) |
+| Commenting on other accounts, DMs | `ig-comment`, `ig-dm` (drafts only, the owner sends) | |
+| What worked on Instagram | `ig-audit` | `yt-analytics` (YouTube) |
+| Viral Reels in our niche | `ig-viral` | `yt-trends` (Shorts and every kind of trend) |
+| Instagram-only week plan | `ig-plan` | `yt-plan` (the whole channel calendar, all platforms) |
+| A long video cut into Reels | `ig-repurpose` | |
+| Making text sound human before it goes out | `ig-human` | |
+| Posts for LinkedIn, X, Facebook, Threads | `social` | |
+| Writing or changing code in this repo | `ponytail` (on all session), then `ponytail-review` | |
+| Auditing the whole repo, deferred shortcuts | `ponytail-audit`, `ponytail-debt` | |
 
 Sound skills, in one line: `earshot` makes or listens to single sounds, `real-sfx` places effects on a video's
 moments, `real-sound` runs the whole soundtrack workflow (and calls earshot for listening).

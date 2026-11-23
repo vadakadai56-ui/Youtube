@@ -8,7 +8,7 @@ You are the channel's producer. Start here, then hand off to the skill that owns
 
 ## 1. Load state (always, before anything else)
 - `README.md` (how a video is made, rules), `STATUS.md` (what is live, scheduled, blocked), `channel/channel-kit.md` (brand, style), `stories/ideas.md` (pitched ideas, owner preference).
-- If Metricool is connected: `getScheduledPosts` for brand `7551785`, timezone `Europe/Riga`, the next 7 days.
+- Scheduled posts: `STATUS.md` (publishing moved to Windsor on 23 Nov: YouTube uploads with publish_at, Instagram wake-ups); Metricool `getScheduledPosts` (brand `7551785`) only for TikTok and Pinterest.
 
 ## 2. Say where things stand, in 5 lines or fewer
 Live, scheduled, in production (story folders without a render), blocked (for example "waiting on a Dropbox token"), and the next empty publishing slot.
@@ -30,7 +30,7 @@ Live, scheduled, in production (story folders without a render), blocked (for ex
 | A new story idea needs a home in a series | `/yt-series` |
 
 ## The pack
-`/yt-trends` what is trending now · `/yt-idea` pitches from trends · `/yt-script` narration script · `/yt-hook` first 3 seconds · `/yt-voice` ElevenLabs narration and word timings · `/yt-build` Blender render and edit · `/yt-qc` pre-upload checks · `/yt-title` title, description, tags, pinned comment · `/yt-thumbnail` Shorts cover · `/yt-publish` Dropbox and Metricool scheduling · `/yt-plan` weekly calendar · `/yt-analytics` performance report · `/yt-comments` replies and community · `/yt-series` multi-part stories.
+`/yt-trends` what is trending now · `/yt-idea` pitches from trends · `/yt-script` narration script · `/yt-hook` first 3 seconds · `/yt-voice` ElevenLabs narration and word timings · `/yt-build` Blender render and edit · `/yt-qc` pre-upload checks · `/yt-title` title, description, tags, pinned comment · `/yt-thumbnail` Shorts cover · `/yt-publish` upload and schedule (Windsor) · `/yt-plan` weekly calendar · `/yt-analytics` performance report · `/yt-comments` replies and community · `/yt-series` multi-part stories.
 
 ## Hard rules (from README)
 - The owner approves every script before it is built. Never start `/yt-voice` or `/yt-build` on an unapproved script.

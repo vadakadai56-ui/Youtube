@@ -19,5 +19,5 @@ python3 pipeline/cover.py make out/<slug>.mp4 <seconds> out/<slug>-cover.jpg "Ev
 Text: 2 short lines max, last line in yellow, kept in the top third so the Shorts UI never covers it. Make 2 or 3 variants and show them to the owner.
 
 ## 3. Hand off
-- Upload the chosen jpg with `python3 pipeline/publish.py out/<slug>-cover.jpg /Youtube/covers/<slug>.jpg` and pass the link as `videoThumbnailUrl`, **or** pass `videoCoverMilliseconds` (printed by `cover.py make`) to use the plain frame.
-- Metricool rejects the whole post if the thumbnail does not apply (YouTube only shows custom Shorts covers on verified channels where YouTube has enabled it). If unsure, use `videoCoverMilliseconds` or leave both out.
+- Instagram: pass the frame as `thumb_offset` (milliseconds, printed by `cover.py make`) in Windsor `create_video_post`, or a custom jpg as `cover_url` (host it with `pipeline/publish_github.py`).
+- YouTube: custom Shorts covers only show on verified channels where YouTube has enabled them; Windsor's upload has no cover field, so leave it.

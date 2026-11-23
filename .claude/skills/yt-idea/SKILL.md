@@ -13,7 +13,7 @@ description: Pitch new video ideas built on what is trending right now. Use when
 - **A live trend** from `channel/trends.md`: name it, its evidence date and how many days it has left. The video must be live before the trend fades.
 - **The trend's own shape.** Use the format and emotion that is getting views now (funny, shocking, satisfying, mystery, wholesome, scary), not a fixed house mood.
 - **A one-line hook** that works as the first spoken sentence and as the title: concrete, a number or a time if possible, a question the viewer must have answered. "Every evening at six, a man pushes an empty swing."
-- **Buildable** with the toolkit: `pipeline/scene.py` and `pipeline/world.py` have peg-doll characters, kitchens, streets, care homes, a toy room, snow, steam. Say which new sets or props an idea needs.
+- **Buildable** with the toolkit: human-like people (`characters.person()`: 11 ready-made CC0 people, as adults, kids or grandparents, with walk, run, wave, sit and more; owner's rule), every important character named (`channel/characters.md`), sets in `pipeline/world.py` (kitchens, dining room, streets, care homes, snow), 2D scrapbook or card videos in `remotion/`. Pitch meme stories too (one a week, `channel/formats.md`). Say which new sets or props an idea needs.
 - 55 to 75 s narrated, or 2 to 4 parts for a series (hand off to `/yt-series`).
 - Original. Never a retelling of a known film, book, viral video or another channel's story.
 

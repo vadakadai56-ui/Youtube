@@ -1,34 +1,37 @@
 ---
 name: yt-publish
-description: Upload a finished, checked video to Dropbox and schedule it on YouTube through Metricool. Use when a video has passed /yt-qc and has a title. Confirms the slot with the owner before scheduling.
+description: Upload a finished, checked video and schedule it on YouTube and Instagram (through Windsor.ai), plus TikTok where possible. Use when a video has passed /yt-qc and has a title. Confirms the slot with the owner before scheduling.
 ---
 # /yt-publish: upload and schedule
 
 ## Preconditions
-`/yt-qc` passed, `/yt-title` approved. Check `getScheduledPosts` so you do not double-book a slot.
+`/yt-qc` passed, `/yt-title` approved. Check `STATUS.md` (and Windsor's scheduled list) so you do not double-book a slot.
 
-## 1. Dropbox
+## 1. Host the file
 ```bash
-python3 pipeline/publish.py out/<slug>.mp4 /Youtube/<slug>.mp4
+python3 pipeline/publish_github.py out/<slug>.mp4 <slug>.mp4
 ```
-Prints a public `dl=1` link. The Dropbox token is a short-lived network secret injected by the proxy; if the upload fails with 401, tell the owner the token expired and needs renewing in the environment's network secrets. Never ask for it in chat.
+It compresses anything over 95 MB and prints a public raw.githubusercontent.com URL. Attach `vadakadai56-ui/Dustlight-Files`
+(push) and clone it to `/home/user/dustlight-files` first if it is missing.
 
 ## 2. Slot
-Default: the next free day at 16:00 Europe/Riga (series parts 2 h apart). If the owner wants data, `getBestTimeToPostByNetwork` for youtube over the coming week. **Confirm the date and time with the owner.**
+Default slots (Europe/Riga): YouTube 10:00 or 16:00, Instagram Reel 12:00 or 18:00, an Instagram Story 90 min after a Reel
+when the video is 60 s or shorter. **Confirm the date and time with the owner.**
 
-## 3. Schedule (Metricool `createScheduledPost`)
-- `blogId` `7551785`, `date` with the Riga offset, `publicationDate` `{dateTime, timezone: "Europe/Riga"}`
-- `providers` `[{"network":"youtube"}]`, `media` `[<dropbox link>]`, `text` = the description
-- `youtubeData`: `title`, `type` "short", `privacy` "public", `category` "FILM_ANIMATION", `madeForKids` false, `tags`, `isAiGeneratedContent` as decided in `/yt-qc`
-- `firstCommentText`: the pinned question
-- Cover: `videoCoverMilliseconds` or `videoThumbnailUrl` from `/yt-thumbnail`, only if it applies
-- `autoPublish` true, `draft` false
+## 3. Schedule (owner, 23 Nov 2026: everything through Windsor; Metricool's free plan is over its limit)
+- **YouTube:** Windsor `execute_action` youtube `upload_video`, account `112783`: `video_url`, `title`, `description`
+  (the caption plus the pinned question), `tags`, `category_id` (1 Film & Animation, 23 Comedy, 27 Education),
+  `made_for_kids` false, `privacy_status` "private" and `publish_at` (ISO with the Riga offset), so YouTube publishes it on
+  time. Upload **one at a time**: parallel uploads get rate-limited. If it is still rate-limited, retry later; never claim it is scheduled.
+- **Instagram:** Windsor instagram account `17841466758506102` has no scheduling, so set a one-shot wake-up at the slot
+  (`send_later` with `at` "YYYY-MM-DDTHH:MM:00[Europe/Riga]") whose message holds the exact `create_video_post`
+  (`video_url`, caption, `thumb_offset` for the cover, `share_to_feed` true; `trial_params` for a Trial Reel),
+  `create_story` or `create_carousel_post` call, then `create_comment` with the pinned question.
+- **TikTok and Pinterest:** Windsor cannot post to them. Use Metricool only if it is back under its limit; otherwise tell
+  the owner and send the file and caption so they can post from the app.
+- AI labels: Instagram and TikTok need the AI-generated declaration where the tool has one.
 
 ## 4. Record
-Add the row to `STATUS.md` (time, title, Dropbox path, Metricool post id, planner URL), commit, and push.
+Add the rows to `STATUS.md` (time, platform, title, file URL, the upload or wake-up id), commit and push.
 
 Never edit or delete an already scheduled or live post without the owner asking.
-
-
-## Upload route (from 22 Nov 2026)
-Use `python3 pipeline/publish_github.py out/<slug>.mp4 <slug>.mp4` and give Metricool the printed raw.githubusercontent.com URL. Attach `vadakadai56-ui/Dustlight-Files` (push) and clone it to `/home/user/dustlight-files` first if it is missing. Dropbox (`publish.py`) is the fallback only.

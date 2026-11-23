@@ -25,7 +25,8 @@ python3 pipeline/edit.py stories/<slug> /tmp/frames narration.mp3 out/<slug>.mp4
 `CUTS` from `durations.json`, `KEY` words in yellow (from `/yt-script`), `XFADE` for the turn and payoff, `END_LINES` for the end card (a quiet closing line, then "D U S T L I G H T"), and `sound(S)`: music that matches the trend's mood (for example tense pulses for a mystery, bouncy plucks for comedy, minor-to-major for an emotional story), a hit at the turn, and story-specific effects. All synthesized, never copyrighted tracks.
 
 ## Style (channel kit)
-Characters: use the model named in the story's style recipe (`pipeline/characters.py` or `world.peg`); no default model. If the model is new, build it in `characters.py` and render a test still first.
+Characters: human-like people in every video (owner, 23 Nov 2026): `person(name, loc, rot, action, age="adult"|"kid"|"old")` from `pipeline/characters.py`, `play()` to change a clip, `pose(d, "sit")` to seat them, `say()` for talking mouths. Older stories keep their figures. Render a test still before any full render.
+Renderer: Blender for stories with action; Remotion 2D (`remotion/`, `split.py`, then `edit.py`) for lists, timelines and fact Shorts. Look: `STYLE=toon` for flat colour; `TOON_LINES=0` drops the outlines (warm stories), keep them for comedy and memes; `TOON_STEP=0.03` in dim rooms. Calm shots go in the story's `CALM` set (6 fps).
 Look: set by the story's style recipe (no fixed world; owner's rule, 22 Nov 2026). Captions 1 to 3 words, white with a black outline, keywords #FFD640, around y=1210 to 1240. Cut every 2 to 3 s.
 
 ## Done
