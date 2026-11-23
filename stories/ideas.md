@@ -18,3 +18,10 @@ Also pitched 21 Nov (not chosen yet): **The Doorframe** ("Mum measured my height
 
 ## Drafted 22 Nov 2026 for the week of 30 Nov (NOT approved, parked; owner wants this week finished first)
 december-eve, gift-glimpse, gran-wrapped, same-tree, snow-globe, sing-door, three-am, night-train, unsent-letters, wrapping-reality, jumper-contest, huss-christmas, first-frost, pause-snow (format 7, text only), slow-moment (format 6). Each has stories/<slug>/narration.txt only.
+
+## Pitched 23 Nov 2026 (owner asked for a new trend idea; new rules: human people, names, hook/lock-in/re-hook structure)
+1. **The Snowman Nobody Builds** (recommended): Christmas kickoff, post 1 Dec. Every December 1st a snowman appears outside
+   Mrs Kowalski's window; at 4 a.m. Ava sees Danny the bin man build it: her late husband built one for him when he was a
+   kid with no dad, and made him promise. Cast: Mrs Kowalski (old), Danny (M_Worker), Ava (kid narrator). Snowy street, night, toon.
+2. **The Age You Feel**: "you" + a power. Grumpy Theo (10) feels 80; Grandpa Walt (81) feels 9 when he plays football with you. Post after Memory Timer has cooled.
+3. **2026, by Mum's Camera Roll**: year recap, 2D scrapbook (Remotion). Priya took 4,312 photos, she is in none; Leo and Maya take one of her.
