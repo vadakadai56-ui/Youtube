@@ -7,7 +7,7 @@ usage (with the bpy venv python):
 
 STORY_DIR/shots.py must define SHOTS = {"name": (setup_fn, duration_seconds)}.
 setup_fn(rng) builds the scene and returns update(t) that poses everything at time t (seconds).
-Frames land in OUT_DIR/<shot>/0000.png ... at FPSA frames per second (default 12), or 6 for shots listed in the story's CALM set; edit.py blends them to 30 fps.
+Frames land in OUT_DIR/<shot>/0000.png ... at FPSA frames per second (default 12), or 6 for shots in the story's CALM set and 30 for its FAST set (quick gestures, so edit.py never blends them); edit.py blends them to 30 fps.
 """
 import importlib.util, math, os, random, sys, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -35,7 +35,8 @@ def run(mod, name, out_root, preview=False):
     fpsf = os.path.join(out, "fps.txt")                     # the frames' own rate, read back by edit.py
     if not preview and not os.path.exists(fpsf):
         started = any(f.endswith(".png") for f in os.listdir(out))   # never change the rate of a half-rendered shot
-        open(fpsf, "w").write(str(FPSA if started or name not in getattr(mod, "CALM", ()) else 6))
+        r = 30 if name in getattr(mod, "FAST", ()) else 6 if name in getattr(mod, "CALM", ()) else FPSA   # FAST: quick gestures, no blending
+        open(fpsf, "w").write(str(FPSA if started else r))
     fps = int(open(fpsf).read()) if os.path.exists(fpsf) else FPSA
     n = 1 if preview else int(math.ceil(dur * fps)) + 1
     t0 = time.time()

@@ -1,6 +1,7 @@
 """Number Nine (Trend Short, Christmas kickoff, clay characters): the whole street turns its Christmas lights on at the same
 minute every year, except number nine, where Mr Abel lives alone. This year the kids climb his ladder for him.
-Render (no low-poly for clay): STYLE=none ENGINE=EEVEE PCT=50 ES=12 $VENV/bin/python pipeline/anim.py stories/number-nine OUT all"""
+v2 (24 Nov 2026): the people are the ready-made Quaternius models (owner: human-like people in every video); the old clay
+version is shots_v1_clay.py. Render: STYLE=none ENGINE=EEVEE PCT=50 ES=8 $VENV/bin/python pipeline/anim.py stories/number-nine OUT all"""
 import json, math, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "..", "pipeline"))
@@ -8,7 +9,7 @@ import scene                  # noqa
 scene.STYLE = "clay"          # anything but "lowpoly": clay stays smooth
 from world import *           # noqa
 from world import cam as _cam
-from characters import clay, clay_mat
+from characters import clay_mat, person, play
 import bpy
 scene.LOOK = os.environ.get("LOOK") or "dream"      # per-video grade (scene.LOOKS)
 
@@ -16,9 +17,12 @@ _D = json.load(open(os.path.join(HERE, "durations.json")))
 HOUSES = [-6.0, -3.0, 0.0, 3.0, 6.0]                                   # number nine is the one at x = 0
 COLS = [(0.75, 0.45, 0.4), (0.5, 0.6, 0.75), (0.8, 0.72, 0.55), (0.55, 0.7, 0.55), (0.78, 0.55, 0.65)]
 BULB_COLS = [(1, 0.25, 0.2), (0.25, 1, 0.35), (1, 0.85, 0.25), (0.35, 0.55, 1)]
-KID = dict(col=(0.85, 0.3, 0.25), style="kid", hat=(0.25, 0.5, 0.85), scarf=(0.95, 0.85, 0.3), name="kid")
-SIS = dict(col=(0.4, 0.7, 0.85), style="kid", hair=(0.35, 0.2, 0.1), scarf=(0.9, 0.4, 0.6), name="sis")
-ABEL = dict(col=(0.35, 0.45, 0.6), style="old", glasses=True, name="abel")
+KID, SIS, ABEL = ("M_Casual_Hoodie", "kid"), ("W_Adventurer", "kid"), ("M_Suit", "old")   # the narrator, his sister, Mr Abel
+FAST = {"n5", "n8"}                     # ladder and waving: rendered at 30 fps so the gestures never blur into ghosts
+
+
+def who(c, loc, rot=0.0, action="Idle", offset=0.0):
+    return person(c[0], loc, rot=rot, age=c[1], action=action, offset=offset)
 
 
 def street_of(rng, lit_others=False, lit_nine=False, ladder=True):
@@ -81,23 +85,21 @@ def n3(rng):            # Except number nine.: close on the one dark house betwe
 
 
 def n4(rng):            # Mr Abel lives alone. His ladder's too tall for him now.: at his window, looking at the ladder
-    street_of(rng, lit_others=True); a = clay((-0.35, -0.25, 0), rot=0.2, mouth="flat", **ABEL)
+    street_of(rng, lit_others=True); a = who(ABEL, (-0.35, -0.25, 0), rot=0.2)
     sn = Snow((0, -0.5, 0.2), size=(5, 3, 3), n=160, rng=rng)
     c = _cam((-0.55, -1.7, 0.75), (-0.35, -0.25, 0.6), lens=40, fstop=2.8)
     def upd(t):
-        sn.update(t); breathe(a, t, 0.5); a["head"].rotation_euler[2] = -0.6 * smooth((t - 1.6) / 0.8)   # he looks over at the ladder
+        sn.update(t); a["root"].rotation_euler[2] = 0.2 - 0.7 * smooth((t - 1.6) / 0.9)      # he turns to look at the ladder
         look_at(c, Vector((-0.35, -0.25, 0.6)).lerp(Vector((0.9, 0.1, 1.4)), smooth((t - 1.8) / 1.2)))
     return upd
 
 
 def n5(rng):            # So this year, at 5:59... we climbed it for him.: the kids on the ladder, hanging the bulbs
     m = street_of(rng, lit_others=False); sn = Snow((0, -0.5, 0.2), size=(5, 3, 3), n=160, rng=rng)
-    k = clay((0.9, -0.05, 0.9), rot=math.pi, **KID); s = clay((0.35, -0.5, 0), rot=-0.3, **SIS)
+    k = who(KID, (0.9, -0.05, 0.9), rot=math.pi, action="Interact"); s = who(SIS, (0.35, -0.5, 0), rot=-0.3, action="Wave")
     c = _cam((2.0, -2.4, 1.2), (0.6, 0.2, 1.2), lens=32, fstop=4)
     def upd(t):
-        sn.update(t); k["root"].location.z = 0.9 + 0.12 * smooth(t / 2.0)
-        k["L"].rotation_euler[0] = -2.6 + 0.2 * math.sin(t * 5); k["R"].rotation_euler[0] = -2.4 + 0.2 * math.sin(t * 5 + 1.5)
-        s["R"].rotation_euler[1] = -2.0; breathe(s, t)
+        sn.update(t); k["root"].location.z = 0.9 + 0.12 * smooth(t / 2.0)                    # a rung higher, reaching for the bulbs
     return upd
 
 
@@ -122,11 +124,12 @@ def n7(rng):            # The whole street lit up.: wide, every house blazes on 
 
 def n8(rng):            # Number nine first.: Mr Abel at his open door under his lights, the kids waving
     m = street_of(rng, lit_others=True, lit_nine=True); sn = Snow((0, -0.5, 0.2), size=(5, 3, 3), n=160, rng=rng)
-    a = clay((0.0, 0.0, 0), mouth="smile", **ABEL); k = clay((0.6, -0.9, 0), rot=2.6, **KID); s = clay((-0.6, -0.9, 0), rot=-2.6, **SIS)
+    a = who(ABEL, (0.0, 0.0, 0), action="Wave"); k = who(KID, (0.42, -0.55, 0), rot=2.6, action="Wave", offset=0.3)
+    s = who(SIS, (-0.42, -0.55, 0), rot=-2.6, action="Wave", offset=0.6)
     c = _cam((0.2, -2.6, 0.9), (0, 0.0, 0.75), lens=36, fstop=3.5)
     def upd(t):
-        sn.update(t); a["R"].rotation_euler[1] = -2.3 + 0.3 * math.sin(t * 5)
-        for d in (k, s): d["R"].rotation_euler[1] = -2.4 + 0.3 * math.sin(t * 6); d["root"].location.z = 0.02 * abs(math.sin(t * 7))
+        sn.update(t)
+        for d in (k, s): d["root"].location.z = 0.02 * abs(math.sin(t * 7))                 # the kids bounce
     return upd
 
 
