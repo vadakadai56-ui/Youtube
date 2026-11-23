@@ -11,7 +11,7 @@ for _n, _d in _D.items():
 CUTS.append((round(_t, 2), "END"))
 T_END = round(_t + 3.2, 2)
 XFADE = {}
-STEP = {"o2", "o3", "o4", "o5", "o6", "o8"}   # waves and fist pumps: hold frames, no blending
+_STEP_OFF = {"o2", "o3", "o4", "o5", "o6", "o8"}   # waves and fist pumps: hold frames, no blending
 CAPTION = {"words": 2, "y": 1240, "size": 104}
 KEY = {'"family."', '"football."', '"dishwasher."', '"wi-fi."', '"huss."', "turkey.", "one", "word."}
 END_LINES = [("What's your one word?", 64, 900, (255, 255, 255), True, 0.2),
