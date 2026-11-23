@@ -448,7 +448,8 @@ def play(d, action, speed=1.0, offset=0.0):
     st = ad.nla_tracks.new().strips.new(action, int(-offset * 24 * speed), act)
     st.scale = 1.0 / speed; st.repeat = 200; st.extrapolation = "HOLD"
     d["clip"], d["speed"], d["offset"] = action, speed, offset
-    for name in (["stoop"] if d.get("age") == "old" else []) + d.get("layers", []):   # pose layers above the clip, combined
+    stoop = d.get("age") == "old" and "sit" not in d.get("layers", [])   # seated, a stoop just hides the face
+    for name in (["stoop"] if stoop else []) + d.get("layers", []):   # pose layers above the clip, combined
         s2 = ad.nla_tracks.new().strips.new(name, 0, _pose_action(d["arm"], name)); s2.blend_type = "COMBINE"
         s2.action_frame_start, s2.action_frame_end = 0, 1; s2.repeat = 100000; s2.extrapolation = "HOLD_FORWARD"   # a 1-frame strip, held for the whole shot
 

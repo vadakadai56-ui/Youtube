@@ -22,6 +22,8 @@ SEAT = {"gran": ("HEAD", 0.0), "dad": ("L1", math.pi / 2), "mum": ("R1", -math.p
 def dinner(rng):
     """The Thanksgiving table with the family seated (each on a chair, facing the table). Returns {name: person}."""
     dining_room(rng, outside="snow", card=False, food=True)
+    light("AREA", (0, 0.9, 2.2), 260, col=(1.0, 0.86, 0.7), size=1.8, target=(0, 0.9, 0.6))      # warm lamp over the table:
+    light("AREA", (0, -1.6, 1.4), 90, col=(0.85, 0.9, 1.0), size=2.5, target=(0, 0.6, 0.7))    # the room is candle-dark
     fam = {}
     for i, (nm, (model, age)) in enumerate(CAST.items()):
         seat, rot = SEAT[nm]; x, y = SEATS[seat]
@@ -54,7 +56,7 @@ def close(name, look, clip, lens=46):
     return shot
 
 
-o2 = close("gran", (0.25, 0.75, 1.15), "Wave")                                 # "Family."
+o2 = close("gran", (0.55, 0.95, 0.95), "Wave")                               # to the side, past the candles                                 # "Family."
 o3 = close("dad", (0.25, -0.45, 1.05), "Punch_Right")                         # "Football." (a fist pump)
 o4 = close("mum", (-0.25, -0.45, 1.05), "Interact")                           # "Dishwasher."
 
