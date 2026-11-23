@@ -12,6 +12,8 @@ Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because t
 
 ## Scheduled
 **24 Nov 2026 (owner): Instagram only for now.** All 11 YouTube posts for 23 to 28 Nov are **Paused** in the scheduler (YouTube kept refusing uploads through Windsor). Turn them back on in the scheduler (Status: Scheduled) when wanted; A Normal Night never went up.
+**Remakes with the new people (24 Nov):** shots rewritten and previewed for Number Nine, Once a Day, Memory Timer, First Snow (hill bug fixed: racers were buried) and The Last Door; old versions kept as `shots_v1_*.py`, old videos stay in Dustlight-Files. Renders: `pipeline/render_queue.sh` with EDIT=v2 writes `out/<story>-v2.mp4` + QC. Each needs a preview, then a swap into the scheduler rows (as done for One Word).
+**New videos built (24 Nov):** Remember November (30 Nov, meme, toon kitchen) and The Snowman (1 Dec, toon night street) have shots, durations and edit configs (kit music); render after the remakes.
 
 - **The Second Cup**: 20 Nov 2026 16:00 Riga (Metricool post uuid -1017785154483633580). Source: Dropbox `/Youtube/Video Nov 20 2026, 1 09 42 AM.mp4` (the 52 MB phone copy, 68.6 s).
   - Title: "He makes two cups of tea every morning. Nobody knows why."
