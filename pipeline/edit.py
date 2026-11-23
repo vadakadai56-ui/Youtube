@@ -128,6 +128,7 @@ def main(story_dir, frames_dir, narration, outf):
         return _r[shot]
     def shot_image(shot, local):
         x = local * fps_of(shot); i = int(x); a = x - i; A = frame(shot, i)
+        if shot in getattr(C, "STEP", ()): return A          # held frames ("on twos"): fast gestures ghost when blended
         return Image.blend(A, frame(shot, i + 1), a) if a > 0.02 else A
 
     capc = getattr(C, "CAPTION", {}); CAP_W = capc.get("words", 3); CAP_Y = capc.get("y", 1240); CAP_SIZE = capc.get("size", 92)
