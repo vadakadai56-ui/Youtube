@@ -1,6 +1,7 @@
 """The Last Door (format 1, emotional twist, clay characters, advent): Grandad's handmade advent calendar has 25 doors; for 11
 years he never opened the last one. This year he gives it to me: inside is a key to the shed, and a new box with my name on it.
-Render (no low-poly for clay): ENGINE=EEVEE PCT=50 ES=12 $VENV/bin/python pipeline/anim.py stories/the-last-door OUT all"""
+v2 (24 Nov 2026): the people are the ready-made Quaternius models (owner: human-like people in every video); the old clay
+version is shots_v1_clay.py. Render: ENGINE=EEVEE PCT=50 ES=8 $VENV/bin/python pipeline/anim.py stories/the-last-door OUT all"""
 import json, math, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "..", "pipeline"))
@@ -8,17 +9,27 @@ import scene                  # noqa
 scene.STYLE = "clay"
 from world import *           # noqa
 from world import cam as _cam
-from characters import clay, clay_mat, say, spans
+from characters import clay_mat, person, play, pose
 import bpy
 scene.LOOK = os.environ.get("LOOK") or "story"      # per-video grade (scene.LOOKS)
 
 _D = json.load(open(os.path.join(HERE, "durations.json")))
 _W = json.load(open(os.path.join(HERE, "words.json")))
 _S = {n: sum(list(_D.values())[:i]) for i, n in enumerate(_D)}      # shot start, global seconds
-GRANDAD = dict(col=(0.45, 0.35, 0.3), style="old", glasses=True, name="grandad")
-ME = dict(col=(0.3, 0.45, 0.7), style="kid", hair=(0.45, 0.28, 0.12), scarf=(0.9, 0.75, 0.3), name="me")
-AUNT = dict(col=(0.75, 0.45, 0.55), style="adult", hair=(0.25, 0.15, 0.1), name="aunt")
-COUSIN = dict(col=(0.4, 0.65, 0.45), style="kid", hat=(0.9, 0.3, 0.3), name="cousin")
+GRANDAD, ME = ("M_Farmer", "old"), ("M_Casual_Hoodie", "kid")      # Grandad, and me (Milo)
+AUNT, COUSIN = ("W_Casual", "adult"), ("W_Adventurer", "kid")
+FAST = {"d8"}                                                     # climbing the stairs: 30 fps, no ghosting
+
+
+def who(c, loc, rot=0.0, action="Idle", offset=0.0):
+    return person(c[0], loc, rot=rot, age=c[1], h=0.7, action=action, offset=offset)   # 0.7: sized to this story's furniture
+
+
+def hand(d, side="R"):
+    bpy.context.view_layer.update(); a = d["arm"]
+    return a.matrix_world @ a.pose.bones["Wrist." + side].head
+
+
 NAME = "MILO"
 
 
@@ -69,10 +80,6 @@ def table(loc=(0, 0.4, 0)):
         for sy in (-0.25, 0.25): cube((x + sx, y + sy, 0.27), (0.05, 0.05, 0.55), tm)
 
 
-def sit(d):
-    for l in ("LL", "LR"): d[l].rotation_euler[0] = -math.pi / 2
-
-
 # ---------------------------------------------------------------- shots
 def d1(rng):            # Grandad's advent calendar has twenty-five little doors.: close on the box in candlelight, slow push
     room(rng); table(); a = advent((0, 0.4, 0.575)); candle((0.4, 0.45, 0.575))
@@ -82,12 +89,11 @@ def d1(rng):            # Grandad's advent calendar has twenty-five little doors
 
 
 def d2(rng):            # He made it himself, out of an old cigar box.: years ago, Grandad at his workbench, painting a door
-    room(rng); table(); a = advent((0, 0.45, 0.575), painted=False); g = clay((0, 1.0, 0), rot=math.pi, mouth="smile", **GRANDAD)
+    room(rng); table(); a = advent((0, 0.45, 0.575), painted=False); g = who(GRANDAD, (0, 1.0, 0), action="Interact")
     brush = cyl((0, 0, 0), 0.008, 0.12, clay_mat("brush", (0.6, 0.4, 0.2)))
     c = _cam((0.55, -0.35, 0.95), (0, 0.6, 0.7), lens=40, fstop=2.4)
     def upd(t):
-        g["R"].rotation_euler[0] = -1.4; brush.location = g["root"].location + Vector((0.12, -0.42, 0.55 + 0.01 * math.sin(t * 9)))
-        brush.rotation_euler = (1.0, 0, 0)
+        brush.location = hand(g); brush.rotation_euler = (1.0, 0, 0)
     return upd
 
 
@@ -109,34 +115,29 @@ def d3(rng):            # Every December, he opens one door a day. A chocolate. 
 
 def d4(rng):            # But for eleven years... he never opened the last one. "Not yet," he says. "Not this year.": Grandad taps door 25
     room(rng); table(); a = advent((-0.14, 0.35, 0.575), opened=tuple(range(1, 25)), scale=0.65)
-    g = clay((0.24, 0.8, 0), rot=0.25, **GRANDAD); k = clay((-0.22, -0.15, 0), rot=math.pi * 0.9, **ME)
+    g = who(GRANDAD, (0.24, 0.8, 0), rot=0.25, action="Interact"); k = who(ME, (-0.22, -0.15, 0), rot=math.pi * 0.9)
     c = _cam((0.0, -1.2, 0.95), (0.05, 0.3, 0.72), lens=32, fstop=3.2)
-    lines = spans(_W, 18.5, 19.1, _S["d4"]) + spans(_W, 20.7, 21.5, _S["d4"])     # "Not yet," ... "Not this year."
     def upd(t):
-        say(g, t, lines)
-        tap = abs(math.sin(t * 5)) * (3.6 < t < 5.0); g["L"].rotation_euler[0] = -1.0 - 0.15 * tap
-        g["head"].rotation_euler[2] = 0.25 * math.sin(t * 1.1) * (t > 5.5); breathe(k, t)
+        g["root"].rotation_euler[2] = 0.25 + 0.2 * math.sin(t * 1.1) * (t > 5.5)      # a slow shake of the head: "not yet"
         c.location.y = -1.2 + 0.04 * t
     return upd
 
 
 def d5(rng):            # My cousins think it's empty. My aunt thinks it's stuck.: a cousin shakes the box, the aunt tugs the little door
     room(rng); table(); a = advent((0, 0.4, 0.575), opened=tuple(range(1, 25)))
-    cz = clay((-0.4, 0.15, 0), rot=-0.5, mouth="open", **COUSIN); au = clay((0.45, 0.15, 0), rot=0.5, mouth="flat", **AUNT)
+    cz = who(COUSIN, (-0.24, 0.05, 0), rot=-0.5, action="Interact"); au = who(AUNT, (0.26, 0.12, 0), rot=0.5, action="Interact", offset=0.5)
     c = _cam((0.0, -1.0, 0.95), (0, 0.4, 0.7), lens=34, fstop=3)
     def upd(t):
-        a["root"].location.x = 0.01 * math.sin(t * 30) * (t < 1.8); cz["R"].rotation_euler[0] = -1.2 * (t < 1.9)
-        au["L"].rotation_euler[0] = -1.3 * (t > 2.0); a["doors"][25].rotation_euler[2] = -0.06 * abs(math.sin(t * 20)) * (t > 2.2)
+        a["root"].location.x = 0.01 * math.sin(t * 30) * (t < 1.8)                     # the cousin's shake, then the aunt's tug
+        a["doors"][25].rotation_euler[2] = -0.06 * abs(math.sin(t * 20)) * (t > 2.2)
     return upd
 
 
 def d6(rng):            # I asked him once. He just tapped the little door and smiled.: close two-shot by the fire
     room(rng); table(); a = advent((-0.12, 0.35, 0.575), opened=tuple(range(1, 25)), scale=0.65)
-    g = clay((0.22, 0.8, 0), rot=0.2, mouth="smile", **GRANDAD); k = clay((-0.2, -0.05, 0), rot=math.pi * 0.92, mouth="open", **ME)
+    g = who(GRANDAD, (0.22, 0.8, 0), rot=0.2, action="Interact"); k = who(ME, (-0.2, -0.05, 0), rot=math.pi * 0.92)
     c = _cam((0.05, -0.75, 0.85), (0.1, 0.6, 0.78), lens=40, fstop=2.6)
-    def upd(t):
-        tap = abs(math.sin(t * 5)) * (1.4 < t < 2.6); g["L"].rotation_euler[0] = -1.0 - 0.15 * tap
-        g["head"].rotation_euler[0] = -0.05 * smooth((t - 2.6) / 0.6)
+    def upd(t): pass
     return upd
 
 
@@ -154,14 +155,12 @@ def d7(rng):            # This year, Grandad couldn't come down the stairs.: the
 def d8(rng):            # So I carried the calendar up to him. Door twenty-five.: climbing the stairs with the box held out in front
     room(rng, dim=True); st = clay_mat("stairs", (0.6, 0.42, 0.28))
     for k in range(8): cube((-0.2, 0.1 + k * 0.25, 0.1 + k * 0.2), (0.8, 0.3, 0.2), st)
-    k_ = clay((-0.2, 0.0, 0.0), rot=math.pi, **ME); a = advent((0, 0, 0), opened=tuple(range(1, 25)), scale=0.8)
+    k_ = who(ME, (-0.2, 0.0, 0.0), rot=math.pi, action="Walk"); a = advent((0, 0, 0), opened=tuple(range(1, 25)), scale=0.8)
     a["root"].rotation_euler[2] = math.pi
     c = _cam((0.8, -0.8, 0.8), (-0.2, 0.6, 0.9), lens=30, fstop=3)
     def upd(t):
         y = 0.0 + 0.32 * t; z = max(0.0, (y - 0.0) / 0.25 * 0.2); k_["root"].location = Vector((-0.2, y, z))
-        k_["L"].rotation_euler[0] = k_["R"].rotation_euler[0] = -1.4
-        a["root"].location = k_["root"].location + Vector((0, 0.22, 0.32))
-        s = math.sin(t * 7); k_["LL"].rotation_euler[0] = 0.4 * s; k_["LR"].rotation_euler[0] = -0.4 * s
+        a["root"].location = k_["root"].location + Vector((0, 0.16, 0.34))           # held out in front
         look_at(c, k_["root"].location + Vector((0, 0, 0.5)))
     return upd
 
@@ -173,13 +172,13 @@ def bedroom(rng):
 
 
 def d9(rng):            # He put it in my hands. "It was always yours.": Grandad in bed, handing the box over
-    bedroom(rng); g = clay((0.3, 1.2, 0.3), mouth="smile", **GRANDAD); g["root"].rotation_euler[0] = -0.2; sit(g)
-    k = clay((0.05, 0.3, 0), rot=math.pi, **ME); a = advent((0, 0, 0), opened=tuple(range(1, 25)), scale=0.8)
+    bedroom(rng); g = who(GRANDAD, (0.3, 1.2, 0), action="Interact"); pose(g, "sit", seat=0.48)   # sitting up in bed
+    k = who(ME, (0.05, 0.3, 0), rot=math.pi, action="Interact", offset=0.4); a = advent((0, 0, 0), opened=tuple(range(1, 25)), scale=0.8)
     c = _cam((0.2, -0.75, 1.05), (0.22, 0.9, 0.7), lens=32, fstop=3.0)
     def upd(t):
         p_ = smooth((t - 0.4) / 1.4); src = Vector((0.15, 0.8, 0.62)); dst = k["root"].location + Vector((0.0, 0.2, 0.42))
         a["root"].location = src.lerp(dst, p_); a["root"].rotation_euler[2] = math.pi * p_
-        k["L"].rotation_euler[0] = k["R"].rotation_euler[0] = -1.3 * p_; g["R"].rotation_euler[0] = -1.2 * (1 - p_)
+
     return upd
 
 
@@ -236,11 +235,11 @@ def d13(rng):           # And my name, carved on the lid.: top-down on the lid, 
 
 def d14(rng):           # The note said... "Your turn. Make one for someone you love.": me at the bench with a brush, the first door painted
     shed(rng); a = advent((0, 1.0, 0.48), painted=False, name=NAME)
-    k = clay((0.0, 0.5, 0), rot=math.pi, **ME); brush = cyl((0, 0, 0), 0.008, 0.12, clay_mat("brush", (0.6, 0.4, 0.2)))
+    k = who(ME, (0.0, 0.5, 0), rot=math.pi, action="Interact"); brush = cyl((0, 0, 0), 0.008, 0.12, clay_mat("brush", (0.6, 0.4, 0.2)))
     first = cube((0, 0, 0), (0.075, 0.009, 0.065), clay_mat("firstred", (0.85, 0.25, 0.2)))
-    c = _cam((0.75, 0.55, 0.95), (0.0, 1.0, 0.75), lens=34, fstop=2.8)
+    c = _cam((0.95, -0.05, 1.1), (0.0, 0.8, 0.78), lens=32, fstop=2.8)
     def upd(t):
-        k["R"].rotation_euler[0] = -1.4; brush.location = k["root"].location + Vector((0.14, 0.4, 0.58 + 0.01 * math.sin(t * 9)))
+        brush.location = hand(k)
         p_ = smooth((t - 1.0) / 2.0); first.location = (-0.18, 0.993, 0.48 + 0.36); first.scale = (p_ + 0.001, 1, 1)
         c.location.x = 0.75 - 0.04 * t
     return upd
@@ -248,4 +247,4 @@ def d14(rng):           # The note said... "Your turn. Make one for someone you 
 
 SHOTS = {n: (globals()[n], _D[n]) for n in _D}
 
-CALM = {"d1", "d4", "d6", "d7", "d9", "d11", "d12", "d13", "d14"}   # slow shots rendered at 6 fps (edit.py blends to 30)
+CALM = {"d1", "d7", "d11", "d12", "d13"}   # slow shots rendered at 6 fps (edit.py blends to 30)
