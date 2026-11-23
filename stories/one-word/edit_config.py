@@ -30,3 +30,4 @@ def sound(S):
     S.add(S.pad([261.6, 329.6, 392.0], 3.5, 0.2, 1.8), C["o8"], 0.07)
 
 REHOOK = (dict((n, t) for t, n in CUTS)["o5"] + 0.2, "Wait for the dog…")
+HOOK = "Everyone says 'family'. Nobody says this."

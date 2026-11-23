@@ -192,7 +192,7 @@ def main(story_dir, frames_dir, narration, outf):
             else: line = (line + " " + w_).strip()
         lines.append(line)
         for i, ln in enumerate(lines[:4]):
-            d.text((W / 2, (250 if CAP_Y > 800 else 150) + i * 92), ln, font=f, fill=tuple(int(255 * a) for _ in range(3)), anchor="mm", stroke_width=8, stroke_fill=(0, 0, 0))
+            d.text((W / 2, getattr(C, "HOOK_Y", 250 if CAP_Y > 800 else 150) + i * 92), ln, font=f, fill=tuple(int(255 * a) for _ in range(3)), anchor="mm", stroke_width=8, stroke_fill=(0, 0, 0))
 
     yy, xx = np.mgrid[0:H, 0:W]
     vig = (1 - VIG * np.clip(((xx - W / 2) / (W * 0.8)) ** 2 + ((yy - H * 0.48) / (H * 0.65)) ** 2, 0, 1) ** 1.4)[..., None].astype(np.float32)
@@ -235,7 +235,7 @@ def main(story_dir, frames_dir, narration, outf):
         draw_hook(img, t); caption(img, t); draw_question(img, t); proc.stdin.write(img.tobytes())
     proc.stdin.close(); proc.wait()
 
-    S = Sound(T_END); S.A[:] += S.noise(len(S.A) / SR, 220) * (0.035 if look != "comedy" else 0.01)
+    S = Sound(T_END); S.A[:] += S.noise(len(S.A) / SR + 0.01, 220)[: len(S.A)] * (0.035 if look != "comedy" else 0.01)
     S.inst = getattr(C, "INSTRUMENT", {"comedy": "marimba", "story": "piano", "dream": "piano", "horror": "bell"}.get(look, "bell"))
     if look == "comedy" and getattr(C, "DRUMS", True): S.drums(0.0, C.CUTS[-1][0], bpm=getattr(C, "BPM", 112))
     C.sound(S)

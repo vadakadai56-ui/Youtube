@@ -69,4 +69,6 @@ def sound(S):
     S.add(S.pad([261.6, 329.6, 392.0, 523.3], 3.5, 0.2, 1.8), C["t10"], 0.08)
     for j, m in enumerate([72, 76, 79, 84]): S.add(S.bell(S.note(m), 1.2), C["t10"] + 0.1 + j * 0.18, 0.07)
 
-REHOOK = (dict((n, t) for t, n in CUTS)["t6"] + 0.2, "Wait for 6 p.m.…")
+REHOOK = (dict((n, t) for t, n in CUTS)["t6"] + 0.2, "Now wait for 6 p.m.")
+HOOK = "Let's come clean about Thanksgiving in my house."
+HOOK_Y = 430

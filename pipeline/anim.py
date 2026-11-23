@@ -3,6 +3,7 @@
 usage (with the bpy venv python):
   ENGINE=EEVEE python pipeline/anim.py STORY_DIR OUT_DIR [shot ...|all]
   PREVIEW=1 PCT=30 ES=8 ... renders only frame 0 of each shot, for a fast framing check.
+  STILLS="w2:4.0,w3:2.5" PCT=100 ... renders single stills at those shot times (carousels).
 
 STORY_DIR/shots.py must define SHOTS = {"name": (setup_fn, duration_seconds)}.
 setup_fn(rng) builds the scene and returns update(t) that poses everything at time t (seconds).
@@ -46,5 +47,14 @@ if __name__ == "__main__":
     story_dir, out_root = sys.argv[1], sys.argv[2]
     names = sys.argv[3:] or ["all"]
     mod = load_story(story_dir)
+    if os.environ.get("STILLS"):                            # STILLS="w2:4.0,w3:2.5" renders single stills (for carousels) to OUT_DIR/<shot>_<t>.png
+        os.makedirs(out_root, exist_ok=True)
+        for item in os.environ["STILLS"].split(","):
+            nm, t = item.split(":"); t = float(t)
+            scene.reset(); upd = mod.SHOTS[nm][0](random.Random(11))
+            for k in range(0, int(t * FPSA) + 1): upd(k / FPSA)   # step up to t so stateful shots end in the right place
+            if _life: _life(t)
+            scene.render(os.path.join(out_root, f"{nm}_{t:g}.png")); print("STILL", nm, t, flush=True)
+        sys.exit(0)
     for nm in (list(mod.SHOTS) if names == ["all"] else names):
         run(mod, nm, out_root, preview=os.environ.get("PREVIEW") == "1")

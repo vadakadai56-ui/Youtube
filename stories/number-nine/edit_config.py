@@ -32,3 +32,4 @@ def sound(S):
     for i, m in enumerate([72, 76, 79, 84]): S.add(S.bell(S.note(m), 1.4), C["n8"] + 0.2 + i * 0.25, 0.05)
 
 REHOOK = (dict((n, t) for t, n in CUTS)["n3"] + 0.2, "Wait for six o'clock…")
+HOOK = "Is it possible to light a whole street in one minute?"

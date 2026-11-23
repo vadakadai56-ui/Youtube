@@ -66,3 +66,4 @@ def sound(S):
     for k in range(3): S.add(S.bell(S.note(88), 0.6), C["s17"] + 0.2 + k * 0.45, 0.06)   # the doorbell
     S.add(S.pad([233, 277, 311], 2.5, 0.05, 1.5), C["s19"], 0.07)                    # "oh no"
 REHOOK = (C["s11"] - 0.2, "Then it went wrong…")
+HOOK = "Is it possible to ace every test with one sneeze?"
