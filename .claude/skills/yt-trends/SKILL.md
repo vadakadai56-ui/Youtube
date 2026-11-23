@@ -6,6 +6,12 @@ description: Find what is trending on YouTube Shorts right now (topics, formats,
 
 Trends move in days. Always research live; never pitch from memory or from a trends file older than 7 days.
 
+**Cover every kind of video, not only stories (owner, 23 Nov 2026).** Every refresh looks at all of these and the ranked
+table has at least one live trend from each that has one this week: stories, **memes and meme phrases**, comedy skits,
+relatable "send this to..." clips, POV and "what if", facts and science, satisfying or oddly calming clips, challenges and
+"day 1 vs day 100", reactions and reveals, seasonal topics. The top 3 must not all be the same kind; one is always a meme
+(the weekly meme story slot in `channel/formats.md`).
+
 ## 1. Research (live)
 - **vidIQ first (connected 22 Nov 2026).** Free plan: 150 credits a month, 5 per research call. Budget: at most 3 calls a week (check `vidiq_balance` first; stop at 20 credits left). Use `vidiq_outliers` (contentType short, publishedWithin thisMonth, minEngagementRate 0.02) for our niche keywords, `vidiq_trending_videos` (videoFormat short, sortBy recentVph) for what is rising now, and `vidiq_keyword_research` for title wording. Ignore fandom, gacha and reupload channels.
 - Load `WebSearch` with ToolSearch. Run several searches in one turn, `mode` "extended":
@@ -13,6 +19,9 @@ Trends move in days. Always research live; never pitch from memory or from a tre
   - "viral Shorts format <month year>", "TikTok trend <month year>" (TikTok trends reach Shorts within days)
   - "Google Trends rising searches this week", plus upcoming dates (holidays, launches, events in the next 14 days)
   - Niche: "viral animated story Shorts <month year>", "viral 3D animation Shorts"
+  - Memes and comedy: "TikTok meme trends this week <month year>", "viral meme phrase <month year>", "viral comedy skit Shorts <month year>"
+  - Other kinds: "relatable animation Shorts <month year>", "satisfying Shorts trend <month year>", "POV trend <month year>", "viral facts Shorts <month year>"
+  - vidIQ: split the calls across kinds (e.g. one for animated stories, one for animated memes or skits)
 - Use the `web-fetch` agent to read the best 3 to 5 results. Note each source's publish date. Drop anything older than 14 days.
 - Metricool, if useful: `getAnalyticsAvailableMetrics` for youtube with connector "competitors", then compare competitor Shorts.
 - Own data: the latest `/yt-analytics` note in `STATUS.md`. A trend that matches what already worked here ranks higher.
