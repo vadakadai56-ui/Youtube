@@ -126,3 +126,5 @@ def r7(rng):            # And it was perfect.: evening, the whole family squashe
 
 
 SHOTS = {n: (globals()[n], _D[n]) for n in _D}
+
+CALM = {"r1", "r5", "r6", "r7"}   # slow shots rendered at 6 fps (edit.py blends to 30)

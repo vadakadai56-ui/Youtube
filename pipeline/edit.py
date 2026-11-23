@@ -122,8 +122,12 @@ def main(story_dir, frames_dir, narration, outf):
             if len(cache) > 12: cache.pop(next(iter(cache)))
             cache[k] = Image.open(os.path.join(d, f"{idx:04d}.png")).convert("RGB").resize((W, H), Image.LANCZOS)
         return cache[k]
+    def fps_of(shot, _r={}):
+        if shot not in _r:
+            f = os.path.join(frames_dir, shot, "fps.txt"); _r[shot] = int(open(f).read()) if os.path.exists(f) else FPSA
+        return _r[shot]
     def shot_image(shot, local):
-        x = local * FPSA; i = int(x); a = x - i; A = frame(shot, i)
+        x = local * fps_of(shot); i = int(x); a = x - i; A = frame(shot, i)
         return Image.blend(A, frame(shot, i + 1), a) if a > 0.02 else A
 
     capc = getattr(C, "CAPTION", {}); CAP_W = capc.get("words", 3); CAP_Y = capc.get("y", 1240); CAP_SIZE = capc.get("size", 92)

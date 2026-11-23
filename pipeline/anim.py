@@ -7,7 +7,7 @@ usage (with the bpy venv python):
 
 STORY_DIR/shots.py must define SHOTS = {"name": (setup_fn, duration_seconds)}.
 setup_fn(rng) builds the scene and returns update(t) that poses everything at time t (seconds).
-Frames land in OUT_DIR/<shot>/0000.png ... at FPSA frames per second (default 12); edit.py blends them to 30 fps.
+Frames land in OUT_DIR/<shot>/0000.png ... at FPSA frames per second (default 12), or 6 for shots listed in the story's CALM set; edit.py blends them to 30 fps.
 """
 import importlib.util, math, os, random, sys, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -32,13 +32,18 @@ def run(mod, name, out_root, preview=False):
     fn, dur = mod.SHOTS[name]
     scene.reset(); upd = fn(random.Random(11))
     out = os.path.join(out_root, name); os.makedirs(out, exist_ok=True)
-    n = 1 if preview else int(math.ceil(dur * FPSA)) + 1
+    fpsf = os.path.join(out, "fps.txt")                     # the frames' own rate, read back by edit.py
+    if not preview and not os.path.exists(fpsf):
+        started = any(f.endswith(".png") for f in os.listdir(out))   # never change the rate of a half-rendered shot
+        open(fpsf, "w").write(str(FPSA if started or name not in getattr(mod, "CALM", ()) else 6))
+    fps = int(open(fpsf).read()) if os.path.exists(fpsf) else FPSA
+    n = 1 if preview else int(math.ceil(dur * fps)) + 1
     t0 = time.time()
     for f in range(n):
         p = os.path.join(out, f"{f:04d}.png")
         if os.path.exists(p) and not preview: continue
-        upd(f / FPSA)
-        if _life: _life(f / FPSA)                          # blinks and glances for every character
+        upd(f / fps)
+        if _life: _life(f / fps)                          # blinks and glances for every character
         scene.render(p)
     print(f"SHOT_DONE {name} frames={n} secs={time.time() - t0:.0f}", flush=True)
 

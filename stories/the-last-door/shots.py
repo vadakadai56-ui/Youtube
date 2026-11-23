@@ -243,3 +243,5 @@ def d14(rng):           # The note said... "Your turn. Make one for someone you 
 
 
 SHOTS = {n: (globals()[n], _D[n]) for n in _D}
+
+CALM = {"d1", "d4", "d6", "d7", "d9", "d11", "d12", "d13", "d14"}   # slow shots rendered at 6 fps (edit.py blends to 30)

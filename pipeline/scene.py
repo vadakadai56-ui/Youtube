@@ -22,6 +22,7 @@ def reset(engine=None):
     eng = (engine or ENGINE).upper()
     if eng == "EEVEE":
         sc.render.engine = "BLENDER_EEVEE"; sc.eevee.taa_render_samples = ES
+        if hasattr(sc.eevee, "shadow_step_count"): sc.eevee.shadow_step_count = 3   # half the default 6: softer shadow edges, faster
     else:
         sc.render.engine = "CYCLES"; sc.cycles.device = "CPU"; sc.cycles.samples = SAMPLES
         sc.cycles.use_denoising = True; sc.cycles.max_bounces = 6

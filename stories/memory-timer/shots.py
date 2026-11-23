@@ -214,3 +214,5 @@ def m17(rng):           # What moment will you never forget? Tell me in the comm
 
 
 SHOTS = {n: (globals()[n], _D[n]) for n in _D}
+
+CALM = {"m6", "m7", "m11", "m12", "m13", "m14", "m15", "m16", "m17"}   # slow shots rendered at 6 fps (edit.py blends to 30)

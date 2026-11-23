@@ -140,3 +140,5 @@ def f8(rng):            # She uses a tea tray.: she sits on a silver tea tray an
 
 
 SHOTS = {n: (globals()[n], _D[n]) for n in _D}
+
+CALM = {"f1", "f5", "f6"}   # slow shots rendered at 6 fps (edit.py blends to 30)
