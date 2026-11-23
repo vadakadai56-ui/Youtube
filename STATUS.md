@@ -56,7 +56,7 @@ Render queue restarted 23 Nov: once-a-day (partly done), random-tuesday, memory-
 | 25 Nov 18:00 | The Extra Plate (YouTube at 16:00) | 1428552922414664655 |
 | 25 Nov 20:00 | Carousel, Same Window, 6 slides (Dustlight-Files carousels/same-window/) | id 438554030 |
 | 27 Nov 20:00 | Trial Reel, The Empty Swing, new hook "Why does he push an empty swing every night?" (media videos/trial-empty-swing.mp4) | id 438581674 |
-Weekly Instagram rhythm from 23 Nov: Trial Reels Tue and Fri 20:00, Carousels Wed and Sun 20:00 (Sun 29 carousel not made yet).
+Weekly Instagram rhythm from 23 Nov: Trial Reels Tue and Fri 20:00, Carousels Wed and Sun 20:00 (Sun 29: Number Nine carousel, 6 slides, 20:00, id 438592054).
 Lost Toy Room is not posted to Instagram (owner's choice, 21 Nov). Times follow Metricool's best Instagram hours (10:00 and 18:00 Riga); YouTube stays at 16:00, its best hour.
 
 ## TikTok (@dustlight00, formerly @divine.773, via Metricool, AI label on)
