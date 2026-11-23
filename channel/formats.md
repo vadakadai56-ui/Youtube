@@ -6,6 +6,10 @@ gags and twists, never another creator's lines. All formats use the same pipelin
 ## Look (colour grade) chosen per video (owner, 22 Nov 2026: "why does it feel the same and dull")
 Every video sets `scene.LOOK` in its shots.py: **comedy** (Standard transform, contrasty, saturation x1.3, bright complementary palettes, never beige on beige), **dream** (soft, warm, slightly bright), **horror** (dark, high contrast, desaturated), **story** (AgX, gentle). Pick it in the style recipe with the character model. Comedy also needs faster cuts and bouncier motion.
 
+## Renderer: chosen per video (owner, 23 Nov 2026)
+- **Blender 3D** (`pipeline/anim.py`): stories where characters move and act (a climb, a race, a train waving). It takes about 2.5 to 5 h per video.
+- **Remotion 2D** (`remotion/`, then `remotion/split.py`, then `edit.py`): slice-of-life lists, timelines, fact Shorts and quotes, in looks like a scrapbook, cards or a flat illustration. It takes about 2 min per video, and the captions, hook and sound match the 3D videos. First one: A Random Tuesday (scrapbook), 28 Nov.
+
 ## Character model: chosen per video (owner's rule, 22 Nov 2026)
 There is no house character. Peg dolls were the first model, not the channel look. For every new video, pick the design that best fits
 its story, format and trend, and write it in the style recipe as **Character**. Models live in `pipeline/characters.py` (same handles as
