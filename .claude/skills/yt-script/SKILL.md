@@ -20,6 +20,7 @@ structure from the owner's writing guide (23 Nov 2026), adapted from advice vide
 6. **Re-hook 2, 1 line, only in videos over 45 s.** It sets up the payoff ("This year, I finally saw it.").
 7. **Payoff.** Deliver what the trend format promises (the reveal, the punchline, the twist). The last line echoes the first if it can ("Higher, Daddy.").
 8. **Question to the viewer, 1 line.** It stands in for the guide's call to action. Ask something every viewer can answer about their own life. It goes in `END_LINES` and the pinned comment. Never ask them to like, follow or subscribe, and there is no lead magnet.
+**Names:** every important character gets a name (rules and the list of names used in `channel/characters.md`). Pick them yourself, put each in the narration early, and add it to the list.
 Cut every line that does not move the story ("reduce fluff"). Keep it as short as the story allows: the guide says 45 to 90 s, and never pad.
 
 ## Also write

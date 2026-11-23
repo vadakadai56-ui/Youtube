@@ -9,6 +9,9 @@ Those were only the first videos. Every video picks the story type, setting, sty
 people (`characters.person()`, see `pipeline/characters.py`) for 3D, or human-proportioned drawings in 2D. Each video
 still picks its own look, setting, outfits and story. Stories rendered or scheduled before this date keep their figures.
 
+**Names (owner, 23 Nov 2026):** every important character in every video gets a name, chosen by Claude without asking
+(`channel/characters.md`).
+
 Read `README.md` (pipeline, rules) and `STATUS.md` (what is live and scheduled) before channel work.
 
 ## Every session
