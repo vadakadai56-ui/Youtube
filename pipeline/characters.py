@@ -405,16 +405,29 @@ def person(name, loc=(0, 0, 0), rot=0.0, h=0.55, action="Idle", speed=1.0, offse
     return d
 
 
-def _stoop_action(arm):
-    """A one-frame pose layered on top of any clip: the back and neck bent forward (old age). Keyed on arm, then detached."""
-    act = bpy.data.actions.get("age_stoop")
+POSES = {   # one-frame bone offsets layered on top of any clip (radians about each bone's own x axis)
+    "stoop": (("Abdomen", 0.22), ("Chest", 0.16), ("Neck", 0.2)),
+    "sit": (("UpperLeg.L", -1.5), ("UpperLeg.R", -1.5), ("LowerLeg.L", 1.5), ("LowerLeg.R", 1.5)),   # shortcut: not bending the legs yet, being fixed
+}
+
+
+def _pose_action(arm, name):
+    """The POSES[name] offsets as a one-frame action, keyed on arm and then detached (made once per scene)."""
+    act = bpy.data.actions.get("pose_" + name)
     if act: return act
-    ad = arm.animation_data or arm.animation_data_create(); act = bpy.data.actions.new("age_stoop"); ad.action = act
-    for bone, ang in (("Abdomen", 0.22), ("Chest", 0.16), ("Neck", 0.2)):
+    ad = arm.animation_data or arm.animation_data_create(); act = bpy.data.actions.new("pose_" + name); ad.action = act
+    for bone, ang in POSES[name]:
         pb = arm.pose.bones[bone]; pb.rotation_mode = "QUATERNION"
         pb.rotation_quaternion = Quaternion((1, 0, 0), ang); pb.keyframe_insert("rotation_quaternion", frame=0)
     ad.action = None
     return act
+
+
+def pose(d, name):
+    """Add a held pose layer ("sit", "stoop") to a person; it combines with whatever clip play() gives them."""
+    d.setdefault("layers", [])
+    if name not in d["layers"]: d["layers"].append(name)
+    play(d, d.get("clip", "Idle"), d.get("speed", 1.0), d.get("offset", 0.0))
 
 
 def play(d, action, speed=1.0, offset=0.0):
@@ -425,9 +438,9 @@ def play(d, action, speed=1.0, offset=0.0):
     fs, fe = act.frame_range
     st = ad.nla_tracks.new().strips.new(action, int(-offset * 24 * speed), act)
     st.scale = 1.0 / speed; st.repeat = 200; st.extrapolation = "HOLD"
-    if d.get("age") == "old":                                  # the stoop goes on a track above the clip and combines with it
-        stoop = _stoop_action(d["arm"])
-        s2 = ad.nla_tracks.new().strips.new("stoop", 0, stoop); s2.blend_type = "COMBINE"
+    d["clip"], d["speed"], d["offset"] = action, speed, offset
+    for name in (["stoop"] if d.get("age") == "old" else []) + d.get("layers", []):   # pose layers above the clip, combined
+        s2 = ad.nla_tracks.new().strips.new(name, 0, _pose_action(d["arm"], name)); s2.blend_type = "COMBINE"
         s2.action_frame_start, s2.action_frame_end = 0, 1; s2.repeat = 100000; s2.extrapolation = "HOLD_FORWARD"   # a 1-frame strip, held for the whole shot
 
 
