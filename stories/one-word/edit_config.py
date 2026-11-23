@@ -28,3 +28,5 @@ def sound(S):
     for sh in ("o2", "o3", "o4", "o5", "o6"): S.add(S.bell(S.note(84), 0.6), C[sh] + 0.05, 0.05)   # a ding for each word
     S.add(S.bell(S.note(60), 0.4), C["o7"] + 1.8, 0.06)                        # the dog's silent "boop"
     S.add(S.pad([261.6, 329.6, 392.0], 3.5, 0.2, 1.8), C["o8"], 0.07)
+
+REHOOK = (dict((n, t) for t, n in CUTS)["o5"] + 0.2, "Wait for the dog…")

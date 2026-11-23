@@ -30,3 +30,5 @@ def sound(S):
     S.add(S.pad([261.6, 329.6, 392.0, 523.3], 5.0, 0.05, 2.5), C["n7"], 0.09)
     for j, m in enumerate([84, 88, 91, 96, 91, 96, 100]): S.add(S.bell(S.note(m), 1.0), C["n7"] + 0.05 + j * 0.12, 0.05)
     for i, m in enumerate([72, 76, 79, 84]): S.add(S.bell(S.note(m), 1.4), C["n8"] + 0.2 + i * 0.25, 0.05)
+
+REHOOK = (dict((n, t) for t, n in CUTS)["n3"] + 0.2, "Wait for six o'clock…")

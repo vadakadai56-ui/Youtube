@@ -45,3 +45,4 @@ def sound(S):
     for j, m in enumerate([72, 76, 79, 84, 88]):
         S.add(S.bell(S.note(m), 1.8), C["w6"] + 0.6 + j * 0.3, 0.06)
 HOOK = "She waved at every train for 70 years."
+REHOOK = (C["w4"] + 0.3, "Wait for 2026…")

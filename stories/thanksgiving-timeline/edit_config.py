@@ -68,3 +68,5 @@ def sound(S):
     S.sample("foley/door", C["t8"] + 0.05, 1.2, g=0.35, pick=0, fade=0.02)
     S.add(S.pad([261.6, 329.6, 392.0, 523.3], 3.5, 0.2, 1.8), C["t10"], 0.08)
     for j, m in enumerate([72, 76, 79, 84]): S.add(S.bell(S.note(m), 1.2), C["t10"] + 0.1 + j * 0.18, 0.07)
+
+REHOOK = (dict((n, t) for t, n in CUTS)["t6"] + 0.2, "Wait for 6 p.m.…")

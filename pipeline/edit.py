@@ -7,7 +7,9 @@ STORY_DIR/edit_config.py defines:
   KEY    = {"phrase", ...}                                         # caption words shown in yellow
   XFADE  = {"shot": seconds}                                       # optional dissolves into a shot
   CAPTION = {"words": 1, "y": 520, "size": 140}                    # optional caption style (default 3 words, y 1240, size 92)
-  END_LINES = [(text, font_size, y, rgb, italic, delay)]           # end card text
+  END_LINES = [(text, font_size, y, rgb, italic, delay)]           # end card text; with QUICK_END only the first line is used, over the last shot
+  QUICK_END = True                                                 # default: no black end card, the video ends TAIL (0.8 s) after the payoff
+  REHOOK = (t, "text")                                             # optional: a line on screen mid-video reminding viewers what they wait for
   def sound(S): ...                                                # music and effects using the S toolkit below
   def overlay(img, t): ...                                         # optional on-screen graphics (typed headline, year counter), drawn under the captions
 Real recordings: S.sample("ambience/fire", at, dur, g) plays a sound from the Dustlight library (~/dustlight-sfx, see pipeline/sfx_library.py).
@@ -179,9 +181,12 @@ def main(story_dir, frames_dir, narration, outf):
         raw = re.sub(r"\[[^\]]*\]", "", open(os.path.join(story_dir, "narration.txt")).read()).strip()
         hook = re.split(r"(?<=[.?!])\s", raw.replace("...", "\u2026"), maxsplit=1)[0].strip()
     HOOK_T = getattr(C, "HOOK_SECONDS", 2.6)
+    rehook = getattr(C, "REHOOK", None); RH_D = 1.8
     def draw_hook(img, t):
-        if not hook or t >= HOOK_T: return
-        a = min(1.0, (HOOK_T - t) / 0.3); f = FONT[76]; d = ImageDraw.Draw(img); words_, lines, line = hook.split(), [], ""
+        if hook and t < HOOK_T: txt_, a = hook, min(1.0, (HOOK_T - t) / 0.3)
+        elif rehook and rehook[0] <= t < rehook[0] + RH_D: txt_, a = rehook[1], min(1.0, (t - rehook[0]) / 0.15, (rehook[0] + RH_D - t) / 0.3)
+        else: return
+        f = FONT[76]; d = ImageDraw.Draw(img); words_, lines, line = txt_.split(), [], ""
         for w_ in words_:
             if f.getlength((line + " " + w_).strip()) > W - 160: lines.append(line); line = w_
             else: line = (line + " " + w_).strip()
@@ -194,8 +199,18 @@ def main(story_dir, frames_dir, narration, outf):
     grng = np.random.default_rng(3); GR = [np.repeat(np.repeat(grng.normal(0, max(GRAIN, 0.01), (H // 2, W // 2, 1)).astype(np.float32), 2, 0), 2, 1) for _ in range(6)]
     proc = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
                              "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18", "-preset", "medium", outf + ".video.mp4"], stdin=subprocess.PIPE)
-    cuts = C.CUTS
-    for fi in range(int(C.T_END * FPS)):
+    cuts = list(C.CUTS)
+    quick = getattr(C, "QUICK_END", True) and cuts[-1][1] == "END"
+    end_t = cuts[-1][0]
+    if quick:                                                       # end on the payoff: hold the last shot TAIL s, the question on top, no black card
+        T_END = end_t + getattr(C, "TAIL", 0.8); cuts = cuts[:-1]
+        q = C.END_LINES[0] if getattr(C, "END_LINES", None) else None
+    else: T_END = C.T_END
+    def draw_question(img, t):
+        if not quick or not q or t < end_t - 0.15: return
+        a = min(1.0, (t - end_t + 0.15) / 0.2); f = ImageFont.truetype(FONT_BLACK, 70); d = ImageDraw.Draw(img)
+        d.text((W / 2, getattr(C, "QUESTION_Y", 560)), q[0], font=f, fill=tuple(int(255 * a) for _ in range(3)), anchor="mm", stroke_width=8, stroke_fill=(0, 0, 0))
+    for fi in range(int(T_END * FPS)):
         t = fi / FPS
         ci = max(i for i, c in enumerate(cuts) if c[0] <= t); st, shot = cuts[ci]
         if shot == "END":
@@ -217,10 +232,10 @@ def main(story_dir, frames_dir, narration, outf):
         arr = np.asarray(img).astype(np.float32) * vig + (GR[fi % 6] if GRAIN else 0)
         img = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8))
         if hasattr(C, "overlay"): C.overlay(img, t)
-        draw_hook(img, t); caption(img, t); proc.stdin.write(img.tobytes())
+        draw_hook(img, t); caption(img, t); draw_question(img, t); proc.stdin.write(img.tobytes())
     proc.stdin.close(); proc.wait()
 
-    S = Sound(C.T_END); S.A[:] += S.noise(len(S.A) / SR, 220) * (0.035 if look != "comedy" else 0.01)
+    S = Sound(T_END); S.A[:] += S.noise(len(S.A) / SR, 220) * (0.035 if look != "comedy" else 0.01)
     S.inst = getattr(C, "INSTRUMENT", {"comedy": "marimba", "story": "piano", "dream": "piano", "horror": "bell"}.get(look, "bell"))
     if look == "comedy" and getattr(C, "DRUMS", True): S.drums(0.0, C.CUTS[-1][0], bpm=getattr(C, "BPM", 112))
     C.sound(S)
@@ -229,6 +244,7 @@ def main(story_dir, frames_dir, narration, outf):
     with wave.open(tmp) as wv: v = np.frombuffer(wv.readframes(wv.getnframes()), np.int16).astype(np.float32) / 32768
     A = S.A; m = min(len(A), len(v)); venv = np.convolve(np.abs(v), np.ones(4410) / 4410, "same")
     duck = np.ones(len(A)); duck[:m] = 1 - 0.45 * np.clip(venv[:m] / 0.05, 0, 1); A *= duck; A[:m] += v[:m]
+    A = A[: int(T_END * SR)]; fo = int(0.25 * SR); A[-fo:] *= np.linspace(1, 0, fo)   # cut the music at the end, with a short fade
     A = A / max(1e-9, np.max(np.abs(A))) * 0.9
     with wave.open(outf + ".mix.wav", "wb") as wv:
         wv.setnchannels(1); wv.setsampwidth(2); wv.setframerate(SR); wv.writeframes((A * 32767).astype(np.int16).tobytes())
@@ -237,8 +253,13 @@ def main(story_dir, frames_dir, narration, outf):
     meas = subprocess.run(["ffmpeg", "-hide_banner", "-i", outf + ".pre.mp4", "-af", "ebur128", "-f", "null", "-"], capture_output=True, text=True).stderr
     integ = float([l for l in meas.splitlines() if l.strip().startswith("I:")][-1].split()[1])
     gain = round(-14 - integ, 2)
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", outf + ".pre.mp4", "-c:v", "copy", "-af", f"volume={gain}dB,alimiter=limit=0.89",
-                    "-c:a", "aac", "-b:a", "192k", outf], check=True)
+    for _ in range(3):                                              # gain + peak limiter, re-measured until it lands within 0.4 dB of -14
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", outf + ".pre.mp4", "-c:v", "copy", "-af", f"volume={gain}dB,alimiter=limit=0.78:level=disabled",
+                        "-c:a", "aac", "-b:a", "192k", outf], check=True)
+        m2 = subprocess.run(["ffmpeg", "-hide_banner", "-i", outf, "-af", "ebur128", "-f", "null", "-"], capture_output=True, text=True).stderr
+        got = float([l for l in m2.splitlines() if l.strip().startswith("I:")][-1].split()[1])
+        if abs(got + 14) <= 0.4: break
+        gain = round(gain + (-14 - got), 2)
     for f in (".video.mp4", ".mix.wav", ".narr.wav", ".pre.mp4"):
         if os.path.exists(outf + f): os.remove(outf + f)
     print(f"done {outf} (loudness {integ} LUFS, trimmed {gain:+} dB)")
