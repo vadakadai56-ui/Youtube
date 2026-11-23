@@ -25,3 +25,9 @@ december-eve, gift-glimpse, gran-wrapped, same-tree, snow-globe, sing-door, thre
    kid with no dad, and made him promise. Cast: Mrs Kowalski (old), Danny (M_Worker), Ava (kid narrator). Snowy street, night, toon.
 2. **The Age You Feel**: "you" + a power. Grumpy Theo (10) feels 80; Grandpa Walt (81) feels 9 when he plays football with you. Post after Memory Timer has cooled.
 3. **2026, by Mum's Camera Roll**: year recap, 2D scrapbook (Remotion). Priya took 4,312 photos, she is in none; Leo and Maya take one of her.
+
+## Meme story pitches 23 Nov 2026
+1. **Go, Go, Go** (recommended): the Christmas market opens; the family yells "go, go, GO" at slow Grandpa Stan (old);
+   last in, he walks to the only stall nobody saw, free hot chocolate. "Go, go, go."
+2. **I Saw You...**: Pickle the dog watches Maya eat turkey at 2 a.m., "and you paid me no mind"; she saved him the biggest slice.
+3. **Oh Yeah?**: Theo (kid) at Mum's office Secret Santa tells everyone their gift, and saves the boss from Uncle Ray's face socks.

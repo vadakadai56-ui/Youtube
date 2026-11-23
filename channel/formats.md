@@ -82,3 +82,10 @@ Pick the template that fits the story; the story must pay it off.
 6. **A plain statement of the strange thing** — when the image already raises the question. *She waved at every train for 70 years.*
 Also, from the retention clip: end on the payoff (`QUICK_END`, no end card), and add a mid-video re-hook (`REHOOK`, e.g. "Wait for 2026…") just before the slowest stretch.
 Scores and notes on each hook: `channel/hook-scores.md`.
+
+## Meme story (owner, 23 Nov 2026: "not just story based, Huss Huss type meme stories too")
+One a week next to the stories. Take a phrase or meme that is trending **this week** (`/yt-trends`) and build a tiny original
+story around it, like Huss Huss: the phrase said three times, a quick setup, an escalation and a funny twist (often Grandma).
+- 15 to 30 s, comedy look, fast cuts, the phrase in yellow on screen each time.
+- Never the meme's original audio (copyright) and never real people: our narrator says the phrase, the story is ours.
+- Named characters, human-like people (CLAUDE.md), and a question to viewers at the end.
