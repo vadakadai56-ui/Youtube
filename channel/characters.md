@@ -25,3 +25,7 @@ How to name them:
 | Biscuit | the dog | Once a Day | 27 Nov 2026 |
 | Milo | the grandchild, name on the lid | The Last Door | 29 Nov 2026 |
 | Huss | the "huss huss" person | Huss Huss Huss | 24 Nov 2026 |
+| Grandpa Stan | waits all year for "November 2026" | Remember November (meme) | 30 Nov 2026 |
+| Mrs Kowalski | the widow whose window gets the snowman | The Snowman | 1 Dec 2026 |
+| Danny | the bin man who builds it | The Snowman | 1 Dec 2026 |
+| Oscar | the narrator's brother with the camera | The Snowman | 1 Dec 2026 |

@@ -91,6 +91,11 @@ To pin once live (need their YouTube ids), 2 a day at 15:00 and 21:00 Riga, the 
 ## Source copies in Metricool (public static links, reachable from sessions)
 Lost Toy Room: Part 1 `7551785-file-2041223862239218930.mp4`, Part 2 `...-14081602158670977575.mp4`, Part 3 `...-13700619248896578994.mp4`, Part 4 `...-7689693484360900601.mp4`; The Empty Swing `...-9944081293849703551.mp4`; Ice hotel `...-14484001482312721434.mp4`; The Second Cup `...-12646092096430351264.mp4`. Prefix: `https://static.metricool.com/planner/202611/`. Download with curl (ffmpeg does not use the proxy).
 
+## Scripts awaiting the owner's approval (23 Nov 2026)
+- `stories/remember-november/` (meme story, about 30 s, for Mon 30 Nov): Grandpa Stan and "Remember November 2026 is coming".
+- `stories/the-snowman/` (story, about 55 s, for Tue 1 Dec): The Snowman Nobody Builds.
+Both use the new rules: Quaternius people, names, hook, lock-in, re-hooks, question. Not voiced yet.
+
 ## Automation
 - **Weekly auto plan:** scheduled task "Dustlight weekly auto plan" (trig_01BsS8QAXWsFZhnnJvJ8C6cA), every Sunday 11:33 Riga, first run 22 Nov 2026. It fires into this session and runs `/yt-plan` auto plan mode: gaps, trends, formats, all scripts, then one approval message. Nothing is voiced, rendered or scheduled before the owner approves.
 - **Friday analytics:** scheduled task "Dustlight Friday analytics" (trig_01YPHE18fFQDEwKDsYjtvnUW), Fridays 14:37 Riga: per-video stats by format, look and character model, three changes for the Sunday plan.
