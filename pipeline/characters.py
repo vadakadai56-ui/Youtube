@@ -13,6 +13,7 @@ Models
 Add new models here (bean, clay, paper...) the first time a video needs one, and list them in channel/formats.md.
 """
 import math, os
+from mathutils import Quaternion
 from scene import *          # noqa
 
 SKINS = {"light": (0.98, 0.82, 0.66), "tan": (0.85, 0.62, 0.45), "brown": (0.55, 0.36, 0.24), "dark": (0.33, 0.21, 0.14)}
@@ -371,10 +372,17 @@ QDIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets", 
 PEOPLE = sorted(f[:-6] for f in os.listdir(QDIR) if f.endswith(".blend")) if os.path.isdir(QDIR) else []
 
 
-def person(name, loc=(0, 0, 0), rot=0.0, h=0.55, action="Idle", speed=1.0, offset=0.0):
+HAIR_MATS = {"W_Formal": ("Red",), "W_Worker": ("DarkBrown",), "W_Adventurer": ("Hair_Brown",),
+             "M_Farmer": ("Eyebrows",), "M_Worker": ("Eyebrows", "Moustache")}   # the material that is hair, where it is not named so
+
+
+def person(name, loc=(0, 0, 0), rot=0.0, h=0.55, action="Idle", speed=1.0, offset=0.0, age="adult", hair=None):
     """A Quaternius person (see PEOPLE, e.g. "W_Casual", "M_Suit") standing at loc, facing -y like the other models.
     h scales the 1.8 m model to the sets' size (0.55 gives an adult about 1 unit tall, like clay()). action is one of the
     model's own clips (Idle, Walk, Run, Wave, Interact, ...); speed and offset (seconds) keep two people out of step.
+    age: "adult" | "kid" (smaller, bigger head, quicker) | "old" (grey hair, slower). hair: an RGB to recolour.
+    shortcut: "old" does not read as old yet (the stoop layer does not apply, light hair shows outline stripes); use a real
+    elderly model before a grandparent story needs one.
     Returns {root, arm, base, clips}; change the clip later with play()."""
     with bpy.data.libraries.load(os.path.join(QDIR, name + ".blend"), link=False) as (src, dst):
         dst.objects = list(src.objects); dst.actions = [a for a in src.actions if a not in bpy.data.actions]
@@ -384,10 +392,30 @@ def person(name, loc=(0, 0, 0), rot=0.0, h=0.55, action="Idle", speed=1.0, offse
         weapon = any(w in o.name for w in ("Pistol", "Sword", "Gun", "Knife"))   # the packs ship props for games: never shown
         o.hide_render = o.hide_viewport = weapon
         if o.type == "ARMATURE": arm = o
+    if age == "kid": h *= 0.66; speed *= 1.15; arm.pose.bones["Head"].scale = (1.45, 1.45, 1.45)   # scale is never keyed
+    if age == "old": speed *= 0.8; hair = hair or (0.72, 0.72, 0.74)   # soft grey: pure white shows the outline between strands
+    if hair:
+        for o in dst.objects:
+            if o.type != "MESH": continue
+            for i, m in enumerate(o.data.materials):
+                if m and m.name.split(".")[0] in HAIR_MATS.get(name, ("Hair", "Hair_Brown", "Hair_Blond", "Eyebrows", "Moustache")):
+                    m = o.data.materials[i] = m.copy(); bsdf(m).inputs["Base Color"].default_value = (*hair, 1)
     arm.location = loc; arm.rotation_euler[2] = rot; arm.scale = (h, h, h)               # the models already face -y
-    d = {"root": arm, "arm": arm, "base": Vector(loc), "clips": sorted(a.name.split(".")[0] for a in dst.actions)}
+    d = {"root": arm, "arm": arm, "base": Vector(loc), "clips": sorted(a.name.split(".")[0] for a in dst.actions), "age": age}
     play(d, action, speed, offset)
     return d
+
+
+def _stoop_action(arm):
+    """A one-frame pose layered on top of any clip: the back and neck bent forward (old age). Keyed on arm, then detached."""
+    act = bpy.data.actions.get("age_stoop")
+    if act: return act
+    ad = arm.animation_data or arm.animation_data_create(); act = bpy.data.actions.new("age_stoop"); ad.action = act
+    for bone, ang in (("Abdomen", 0.22), ("Chest", 0.16), ("Neck", 0.2)):
+        pb = arm.pose.bones[bone]; pb.rotation_mode = "QUATERNION"
+        pb.rotation_quaternion = Quaternion((1, 0, 0), ang); pb.keyframe_insert("rotation_quaternion", frame=0)
+    ad.action = None
+    return act
 
 
 def play(d, action, speed=1.0, offset=0.0):
@@ -398,6 +426,10 @@ def play(d, action, speed=1.0, offset=0.0):
     fs, fe = act.frame_range
     st = ad.nla_tracks.new().strips.new(action, int(-offset * 24 * speed), act)
     st.scale = 1.0 / speed; st.repeat = 200; st.extrapolation = "HOLD"
+    if d.get("age") == "old":                                  # the stoop goes on a track above the clip and combines with it
+        stoop = _stoop_action(d["arm"])
+        s2 = ad.nla_tracks.new().strips.new("stoop", 0, stoop); s2.blend_type = "COMBINE"
+        s2.action_frame_start, s2.action_frame_end = 0, 1; s2.repeat = 100000; s2.extrapolation = "HOLD_FORWARD"   # a 1-frame strip, held for the whole shot
 
 
 def dog(loc, rot=0.0, col=(0.96, 0.92, 0.84)):
