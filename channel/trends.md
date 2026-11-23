@@ -1,60 +1,63 @@
-# Trends: 21 Nov 2026 (full page reads)
+# Trends: 23 Nov 2026
 
-Method: WebSearch (extended), then the four best pages downloaded with curl and read in full (newengen.com updated 20 Nov,
-virlo.ai updated 21 Nov, socialpilot.co covering 17 to 25 Nov, anijam.ai "refreshed November" but mostly July to
-October content, so it is weighted low). View and video counts are the pages' own figures, not checked.
+Method: 4 extended web searches (23 Nov), the earlier meme scan (23 Nov), 2 vidIQ calls (trending animated story Shorts
+since 14 Nov, sorted by views in the last hour; breakout animated meme Shorts this month). vidIQ 125 credits left.
+Sources: newengen.com (Nov), postdom.com (16 to 22 Nov), socialpilot.co (Nov), socialbee.com (12 Nov), viralremix.org (13 Nov),
+newengen Christmas guide (2026), dromana.app Christmas guide, garagefarm/trendshift (3D Shorts wave). Counts are the
+sources' own figures. Dropped: Italian "brainrot" edits (Tung Tung Sahur: game/fandom reposts, not our audience), gacha,
+K-pop fancams, real-person memes ("Why would I deceive you?").
 
-Own data (STATUS, 20 Nov): no per-video numbers yet. Re-check with /yt-analytics on 22 Nov or later.
+Own data: no per-video numbers yet. Check "viewed vs swiped away" in Studio after 48 h (owner).
 
 ## Ranked
-Scores 1 to 5: momentum, shelf life, fit (can our Blender pipeline make it in 2 to 3 days), originality room, safety.
+Scores 1 to 5: momentum, shelf life, fit (our Blender/Remotion pipeline in 2 to 3 days), originality room, safety.
 
 | # | Trend | Kind | Evidence (source, date) | Mom | Shelf | Fit | Orig | Safe | Days left |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | Thanksgiving / Friendsgiving, then Christmas kickoff | Topic | Thanksgiving prep is the cultural moment for 21 to 25 Nov, Thanksgiving 26 Nov (socialpilot); Gossip Girl Thanksgiving and turkey boards (newengen, 20 Nov); Mariah "It's Time" transitions (virlo, 21 Nov; newengen) | 5 | 5 | 5 | 5 | 5 | 5 (Thanksgiving), 30+ (Christmas) |
-| 2 | "Same Spot, Years Apart" (one place, the passing of time) | Format | Peak; Pink Floyd "Time" clip, sound used in 556.4K videos (socialpilot, 17 to 25 Nov) | 4 | 3 | 5 | 5 | 5 | ~7 |
-| 3 | Narrated animated story videos (second-person, AI-animated zombie survival stories) | Format | Listed as a current trend (newengen, 20 Nov); 3D cartoon Shorts "some of the most viral" plus free AI tools and tutorials 1 to 18 Nov (search results) | 4 | 4 | 5 | 3 | 4 | 14+ |
-| 4 | Reflective year recap ("A Random Day In...") | Format | CapCut template, reflective and grateful tone (newengen, 20 Nov) | 4 | 4 | 3 | 4 | 5 | to 31 Dec |
-| 5 | Soft launch / "My Moon My Man" (slow reveal of a loved one) | Format + sound | Rising; one example 15.7M views (virlo, 21 Nov); niki sound 547.1K videos, about 75,000 a day (socialpilot); also on newengen | 5 | 2 | 3 | 4 | 5 | ~5 |
-| 6 | Nostalgic POV ("The Night We Met" instrumental) | Format | 1,317 videos, example 2.3M views, but stage "Fading" since 29 Aug (virlo, 21 Nov) | 2 | 1 | 4 | 4 | 5 | peaked |
-| 7 | Moody, nostalgic and bittersweet music on the charts ("Stolen From Each Other", "The Feeling") | Sound | MusicMaestro chart, week of 6 to 12 Nov (newengen) | 3 | 3 | n/a | n/a | n/a | we synthesize our own; mood only |
+| 1 | Christmas kickoff: "it's time", the tree goes up, "Christmas music is allowed now", advent from 1 Dec | Topic | "The tree goes up" and "Christmas music is allowed now" named for 16 to 22 Nov (postdom); "It's Time" kickoff is the top holiday format, Christmas starts 1 Nov now (newengen) | 5 | 5 | 5 | 5 | 5 | 30+ |
+| 2 | Holiday dinner drama with a reveal ("If you sit down, who's going to serve?") | Format | vidIQ: a 31 s story Short from a 13.6K-sub channel, 138K views and about 7,300 views per hour one day after posting (22 Nov); "Gossip Girl Thanksgiving" dramatic dinners (newengen, Nov) | 5 | 4 | 5 | 4 | 4 | ~30 (Thanksgiving 26 Nov, then Christmas dinner) |
+| 3 | Meme phrases in a tiny story: "go, go, go" at someone slow; "Oh yeah?" getting unwritten rules wrong with confidence | Meme / format | "Go go go" and "Oh yeah?" both listed for November (socialpilot, newengen, socialbee) | 4 | 2 | 5 | 5 | 5 | ~7 |
+| 4 | "Send this to a friend who..." relatable animated skit | Format | vidIQ: "Send this to a broke friend", animated, 3.8M views in 2 weeks (569K-sub channel, 4 Nov) | 4 | 4 | 4 | 4 | 5 | 14+ |
+| 5 | Girlsmas / Friendsmas (friends-only themed Christmas party) | Topic | "One of the biggest Christmas trends" (Girlsmas guide; newengen Christmas guide) | 4 | 4 | 3 | 4 | 5 | to 25 Dec |
+| 6 | Reflective year recap ("A random day in 2026") | Format | CapCut template, reflective tone (newengen, Nov); we made Random Tuesday (2D) for 28 Nov | 3 | 5 | 5 | 3 | 5 | to 31 Dec |
+| 7 | Faceless 3D animated story Shorts (the format we are in) | Format | Several Nov 2026 tutorials and an open-source skill for "viral 3D animated Shorts" (trendshift, YouTube) | 4 | 4 | 5 | 2 | 5 | ongoing; more competition, so stand out on look and names |
+| 8 | Tacky lights tours, snow globes, matching pyjamas | Topic | Listed for early to mid December (dromana) | 3 | 4 | 4 | 4 | 5 | Dec |
 
-Left out: dances (Chipmunks, Dame Hombro, Thank You Baby), pranks, makeup transitions, celebrity memes (real people),
-GTA VI and Hunger Games launches (brands or film IP), Black Friday shopping.
+Left out: dances (Ba Ba Ba, Shoulder Carry, Deck the Halls dance), real-person memes, brands, fandom edits, sports.
 
 ## Top 3 for Dustlight
-1. **Thanksgiving, landing 25 to 26 Nov:** a sad-start, warm-twist table story. One chair is always set for someone
-   who never comes, until this year. Hook as a typed headline: "she sets one extra plate. every year."
-2. **"Same Spot, Years Apart":** this is exactly our kind of feeling. One place (a bench, a doorway, a window seat)
-   shown across years, with one person getting older and the twist in the last frame. It is easy in Blender: same
-   camera, swap seasons and ages. It is at its peak, so build it within the week or use it as the structure of
-   story 1.
-3. **Narrated animated stories:** still our format and still growing, but the AI-made copies are arriving. Stand out
-   on the low-poly night look, real recorded sound and the twist ending.
+1. **Christmas kickoff:** post on Tue 1 Dec as Christmas "officially starts". Best fit: **The Snowman Nobody Builds**
+   (pitched 23 Nov; Mrs Kowalski, Danny the bin man, Ava). Also good: a "the tree goes up" family story.
+2. **Holiday dinner drama with a reveal:** a 30 s narrated family-dinner moment with a sharp line and a reveal at the end.
+   Our version: the kids' table finally gets a seat at the big table, or a grandparent's quiet line that silences the room.
+   It reuses the One Word dining room and the new seated people.
+3. **Meme phrase story:** **Go, Go, Go** (slow Grandpa Stan at the Christmas market opening, the free hot chocolate).
+   It is our weekly meme story slot (channel/formats.md). Post within 7 days, by 30 Nov.
 
-Best combination: **a Thanksgiving story told as "Same Spot, Years Apart"**: the same table, the same empty chair,
-year after year.
+## Style recipes
+**1. Christmas kickoff story (The Snowman Nobody Builds)**
+- Character: Quaternius people (Mrs Kowalski: W_Formal, old; Danny: M_Worker; Ava: W_Casual, kid). Named in the first lines.
+- Look: toon, a blue snowy night with warm windows; the 4 a.m. reveal under one streetlamp; a fixed wide on the window each year.
+- Pace: 2 to 3 s shots; a re-hook at about 22 s ("So this year, I didn't sleep") and another before the payoff.
+- Captions: 2 words, yellow on names and numbers ("TWELVE YEARS", "4 A.M."), centred low.
+- Voice: warm storyteller, soft on the payoff line.
+- Sound: wind, snow crunch, a bin lorry beep at the reveal, a music box that turns into a full chord at the wave.
+- Length and ending: 45 to 55 s; "Who would you build one for?"
 
-Sources: [newengen.com](https://newengen.com/insights/tiktok-trends/), [virlo.ai](https://virlo.ai/trends/2026-11),
-[socialpilot.co](https://www.socialpilot.co/blog/tiktok-trends), [anijam.ai](https://www.anijam.ai/blog/youtube-shorts-trends/),
-[youtube.com tutorial](https://www.youtube.com/watch?v=AC0AOpgLtRA), [note.com](https://note.com/tanatana_game/n/n8f0a091103bd?hl=en),
-[revid.ai](https://www.revid.ai/blog/short-form-video-trends)
+**2. Dinner drama with a reveal**
+- Character: the seated family from One Word v2 (sit pose), one grandparent (age="old") as the quiet power.
+- Look: toon, warm candle-lit dining room, but with a key light so faces read; tight close-ups for each line.
+- Pace: 1.5 to 2 s per shot, a cut on every line; the reveal line on a slow push-in.
+- Captions: the quoted line in white quotes, one huge word on the reveal.
+- Voice: deadpan narrator plus one quoted line; no shouting.
+- Sound: cutlery clinks, a chair scrape for the silence, one low note on the reveal.
+- Length and ending: 25 to 35 s; "Who runs dinner in your house?"
 
-## Story formats check (21 Nov 2026, evening)
-| Format (see channel/formats.md) | Evidence (source, date) | Verdict |
-|---|---|---|
-| "You" + a power ("What if you could…") | Several animated "what if you" series on TikTok and Shorts with posts 7 to 19 days old; one part 2 at 44.8K likes (tiktok.com discover pages, Oct to Nov 2026) | **Active.** Mom 4, shelf long (evergreen genre), fit 4, room 4. Make ours with an unusual power and a real cost |
-| Nothing ever happens (anticlimax POV) | The phrase is an active TikTok meme, but tied to the 4chan /pol/ "chud" and Wojak scene (tiktok.com/tag/nothingeverhappens). An "It never happened" variant around 16 Nov had about 160K likes (unverified) | **Use the format, not the phrase or its hashtags.** Title ours differently ("In my town, a normal night is terrifying"), no #chud or #nothingeverhappens |
-| Weird town rule + "type your name" ending | Comment-your-name and type-your-name posts are a long-running pattern, not new this week (tiktok.com discover pages, last updated Jun to Aug 2026) | **Evergreen comment driver**, not a trend. Use the ending on any format |
-
-Sources: [what-if superpowers](https://www.tiktok.com/discover/what-would-you-do-if-you-had-superpowers), [what if 1000x stronger](https://www.youtube.com/shorts/bWjDs2fb1Bk), [#nothingeverhappens](https://www.tiktok.com/tag/nothingeverhappens), [pov nothing happened](https://www.tiktok.com/discover/pov-nothing-happened), [type your name trend](https://www.tiktok.com/discover/type-your-name-trend)
-
-## vidIQ outliers check (22 Nov 2026, Shorts, this month, "animated story shorts emotional twist", 5 credits)
-Real breakout data (views relative to each channel's usual):
-| Signal | Example (channel, views, breakout) | What it means for Dustlight |
-|---|---|---|
-| **Family love, especially mothers and grandparents** | "Koi ni le skda jag te tha Maa di" (Ai Kahani Studio, 1.2K subs) 63.9K views, **392x**; "Gareeb Bachchi aur Bechaari Dadi" (Storyverse) 9.6x | Our grandma / mother / grandad stories fit the strongest pattern. The Extra Plate (a mother) is well placed |
-| **3D cartoon "psychology story" explainers** | "How Rejection Shapes Future Relationships" (Zack D. Films, 29.8M subs) **15.7M views**, 1.6x | A fact-with-feeling story format works at scale: "why we…" told through one character. Candidate format 6 |
-| **Heartbreak / "true love" shorts** | "true love… #hearttouching" (Ur satish) 394.7K, **83x** in 1 day | Short emotional love stories travel fast; keep under 30 s for the trend slot |
-| **Numbered parts** | "{part 1 💔}" (Pink gacha story) 865K; "part 2" gacha 3.4x | Series with a part number still pull; format 3 cliffhangers can carry "Part 1" |
-Most of the list is fandom and gacha content, which is not our lane. Sources: vidIQ outliers, videos published 27 Oct to 20 Nov 2026.
+**3. Meme phrase story (Go, Go, Go)**
+- Character: Grandpa Stan (M_Suit, old: the slow stooped walk), the family (adults and kids), a crowd of the 11 people.
+- Look: comedy grade, bright winter day, a market gate; a low angle on Stan's slow steps, then a fast whip to the crowd.
+- Pace: 1 to 1.5 s cuts, the phrase three times with rising energy; the twist in the last 4 s.
+- Captions: "GO, GO, GO" in big yellow letters each time; other captions 2 words.
+- Voice: energetic young narrator; the last "go, go, go" slow and smug.
+- Sound: a crowd rush, a gate bell, a sip and an "ahh".
+- Length and ending: 18 to 25 s; "Who's the slowest in your family?"
