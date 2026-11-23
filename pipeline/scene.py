@@ -89,7 +89,7 @@ def toon_pass(line_px=None):
     small = bpy.data.collections.new("toon_noline")                          # snowflakes, eyes, smile dots, glasses: no outline
     sc.collection.children.link(small)
     for o in bpy.data.objects:
-        if o.type == "MESH" and (max(o.dimensions) < 0.05 or min(o.dimensions) < 0.002): small.objects.link(o)   # tiny or paper-flat
+        if o.type == "MESH" and (max(o.dimensions) < 0.05 or min(o.dimensions) < 0.002 or "noline" in o): small.objects.link(o)   # tiny, paper-flat or marked
     lset.select_by_collection = True; lset.collection = small; lset.collection_negation = "EXCLUSIVE"
     sc.view_settings.view_transform = "Standard"; sc.view_settings.look = "None"; sc.view_settings.exposure = 0
 

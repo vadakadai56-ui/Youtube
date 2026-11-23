@@ -6,6 +6,8 @@ Models
 - blocky(): chunky block people (bevelled box head, box torso, hinged block limbs, mitten hands). Comedy, trend, game-like Shorts.
 - clay(): plasticine people (lumpy, matte fingerprint texture, ball nose, button eyes). Warm family and holiday stories; render without STYLE=lowpoly.
 - bean(): round one-colour capsule people with big glossy eyes and tiny limbs. Cute, fast comedy, "you" stories, kids logic.
+- human(): primitive-built human proportions (neck, elbows, hands, knees, shoes, full face). EXPERIMENT ONLY: the owner rejected
+  its look on 23 Nov 2026 ("looks shit"). Do not use in a video; the plan is ready-made CC0 human models (e.g. Quaternius).
 Add new models here (bean, clay, paper...) the first time a video needs one, and list them in channel/formats.md.
 """
 import math
@@ -107,6 +109,9 @@ def stride(d, t, speed=1.0, direction=(0, -1), amp=0.6, rate=2.0):
     s = math.sin(ph)
     d["LL"].rotation_euler[0] = amp * s; d["LR"].rotation_euler[0] = -amp * s
     d["L"].rotation_euler[0] = -amp * 0.8 * s; d["R"].rotation_euler[0] = amp * 0.8 * s
+    if "LK" in d:                                    # human: the knee bends as the leg swings back, elbows stay soft
+        d["LK"].rotation_euler[0] = 1.2 * amp * max(0.0, s); d["RK"].rotation_euler[0] = 1.2 * amp * max(0.0, -s)
+        d["LE"].rotation_euler[0] = d["RE"].rotation_euler[0] = -0.35 - 0.3 * amp
 
 
 def ball(loc, r=0.09, col=(0.92, 0.42, 0.12)):
@@ -284,6 +289,82 @@ def clay(loc, col, rot=0.0, h=1.0, name="clay", style="kid", hair=None, skin=(0.
             "cheek": cheek, "base": Vector(loc), "hand_z": az - 0.26, "arm_x": 0.2, **TALK}
 
 
+def human(loc, col, rot=0.0, h=1.0, name="human", style="adult", hair=None, skin=(0.96, 0.78, 0.62), mouth="smile",
+          glasses=False, scarf=None, hat=None, apron=None, pants=None, shoes=(0.15, 0.12, 0.11)):
+    """Human-proportioned person, about 1 unit tall as an adult (kid 0.78, old 0.94 and a little stooped): capsule torso and
+    limbs, a neck, shoulders, elbows (LE, RE) and knees (LK, RK) that bend, round hands, shoes, and a face with eyes, brows,
+    nose, ears and a mouth. Same arguments as clay() (col = top colour) and the same handles, plus LE/RE/LK/RK and hip_z."""
+    H_ = {"kid": 0.78, "adult": 1.0, "old": 0.94}.get(style, 1.0)
+    hr = {"kid": 0.1, "adult": 0.092, "old": 0.09}.get(style, 0.092)                 # kids: bigger head for their size
+    sk = mat("huskin_" + name, skin, 0.55); top = mat("hutop_" + name, col, 0.7)
+    low = mat("hupants_" + name, pants or tuple(c * 0.45 for c in col), 0.75); sh = mat("hushoe_" + name, shoes, 0.5)
+    blk = mat("hueye", (0.03, 0.03, 0.04), 0.2); wht = mat("huwht", (0.98, 0.98, 0.97), 0.3)
+    cheek = mat("hucheek_" + name, (0.97, 0.6, 0.55), 0.6)
+    hip_z = 0.46 * H_; sho_z = 0.78 * H_ - (0.02 if style == "old" else 0)
+    leg_r, arm_r = 0.038 * H_ ** 0.5, 0.025 * H_ ** 0.5
+    torso = [capsule((0, 0, (hip_z + sho_z) / 2), 0.078 * H_ ** 0.5, sho_z - hip_z - 0.06, top),
+             cyl((0, 0, sho_z + 0.025), 0.03, 0.06, sk)]                                # neck
+    torso[0].scale = (1.08, 0.7, 1.0)
+    if apron:
+        ap = capsule((0, -0.05, hip_z + 0.06), 0.06, 0.12, mat("huapron_" + name, apron, 0.8)); ap.scale = (1.0, 0.25, 1.0); torso.append(ap)
+    if scarf: torso.append(torus((0, 0, sho_z + 0.01), 0.045, 0.022, mat("huscarf_" + name, scarf, 0.9)))
+    hz = sho_z + 0.055 + hr
+    head = empty("head_" + name, (0, 0, sho_z + 0.05))
+    F = [sphere((0, 0, hz), hr, sk, scale=(0.95, 0.95, 1.05)), sphere((0, -hr * 0.97, hz - hr * 0.12), hr * 0.13, sk)]   # head, nose
+    ey, ez = -hr * 0.86, hz + hr * 0.12
+    for sx in (-1, 1):
+        F += [sphere((sx * hr * 0.38, ey, ez), hr * 0.27, wht, scale=(0.85, 0.45, 1.1)),            # eye white
+              sphere((sx * hr * 0.37, ey - hr * 0.09, ez - hr * 0.03), hr * 0.17, blk, scale=(0.85, 0.4, 1.05)),
+              capsule((sx * hr * 0.42, ey - 0.004, ez + hr * 0.36), hr * 0.045, hr * 0.22, blk),    # brow
+              sphere((sx * hr * 0.98, 0, hz - hr * 0.02), hr * 0.2, sk, scale=(0.45, 0.7, 1.0)),     # ear
+              sphere((sx * hr * 0.6, ey + hr * 0.12, hz - hr * 0.32), hr * 0.15, cheek, scale=(1, 0.3, 0.7))]
+        F[-3].rotation_euler = (0, math.pi / 2 + sx * 0.1, 0)
+    my, mz = -hr * 0.9, hz - hr * 0.45; m0 = len(F)
+    if mouth == "open": F.append(sphere((0, my, mz), hr * 0.14, blk, scale=(1, 0.4, 0.8)))
+    elif mouth == "flat": F.append(capsule((0, my, mz), 0.006, hr * 0.3, blk)); F[-1].rotation_euler = (0, math.pi / 2, 0)
+    else: F.append(torus((0, my + 0.006, mz + hr * 0.05), hr * 0.15, 0.0045, blk, rot=(math.pi / 2 - 0.45, 0, 0)))
+    TALK = _talk(F, m0, sphere((0, my, mz), hr * 0.15, blk, scale=(1, 0.4, 0.001)))
+    hcol = hair or {"kid": (0.35, 0.22, 0.12), "adult": (0.22, 0.15, 0.1), "old": (0.93, 0.92, 0.9)}[style]
+    hm = mat("huhair_" + name, hcol, 0.85, sheen=0.3)
+    if hat:
+        km = mat("huhat_" + name, hat, 0.9)
+        F += [sphere((0, 0.005, hz + hr * 0.45), hr * 1.06, km, scale=(1, 1, 0.62)), sphere((0, 0, hz + hr * 1.1), hr * 0.25, km)]
+    elif style == "old":
+        F += [sphere((sx * hr * 0.82, hr * 0.15, hz + hr * 0.1), hr * 0.35, hm, scale=(0.6, 1, 0.8)) for sx in (-1, 1)]
+    else:
+        F += [sphere((0, hr * 0.12, hz + hr * 0.3), hr * 1.04, hm, scale=(1.02, 0.98, 0.78))]
+        if style == "kid": F.append(sphere((-hr * 0.35, -hr * 0.62, hz + hr * 0.62), hr * 0.32, hm, scale=(1.4, 0.7, 0.55)))   # fringe
+    if glasses:
+        fm = mat("huglass", (0.25, 0.18, 0.14), 0.3, metal=0.5)
+        for sx in (-1, 1):
+            F.append(torus((sx * hr * 0.38, -hr * 0.98, ez), hr * 0.3, 0.004, fm, rot=(math.pi / 2, 0, 0))); F[-1]["noline"] = 1
+    _pin(F, head)
+    joints = {}
+    for side, sx in (("L", -1), ("R", 1)):
+        ax = sx * 0.11 * H_ ** 0.5
+        sp = empty(f"arm{side}_{name}", (ax, 0, sho_z - 0.02)); ua = 0.17 * H_; fa = 0.15 * H_
+        ep = empty(f"elbow{side}_{name}", (ax, 0, sho_z - 0.02 - ua))
+        _pin([capsule((ax, 0, sho_z - 0.02 - ua / 2), arm_r, ua - 2 * arm_r, top)], sp)
+        _pin([capsule((ax, 0, sho_z - 0.02 - ua - fa / 2), arm_r * 0.9, fa - 2 * arm_r, sk if style == "kid" else top),
+              sphere((ax, 0, sho_z - 0.02 - ua - fa - 0.01), arm_r * 1.25, sk)], ep)          # forearm, hand
+        ep.parent = sp; ep.location = Vector(ep.location) - Vector(sp.location)
+        lx = sx * 0.045 * H_ ** 0.5; th = hip_z * 0.5; shn = hip_z * 0.5 - 0.03
+        lp = empty(f"leg{side}_{name}", (lx, 0, hip_z)); kp = empty(f"knee{side}_{name}", (lx, 0, hip_z - th))
+        _pin([capsule((lx, 0, hip_z - th / 2), leg_r, th - leg_r, low)], lp)
+        shoe = capsule((lx, -0.025, 0.022), 0.024, 0.05, sh); shoe.rotation_euler = (math.pi / 2, 0, 0)   # lying along the foot
+        _pin([capsule((lx, 0, hip_z - th - shn / 2), leg_r * 0.85, shn - leg_r, low), shoe], kp)
+        kp.parent = lp; kp.location = Vector(kp.location) - Vector(lp.location)
+        joints.update({side: sp, "E" + side: ep, "L" + side: lp, "K" + side: kp})
+    root = empty("root_" + name)
+    for o in torso + [head, joints["L"], joints["R"], joints["LL"], joints["LR"]]:
+        if o.parent is None: o.parent = root
+    root.location = loc; root.rotation_euler[2] = rot; root.scale = (h, h, h)
+    if style == "old": head.rotation_euler[0] = 0.12; root.rotation_euler[0] = 0.05      # a little stooped
+    return {"root": root, "head": head, "L": joints["L"], "R": joints["R"], "LL": joints["LL"], "LR": joints["LR"],
+            "LE": joints["EL"], "RE": joints["ER"], "LK": joints["KL"], "RK": joints["KR"], "cheek": cheek,
+            "base": Vector(loc), "hand_z": sho_z - 0.02 - 0.32 * H_, "arm_x": 0.11 * H_ ** 0.5, "hip_z": hip_z, **TALK}
+
+
 def dog(loc, rot=0.0, col=(0.96, 0.92, 0.84)):
     """A blocky dog sitting up: box body, head with floppy ears, a wagging tail. Returns {root, head, tail}."""
     m = mat("dogfur", col, 0.85, sheen=0.5, noise=0.25); dk = mat("dogdark", (0.35, 0.22, 0.12), 0.8)
@@ -330,8 +411,8 @@ def spans(words, t0, t1, shot_start):
 
 
 # ---------------------------------------------------------------- life: automatic blinks and glances for every character
-EYE_MATS = {"beye", "beaneye", "clayeye", "dogeye", "eyeblk"}                       # pupils (move on a glance)
-LID_MATS = EYE_MATS | {"beyew", "beanwht", "claywht", "clay_claywht", "dogwht", "eyewht"}          # everything that closes on a blink
+EYE_MATS = {"beye", "beaneye", "clayeye", "dogeye", "eyeblk", "hueye"}                       # pupils (move on a glance)
+LID_MATS = EYE_MATS | {"beyew", "beanwht", "claywht", "clay_claywht", "dogwht", "eyewht", "huwht"}          # everything that closes on a blink
 _LIFE = {}
 
 
