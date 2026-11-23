@@ -11,3 +11,4 @@ __pycache__/
 .claude/skills/real-sfx/vendor/models/
 audio/
 previews/
+assets/edit-kit/
