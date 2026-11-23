@@ -189,8 +189,9 @@ def main(story_dir, frames_dir, narration, outf):
     rehooks = [rh] if rh and isinstance(rh[0], (int, float)) else list(rh or [])     # one (t, text) or a list of them
     def draw_hook(img, t):
         live = [r for r in rehooks if r[0] <= t < r[0] + RH_D]
+        hy = getattr(C, "HOOK_Y", 250 if CAP_Y > 800 else 150)
         if hook and t < HOOK_T: txt_, a = hook, min(1.0, (HOOK_T - t) / 0.3)
-        elif live: r = live[0]; txt_, a = r[1], min(1.0, (t - r[0]) / 0.15, (r[0] + RH_D - t) / 0.3)
+        elif live: r = live[0]; txt_, a = r[1], min(1.0, (t - r[0]) / 0.15, (r[0] + RH_D - t) / 0.3); hy = getattr(C, "REHOOK_Y", hy)
         else: return
         f = FONT[76]; d = ImageDraw.Draw(img); words_, lines, line = txt_.split(), [], ""
         for w_ in words_:
@@ -198,7 +199,7 @@ def main(story_dir, frames_dir, narration, outf):
             else: line = (line + " " + w_).strip()
         lines.append(line)
         for i, ln in enumerate(lines[:4]):
-            d.text((W / 2, getattr(C, "HOOK_Y", 250 if CAP_Y > 800 else 150) + i * 92), ln, font=f, fill=tuple(int(255 * a) for _ in range(3)), anchor="mm", stroke_width=8, stroke_fill=(0, 0, 0))
+            d.text((W / 2, hy + i * 92), ln, font=f, fill=tuple(int(255 * a) for _ in range(3)), anchor="mm", stroke_width=8, stroke_fill=(0, 0, 0))
 
     yy, xx = np.mgrid[0:H, 0:W]
     vig = (1 - VIG * np.clip(((xx - W / 2) / (W * 0.8)) ** 2 + ((yy - H * 0.48) / (H * 0.65)) ** 2, 0, 1) ** 1.4)[..., None].astype(np.float32)
