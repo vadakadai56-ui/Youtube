@@ -45,3 +45,4 @@ def sound(S):
     S.add(S.pad([196, 246.9, 293.7], C["r7"] - C["r3"], 0.5, 1.0), C["r3"], 0.03)
     S.sample("foley/footsteps", C["r4"], _D["r4"], g=0.25, pick=0)
     S.add(S.pad([261.6, 329.6, 392.0, 493.9], 5.0, 0.3, 2.5), C["r7"], 0.08)
+HOOK = "People are beginning to realise the boring days are the ones they miss."

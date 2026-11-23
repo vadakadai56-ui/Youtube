@@ -28,3 +28,4 @@ def sound(S):
     for j, m in enumerate([84, 88, 91]): S.add(S.bell(S.note(m), 0.8), C["f8"] + 0.05 + j * 0.1, 0.07)
     S.sample("transitions/whoosh", C["f8"] + 0.6, 1.2, g=0.35, pick=1)
     S.add(S.pad([261.6, 329.6, 392.0, 523.3], 3.5, 0.2, 2.0), C["END"] - 0.5, 0.06)
+HOOK = "Grandma wins this race every year. Nobody knows how."
