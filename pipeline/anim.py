@@ -42,6 +42,7 @@ def run(mod, name, out_root, preview=False):
     for f in range(n):
         p = os.path.join(out, f"{f:04d}.png")
         if os.path.exists(p) and not preview: continue
+        bpy.context.scene.frame_set(int(f / fps * 24), subframe=(f / fps * 24) % 1)   # clock for ready-made clips (24 fps)
         upd(f / fps)
         if _life: _life(f / fps)                          # blinks and glances for every character
         scene.render(p)
@@ -58,7 +59,7 @@ if __name__ == "__main__":
             nm, t = item.split(":"); t = float(t)
             scene.reset(); upd = mod.SHOTS[nm][0](random.Random(11))
             for k in range(0, int(t * FPSA) + 1): upd(k / FPSA)   # step up to t so stateful shots end in the right place
-            upd(t)                                                # then land on t itself, not the last whole frame before it
+            bpy.context.scene.frame_set(int(t * 24), subframe=(t * 24) % 1); upd(t)   # then land on t itself, clips too
             if _life: _life(t)
             scene.render(os.path.join(out_root, f"{nm}_{t:g}.png")); print("STILL", nm, t, flush=True)
         sys.exit(0)

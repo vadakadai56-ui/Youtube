@@ -91,6 +91,15 @@ def toon_pass(line_px=None):
     for o in bpy.data.objects:
         if o.type == "MESH" and (max(o.dimensions) < 0.05 or min(o.dimensions) < 0.002 or "noline" in o): small.objects.link(o)   # tiny, paper-flat or marked
     lset.select_by_collection = True; lset.collection = small; lset.collection_negation = "EXCLUSIVE"
+    ink = bpy.data.materials.new("toon_ink"); ink.use_nodes = True; ink.use_backface_culling = True
+    nt = ink.node_tree; e = nt.nodes.new("ShaderNodeEmission"); e.inputs["Color"].default_value = (0.08, 0.06, 0.07, 1)
+    nt.links.new(e.outputs[0], next(n for n in nt.nodes if n.type == "OUTPUT_MATERIAL").inputs["Surface"])
+    for o in bpy.data.objects:                                # rigged (animated) bodies: an inverted-hull outline instead,
+        if o.type != "MESH" or not any(m.type == "ARMATURE" for m in o.modifiers): continue   # Freestyle smears on them
+        if o.name not in small.objects: small.objects.link(o)
+        o.data.materials.append(ink)
+        sol = o.modifiers.new("toon_hull", "SOLIDIFY"); sol.thickness = 0.012 / max(o.matrix_world.to_scale())
+        sol.use_flip_normals = True; sol.material_offset = len(o.data.materials) - 1; sol.use_rim = False
     sc.view_settings.view_transform = "Standard"; sc.view_settings.look = "None"; sc.view_settings.exposure = 0
 
 

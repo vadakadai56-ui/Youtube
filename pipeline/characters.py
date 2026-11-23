@@ -6,11 +6,13 @@ Models
 - blocky(): chunky block people (bevelled box head, box torso, hinged block limbs, mitten hands). Comedy, trend, game-like Shorts.
 - clay(): plasticine people (lumpy, matte fingerprint texture, ball nose, button eyes). Warm family and holiday stories; render without STYLE=lowpoly.
 - bean(): round one-colour capsule people with big glossy eyes and tiny limbs. Cute, fast comedy, "you" stories, kids logic.
+- person(): ready-made CC0 people by Quaternius (assets/characters/quaternius, 5 men and 6 women in everyday clothes,
+  each with 24 animations: Walk, Run, Idle, Wave, Interact...). The owner's choice for human characters, 23 Nov 2026.
 - human(): primitive-built human proportions (neck, elbows, hands, knees, shoes, full face). EXPERIMENT ONLY: the owner rejected
   its look on 23 Nov 2026 ("looks shit"). Do not use in a video; the plan is ready-made CC0 human models (e.g. Quaternius).
 Add new models here (bean, clay, paper...) the first time a video needs one, and list them in channel/formats.md.
 """
-import math
+import math, os
 from scene import *          # noqa
 
 SKINS = {"light": (0.98, 0.82, 0.66), "tan": (0.85, 0.62, 0.45), "brown": (0.55, 0.36, 0.24), "dark": (0.33, 0.21, 0.14)}
@@ -363,6 +365,39 @@ def human(loc, col, rot=0.0, h=1.0, name="human", style="adult", hair=None, skin
     return {"root": root, "head": head, "L": joints["L"], "R": joints["R"], "LL": joints["LL"], "LR": joints["LR"],
             "LE": joints["EL"], "RE": joints["ER"], "LK": joints["KL"], "RK": joints["KR"], "cheek": cheek,
             "base": Vector(loc), "hand_z": sho_z - 0.02 - 0.32 * H_, "arm_x": 0.11 * H_ ** 0.5, "hip_z": hip_z, **TALK}
+
+
+QDIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets", "characters", "quaternius")
+PEOPLE = sorted(f[:-6] for f in os.listdir(QDIR) if f.endswith(".blend")) if os.path.isdir(QDIR) else []
+
+
+def person(name, loc=(0, 0, 0), rot=0.0, h=0.55, action="Idle", speed=1.0, offset=0.0):
+    """A Quaternius person (see PEOPLE, e.g. "W_Casual", "M_Suit") standing at loc, facing -y like the other models.
+    h scales the 1.8 m model to the sets' size (0.55 gives an adult about 1 unit tall, like clay()). action is one of the
+    model's own clips (Idle, Walk, Run, Wave, Interact, ...); speed and offset (seconds) keep two people out of step.
+    Returns {root, arm, base, clips}; change the clip later with play()."""
+    with bpy.data.libraries.load(os.path.join(QDIR, name + ".blend"), link=False) as (src, dst):
+        dst.objects = list(src.objects); dst.actions = [a for a in src.actions if a not in bpy.data.actions]
+    arm = None
+    for o in dst.objects:
+        bpy.context.scene.collection.objects.link(o)
+        weapon = any(w in o.name for w in ("Pistol", "Sword", "Gun", "Knife"))   # the packs ship props for games: never shown
+        o.hide_render = o.hide_viewport = weapon
+        if o.type == "ARMATURE": arm = o
+    arm.location = loc; arm.rotation_euler[2] = rot; arm.scale = (h, h, h)               # the models already face -y
+    d = {"root": arm, "arm": arm, "base": Vector(loc), "clips": sorted(a.name.split(".")[0] for a in dst.actions)}
+    play(d, action, speed, offset)
+    return d
+
+
+def play(d, action, speed=1.0, offset=0.0):
+    """Loop one of the person's clips from shot time 0 (anim.py moves the scene clock for every frame it renders)."""
+    act = bpy.data.actions.get(action) or next(a for a in bpy.data.actions if a.name.split(".")[0] == action)
+    ad = d["arm"].animation_data or d["arm"].animation_data_create(); ad.action = None
+    for tr in list(ad.nla_tracks): ad.nla_tracks.remove(tr)
+    fs, fe = act.frame_range
+    st = ad.nla_tracks.new().strips.new(action, int(-offset * 24 * speed), act)
+    st.scale = 1.0 / speed; st.repeat = 200; st.extrapolation = "HOLD"
 
 
 def dog(loc, rot=0.0, col=(0.96, 0.92, 0.84)):
