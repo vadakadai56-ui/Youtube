@@ -89,6 +89,22 @@ textarea { min-height: 96px; resize: vertical; line-height: 1.45 }
   background: var(--fg); color: var(--bg); font: 500 13px var(--mono); padding: 10px 14px; border-radius: 999px; transition: all .5s var(--ease); pointer-events: none }
 .toast.on { opacity: 1; transform: translateX(-50%) }
 footer { color: var(--feint); font-size: 13px; max-width: 62ch }
+
+/* Analyser: a 7 x 24 heatmap of audience activity per app (Riga hours), the best slots, and how many upcoming posts sit off-peak. */
+.an { border: 1px solid var(--border); border-radius: 10px; background: var(--layer); padding: 14px; display: grid; gap: 12px; min-width: 0 }
+.an .top { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
+.an h2 { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -.01em }
+.heat { display: grid; grid-template-columns: 30px repeat(24, minmax(0, 1fr)); gap: 2px; min-width: 0 }
+.heat .d { font: 500 10px/1 var(--mono); color: var(--feint); align-self: center; text-transform: uppercase }
+.heat button { aspect-ratio: 1 / 1.35; border: 0; border-radius: 2px; padding: 0; cursor: pointer; min-width: 0;
+  background: color-mix(in oklch, var(--c) calc(var(--v) * 100%), var(--deep)) }
+.heat button.has { outline: 1.5px solid var(--fg); outline-offset: -1.5px }
+.heat button.sel { outline: 2px solid var(--yellow); outline-offset: 0 }
+.heat .h { font: 10px/1 var(--mono); color: var(--feint); grid-row: 9; white-space: nowrap; overflow: visible }
+.read { font: 500 13px var(--mono); color: var(--fg); min-height: 1.4em }
+.slots { display: flex; gap: 8px; flex-wrap: wrap }
+.slot { font: 500 12px var(--mono); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px }
+.slot b { color: var(--c) }
 </style>
 
 <div class="wrap">
@@ -106,6 +122,14 @@ footer { color: var(--feint); font-size: 13px; max-width: 62ch }
   </section>
 
   <div class="next" id="next"><span class="kicker">Next up</span><span class="ttl" id="nextTtl">Loading the queue…</span><span class="t" id="nextT"></span></div>
+
+  <section class="an" aria-label="Best times analyser">
+    <div class="top"><h2>Best times</h2><span class="spacer"></span><span id="anPlats" class="top" role="group" aria-label="Analyser app"></span></div>
+    <div class="heat" id="heat"></div>
+    <div class="read" id="read">Tap a square to see that hour.</div>
+    <div class="slots" id="slots"></div>
+    <div class="note" id="anNote"></div>
+  </section>
 
   <div class="bar" role="group" aria-label="Filter by platform">
     <button class="chip" data-p="all" aria-pressed="true">All</button>
@@ -131,7 +155,44 @@ const PLAT = { youtube: ["YouTube", "--watermelon"], instagram: ["Instagram", "-
 const KINDS = { youtube: ["short", "video"], instagram: ["reel", "story", "trial", "carousel"], tiktok: ["video"], pinterest: ["pin"] };
 const STATUS = { scheduled: ["Scheduled", "--yellow"], queued: ["Queued on YouTube", "--rind"], posted: ["Posted", "--rind"], manual: ["By hand", "--blueberry"],
   paused: ["Paused", "--feint"], failed: ["Failed", "--error"] };
-let posts = [], filter = "all", showDone = false, openId = null, col = null;
+let posts = [], filter = "all", showDone = false, openId = null, col = null, best = {}, anPlat = "instagram", sel = null;
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+// Metricool day 1 = Monday. A post's slot score = its hour's activity / that day's best hour.
+const dow = d => (new Date(d + "T12:00:00+02:00").getUTCDay() + 6) % 7 + 1;
+function score(p) {
+  const arr = p.kind !== "story" && best[p.platform]?.days?.[dow(day(p.at))]; if (!arr) return null;   // a Story stays up 24 h, so its hour matters little
+  const mx = Math.max(...arr); return { s: arr[+hm(p.at).slice(0, 2)] / mx, bestH: arr.indexOf(mx) };
+}
+const upcoming = p => ["scheduled", "queued", "manual"].includes(p.status) && p.at.slice(0, 16) >= nowRiga();
+const hh = h => String(h).padStart(2, "0") + ":00";
+
+function renderAn() {
+  const ps = $("#anPlats"); ps.replaceChildren();
+  Object.entries(PLAT).forEach(([k, [n]]) => { const b = el("button", "chip", n); b.setAttribute("aria-pressed", k === anPlat); b.onclick = () => { anPlat = k; sel = null; $("#read").textContent = "Tap a square to see that hour."; renderAn(); }; ps.append(b); });
+  const heat = $("#heat"), c = best[anPlat], color = `var(${PLAT[anPlat][1]})`; heat.replaceChildren();
+  const off = posts.filter(p => upcoming(p) && (score(p)?.s ?? 1) < .6).length;
+  $("#anNote").textContent = Object.keys(best).length ? `${off} upcoming post${off === 1 ? "" : "s"} in an off-peak hour (under 60% of that day's best hour). Open one to move it. Data: ${c?.source || "Metricool"}, ${c?.updated || "23 Nov"}.` : "Loading activity data…";
+  if (!c) { $("#slots").replaceChildren(); $("#read").textContent = anPlat === "pinterest" ? "No measured data for Pinterest. Usual advice: 20:00 to 22:00, and weekends." : "No data for this app yet."; return; }
+  const mx = Math.max(...Object.values(c.days).flat());
+  const taken = new Set(posts.filter(p => p.platform === anPlat && upcoming(p)).map(p => dow(day(p.at)) + "-" + +hm(p.at).slice(0, 2)));
+  for (let d = 1; d <= 7; d++) {
+    heat.append(el("span", "d", DAYS[d - 1]));
+    c.days[d].forEach((v, h) => {
+      const b = el("button"); b.style.setProperty("--c", color); b.style.setProperty("--v", (v / mx).toFixed(3));
+      if (taken.has(d + "-" + h)) b.classList.add("has"); if (sel === d + "-" + h) b.classList.add("sel");
+      b.setAttribute("aria-label", `${DAYS[d - 1]} ${hh(h)}: ${Math.round(v / mx * 100)}% of the week's peak`);
+      b.onclick = () => { sel = d + "-" + h; renderAn(); $("#read").textContent = `${DAYS[d - 1]} ${hh(h)} · ${Math.round(v / mx * 100)}% of the week's peak${taken.has(d + "-" + h) ? " · a post is scheduled here" : ""}`; };
+      heat.append(b);
+    });
+  }
+  heat.append(el("span", "h", "")); [0, 6, 12, 18].forEach(h => { const s = el("span", "h", hh(h).slice(0, 2)); s.style.gridColumn = String(h + 2); heat.append(s); });
+  // Best hours over the week: sum each hour across days, top 3.
+  const tot = Array.from({ length: 24 }, (_, h) => Object.values(c.days).reduce((a, arr) => a + arr[h], 0)), top = Math.max(...tot);
+  const sl = $("#slots"); sl.replaceChildren(el("span", "kicker", "Best hours"));
+  [...tot.keys()].sort((a, b) => tot[b] - tot[a]).slice(0, 3).forEach(h => { const s = el("span", "slot"); s.style.setProperty("--c", color); const b = el("b", null, hh(h)); s.append(b, document.createTextNode(" " + Math.round(tot[h] / top * 100) + "%")); sl.append(s); });
+  const dt = Object.entries(c.days).map(([d, arr]) => [d, arr.reduce((a, b) => a + b, 0)]).sort((a, b) => b[1] - a[1])[0];
+  const s = el("span", "slot"); s.style.setProperty("--c", color); s.append(el("b", null, DAYS[dt[0] - 1]), document.createTextNode(" busiest day")); sl.append(s);
+}
 const $ = (s, r = document) => r.querySelector(s);
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 
@@ -163,6 +224,7 @@ function card(p, i) {
   const h = el("button", "head"); h.setAttribute("aria-expanded", openId === p.id);
   const main = el("div", "main"), tags = el("div", "tags");
   const [pn, pc] = PLAT[p.platform] || [p.platform, "--feint"]; tags.append(tag(pn, pc), tag(p.kind || "", "--feint"));
+  const sq = upcoming(p) && score(p); if (sq) { if (sq.s >= .9) tags.append(tag("Peak hour", "--rind")); else if (sq.s < .6) tags.append(tag("Off-peak", "--watermelon")); }
   main.append(el("span", "ttl", p.title || "(untitled)"), tags);
   const [sn, sc] = STATUS[p.status] || [p.status, "--feint"]; const pill = el("span", "pill", sn); pill.style.setProperty("--c", `var(${sc})`);
   h.append(el("span", "time", hm(p.at)), main, pill);
@@ -187,6 +249,14 @@ function editor(p) {
     if (/^https:\/\//.test(u)) { const a = el("a", null, u.split("/").pop()); a.href = u; a.target = "_blank"; a.rel = "noopener"; media.append(a); } else media.append(document.createTextNode(u));
   });
   f.append(field("Media", media));
+  const sc = score(p);
+  if (sc) {
+    const n = el("div", "actions"); n.append(el("span", "note", `This hour gets ${Math.round(sc.s * 100)}% of the day's best activity. Best that day: ${hh(sc.bestH)}.`));
+    if (sc.s < .95 && upcoming(p)) { const mv = el("button", "btn ghost", "Move to " + hh(sc.bestH)); mv.type = "button";
+      mv.onclick = async () => { mv.disabled = true; try { await col.doc(p.id).update({ at: day(p.at) + "T" + hh(sc.bestH) + ":00+02:00", edited_at: new Date().toISOString() }); toast("Moved to " + hh(sc.bestH)); } catch { toast("Couldn't move it. Try again."); mv.disabled = false; } };
+      n.append(mv); }
+    f.append(n);
+  }
   if (p.result || p.error) f.append(el("div", "note" + (p.error ? " err" : ""), p.error || p.result));
   const acts = el("div", "actions"), save = el("button", "btn", "Save"), copy = el("button", "btn ghost", "Copy caption"), del = el("button", "btn danger", "Delete");
   save.type = copy.type = del.type = "button";
@@ -240,14 +310,15 @@ document.querySelectorAll(".chip[data-p]").forEach(b => b.onclick = () => {
 });
 $("#showDone").onclick = e => { showDone = !showDone; e.currentTarget.setAttribute("aria-pressed", showDone); render(); };
 $("#addBtn").onclick = () => { const b = $("#addBox"); if (b.hidden) { addForm(); b.hidden = false; $("#new-title").focus(); } else b.hidden = true; };
-setInterval(render, 60000);
+setInterval(render, 60000); renderAn();
 
 (async () => {
   const timer = setTimeout(() => { if (!posts.length) $("#state").textContent = "The queue is taking a while to load. Pull to refresh in a moment."; }, 10000);
   const db = await window.claude?.use?.("db");
   if (!db) { clearTimeout(timer); $("#state").textContent = "Sign in to claude.ai to see the queue."; $("#nextTtl").textContent = "Sign in to see the queue"; $("#addBtn").disabled = true; return; }
   col = db.collection("posts");
-  col.onSnapshot(snap => { clearTimeout(timer); posts = snap.docs.map(d => ({ id: d.id, ...d.data() })); render(); },
+  db.collection("besttimes").onSnapshot(snap => { best = Object.fromEntries(snap.docs.map(d => [d.id, d.data()])); render(); renderAn(); }, () => { $("#anNote").textContent = "Couldn't load the activity data."; });
+  col.onSnapshot(snap => { clearTimeout(timer); posts = snap.docs.map(d => ({ id: d.id, ...d.data() })); render(); renderAn(); },
     () => { clearTimeout(timer); $("#state").textContent = "Couldn't load the queue. Reopen the page to try again."; });
 })();
 </script>
