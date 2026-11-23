@@ -405,9 +405,12 @@ def person(name, loc=(0, 0, 0), rot=0.0, h=0.55, action="Idle", speed=1.0, offse
     return d
 
 
-POSES = {   # one-frame bone offsets layered on top of any clip (radians about each bone's own x axis)
+POSES = {   # one-frame offsets layered on top of any clip: a number bends the bone (radians), a tuple moves it
     "stoop": (("Abdomen", 0.22), ("Chest", 0.16), ("Neck", 0.2)),
-    "sit": (("UpperLeg.L", -1.5), ("UpperLeg.R", -1.5), ("LowerLeg.L", 1.5), ("LowerLeg.R", 1.5)),   # shortcut: not bending the legs yet, being fixed
+    # sit: the legs are IK (feet and knee targets drive them), so move the hips down and back and the feet forward;
+    # offsets are metres in the 1.8 m model's own space (x right, y back, z up), sized for chair() at h=0.55
+    "sit": (("Body", (0, 0.12, -0.38)), ("Foot.L", (0, -0.32, 0)), ("Foot.R", (0, -0.32, 0)),
+            ("PT.L", (0, -0.6, 0.1)), ("PT.R", (0, -0.6, 0.1))),
 }
 
 
@@ -416,9 +419,13 @@ def _pose_action(arm, name):
     act = bpy.data.actions.get("pose_" + name)
     if act: return act
     ad = arm.animation_data or arm.animation_data_create(); act = bpy.data.actions.new("pose_" + name); ad.action = act
-    for bone, ang in POSES[name]:
-        pb = arm.pose.bones[bone]; pb.rotation_mode = "QUATERNION"
-        pb.rotation_quaternion = Quaternion((1, 0, 0), ang); pb.keyframe_insert("rotation_quaternion", frame=0)
+    for bone, v in POSES[name]:
+        pb = arm.pose.bones[bone]
+        if isinstance(v, tuple):                               # a move in model space, turned into the bone's own axes
+            pb.location = pb.bone.matrix_local.to_3x3().inverted() @ Vector(v); pb.keyframe_insert("location", frame=0)
+        else:                                                  # a bend (radians) about the bone's own x axis
+            pb.rotation_mode = "QUATERNION"; pb.rotation_quaternion = Quaternion((1, 0, 0), v)
+            pb.keyframe_insert("rotation_quaternion", frame=0)
     ad.action = None
     return act
 
