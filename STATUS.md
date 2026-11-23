@@ -96,6 +96,15 @@ Lost Toy Room: Part 1 `7551785-file-2041223862239218930.mp4`, Part 2 `...-140816
 - `stories/the-snowman/` (story, about 55 s, for Tue 1 Dec): The Snowman Nobody Builds.
 Both use the new rules: Quaternius people, names, hook, lock-in, re-hooks, question. Not voiced yet.
 
+## Publishing moved off Metricool (23 Nov 2026, owner: "switch every account to Windsor")
+Metricool's free plan hit its limit at 13:30 on 23 Nov ("You have reached your Metricool account limit"): every post after that fails.
+- **Instagram:** Windsor has no scheduling, so each slot this week (24 to 29 Nov, 18 posts) has a one-shot wake-up into this
+  session that posts with Windsor create_video_post / create_story / create_carousel_post at that time, then adds the first comment.
+- **YouTube:** Windsor upload_video (YouTube's own publish_at) was rate-limited on 23 Nov; an automatic retry is set
+  (trig_01RgAUH6noXseT7pEvpuSakw, 20:56 UTC). If it keeps failing: the owner upgrades Metricool or uploads in the YouTube app.
+- **TikTok and Pinterest:** Windsor cannot post to them. They stay in Metricool (failing while over the limit).
+- Risk: if Metricool's limit resets, its still-scheduled Instagram and YouTube posts could double up; check before 1 Dec.
+
 ## Automation
 - **Weekly auto plan:** scheduled task "Dustlight weekly auto plan" (trig_01BsS8QAXWsFZhnnJvJ8C6cA), every Sunday 11:33 Riga, first run 22 Nov 2026. It fires into this session and runs `/yt-plan` auto plan mode: gaps, trends, formats, all scripts, then one approval message. Nothing is voiced, rendered or scheduled before the owner approves.
 - **Friday analytics:** scheduled task "Dustlight Friday analytics" (trig_01YPHE18fFQDEwKDsYjtvnUW), Fridays 14:37 Riga: per-video stats by format, look and character model, three changes for the Sunday plan.
