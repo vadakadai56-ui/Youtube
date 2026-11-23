@@ -10,3 +10,4 @@ __pycache__/
 .claude/skills/real-sfx/vendor/venv-audiolm/
 .claude/skills/real-sfx/vendor/models/
 audio/
+previews/
