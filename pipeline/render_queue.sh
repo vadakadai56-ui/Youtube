@@ -8,8 +8,8 @@ for s in "$@"; do
   while pgrep -f "pipeline/anim.py stories/" >/dev/null; do sleep 60; done
   mkdir -p "$ROOT/$s"
   echo "START $s $(date -u +%H:%M)"
-  PCT=50; ES=8; [ -f "stories/$s/render.env" ] && . "stories/$s/render.env"     # per-story overrides (e.g. PCT=75 for story videos)
-  STYLE=lowpoly ENGINE=EEVEE PCT=$PCT ES=$ES ~/.dustlight-venv/bin/python pipeline/anim.py "stories/$s" "$ROOT/$s" all > "$ROOT/$s/render.log" 2>&1
+  ( export STYLE=lowpoly ENGINE=EEVEE PCT=50 ES=8; [ -f "stories/$s/render.env" ] && { set -a; . "stories/$s/render.env"; set +a; }   # per-story,
+    ~/.dustlight-venv/bin/python pipeline/anim.py "stories/$s" "$ROOT/$s" all > "$ROOT/$s/render.log" 2>&1 )   # e.g. STYLE=toon TOON_LINES=0
   echo "END $s $(date -u +%H:%M) $(grep -c SHOT_DONE "$ROOT/$s/render.log") shots, errors: $(grep -c Traceback "$ROOT/$s/render.log")"
   [ -n "$EDIT" ] && [ "$(grep -c SHOT_DONE "$ROOT/$s/render.log")" -gt 0 ] && ! grep -q Traceback "$ROOT/$s/render.log" && {   # EDIT=v2: edit + QC too
     python3 pipeline/edit.py "stories/$s" "$ROOT/$s" "audio/$s.mp3" "out/$s-$EDIT.mp4" 2>&1 | tail -1
