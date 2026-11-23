@@ -137,4 +137,4 @@ def sound(S):
     S.add(S.pad([261.6, 329.6, 392.0, 523.3], 6.0, 0.05, 3.0), C["m16"], 0.09)
     for j, m in enumerate([72, 76, 79, 84, 88]): S.add(S.bell(S.note(m), 1.6), C["m16"] + 0.05 + j * 0.15, 0.06)
 HOOK = "People are beginning to realise they forget most of today by tomorrow."
-REHOOK = (C["m9"] + 0.2, "Wait for Sunday…")
+REHOOK = [(C["m7"] + 0.2, "Wait for Sunday…"), (C["m13"] + 3.0, "Now wait for the phone call…")]

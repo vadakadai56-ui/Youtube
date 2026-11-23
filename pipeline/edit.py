@@ -9,7 +9,7 @@ STORY_DIR/edit_config.py defines:
   CAPTION = {"words": 1, "y": 520, "size": 140}                    # optional caption style (default 3 words, y 1240, size 92)
   END_LINES = [(text, font_size, y, rgb, italic, delay)]           # end card text; with QUICK_END only the first line is used, over the last shot
   QUICK_END = True                                                 # default: no black end card, the video ends TAIL (0.8 s) after the payoff
-  REHOOK = (t, "text")                                             # optional: a line on screen mid-video reminding viewers what they wait for
+  REHOOK = (t, "text") or a list of them                                             # optional: a line on screen mid-video reminding viewers what they wait for
   def sound(S): ...                                                # music and effects using the S toolkit below
   def overlay(img, t): ...                                         # optional on-screen graphics (typed headline, year counter), drawn under the captions
 Real recordings: S.sample("ambience/fire", at, dur, g) plays a sound from the Dustlight library (~/dustlight-sfx, see pipeline/sfx_library.py).
@@ -185,10 +185,12 @@ def main(story_dir, frames_dir, narration, outf):
         raw = re.sub(r"\[[^\]]*\]", "", open(os.path.join(story_dir, "narration.txt")).read()).strip()
         hook = re.split(r"(?<=[.?!])\s", raw.replace("...", "\u2026"), maxsplit=1)[0].strip()
     HOOK_T = getattr(C, "HOOK_SECONDS", 2.6)
-    rehook = getattr(C, "REHOOK", None); RH_D = 1.8
+    rh = getattr(C, "REHOOK", None); RH_D = 1.8
+    rehooks = [rh] if rh and isinstance(rh[0], (int, float)) else list(rh or [])     # one (t, text) or a list of them
     def draw_hook(img, t):
+        live = [r for r in rehooks if r[0] <= t < r[0] + RH_D]
         if hook and t < HOOK_T: txt_, a = hook, min(1.0, (HOOK_T - t) / 0.3)
-        elif rehook and rehook[0] <= t < rehook[0] + RH_D: txt_, a = rehook[1], min(1.0, (t - rehook[0]) / 0.15, (rehook[0] + RH_D - t) / 0.3)
+        elif live: r = live[0]; txt_, a = r[1], min(1.0, (t - r[0]) / 0.15, (r[0] + RH_D - t) / 0.3)
         else: return
         f = FONT[76]; d = ImageDraw.Draw(img); words_, lines, line = txt_.split(), [], ""
         for w_ in words_:

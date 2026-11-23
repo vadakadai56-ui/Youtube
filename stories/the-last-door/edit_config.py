@@ -36,5 +36,5 @@ def sound(S):
     for j in range(4): S.add(S.bell(S.note(98 + j % 2), 0.2), C["d10"] + 1.3 + j * 0.09, 0.04)   # key jingle
     S.sample("foley/door", C["d12"] + 0.05, 1.5, g=0.35, pick=1, fade=0.02)
     S.sample("foley/footsteps", C["d8"], _D["d8"], g=0.2, pick=0)
-REHOOK = (C["d8"] + 0.2, "Wait for door 25…")
+REHOOK = [(C["d5"] + 0.2, "So what is behind door 25?"), (C["d8"] + 0.2, "Wait for door 25…")]
 HOOK = "Why did Grandad never open door 25?"
