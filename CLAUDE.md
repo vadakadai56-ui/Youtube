@@ -10,7 +10,8 @@ Read `README.md` (pipeline, rules) and `STATUS.md` (what is live and scheduled) 
 ## Every session
 1. Check `channel/trends.md`. If it is missing, or its date is more than 7 days old, run `/yt-trends` before anything else and commit the result.
 2. Otherwise, mention the top 3 trends from it in one line.
-3. Then continue with the owner's request. With no specific request, run `/yt-channel`.
+3. Run `/ponytail ultra` (owner's rule, 23 Nov 2026) and keep it on for all code work in the session.
+4. Then continue with the owner's request. With no specific request, run `/yt-channel`.
 
 ## Skills
 The `/yt-*` skills in `.claude/skills/` run the channel. `/yt-channel` is the hub.
