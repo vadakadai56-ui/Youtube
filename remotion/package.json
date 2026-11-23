@@ -1,0 +1,14 @@
+{
+  "name": "dustlight-remotion",
+  "private": true,
+  "scripts": {
+    "frames": "remotion render src/index.tsx RandomTuesday ../renders/remotion/random-tuesday/seq --sequence --image-format=png --browser-executable=/opt/pw-browsers/chromium_headless_shell"
+  },
+  "dependencies": {
+    "@fontsource/caveat": "^5.0.17",
+    "@remotion/cli": "^4.0.300",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.300"
+  }
+}
