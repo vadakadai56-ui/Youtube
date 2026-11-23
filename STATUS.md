@@ -11,6 +11,8 @@
 Parts 2 and 3 end cards say "PART 3 · NEXT" and "THE FINALE · NEXT", because the parts were released 2 hours apart.
 
 ## Scheduled
+**24 Nov 2026 (owner): Instagram only for now.** All 11 YouTube posts for 23 to 28 Nov are **Paused** in the scheduler (YouTube kept refusing uploads through Windsor). Turn them back on in the scheduler (Status: Scheduled) when wanted; A Normal Night never went up.
+
 - **The Second Cup**: 20 Nov 2026 16:00 Riga (Metricool post uuid -1017785154483633580). Source: Dropbox `/Youtube/Video Nov 20 2026, 1 09 42 AM.mp4` (the 52 MB phone copy, 68.6 s).
   - Title: "He makes two cups of tea every morning. Nobody knows why."
   - First comment: "Who would you make the second cup for? 👇"
