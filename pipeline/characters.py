@@ -380,9 +380,8 @@ def person(name, loc=(0, 0, 0), rot=0.0, h=0.55, action="Idle", speed=1.0, offse
     """A Quaternius person (see PEOPLE, e.g. "W_Casual", "M_Suit") standing at loc, facing -y like the other models.
     h scales the 1.8 m model to the sets' size (0.55 gives an adult about 1 unit tall, like clay()). action is one of the
     model's own clips (Idle, Walk, Run, Wave, Interact, ...); speed and offset (seconds) keep two people out of step.
-    age: "adult" | "kid" (smaller, bigger head, quicker) | "old" (grey hair, slower). hair: an RGB to recolour.
-    shortcut: "old" does not read as old yet (the stoop layer does not apply, light hair shows outline stripes); use a real
-    elderly model before a grandparent story needs one.
+    age: "adult" | "kid" (smaller, bigger head, quicker) | "old" (white hair, a stoop, slower). hair: an RGB to recolour.
+    The stoop shows best from the side or three-quarter view; straight on, an old person mostly reads as shorter.
     Returns {root, arm, base, clips}; change the clip later with play()."""
     with bpy.data.libraries.load(os.path.join(QDIR, name + ".blend"), link=False) as (src, dst):
         dst.objects = list(src.objects); dst.actions = [a for a in src.actions if a not in bpy.data.actions]
@@ -393,7 +392,7 @@ def person(name, loc=(0, 0, 0), rot=0.0, h=0.55, action="Idle", speed=1.0, offse
         o.hide_render = o.hide_viewport = weapon
         if o.type == "ARMATURE": arm = o
     if age == "kid": h *= 0.66; speed *= 1.15; arm.pose.bones["Head"].scale = (1.45, 1.45, 1.45)   # scale is never keyed
-    if age == "old": speed *= 0.8; hair = hair or (0.72, 0.72, 0.74)   # soft grey: pure white shows the outline between strands
+    if age == "old": speed *= 0.8; hair = hair or (0.86, 0.86, 0.88)
     if hair:
         for o in dst.objects:
             if o.type != "MESH": continue

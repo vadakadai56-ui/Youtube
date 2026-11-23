@@ -98,7 +98,8 @@ def toon_pass(line_px=None):
         if o.type != "MESH" or not any(m.type == "ARMATURE" for m in o.modifiers): continue   # Freestyle smears on them
         if o.name not in small.objects: small.objects.link(o)
         o.data.materials.append(ink)
-        sol = o.modifiers.new("toon_hull", "SOLIDIFY"); sol.thickness = 0.012 / max(o.matrix_world.to_scale())
+        thick = 0.005 if "Head" in o.name or "Formad" in o.name else 0.012     # thin on heads: hair strands would stripe
+        sol = o.modifiers.new("toon_hull", "SOLIDIFY"); sol.thickness = thick / max(o.matrix_world.to_scale())
         sol.use_flip_normals = True; sol.material_offset = len(o.data.materials) - 1; sol.use_rim = False
     sc.view_settings.view_transform = "Standard"; sc.view_settings.look = "None"; sc.view_settings.exposure = 0
 
