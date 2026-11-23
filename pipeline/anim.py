@@ -2,7 +2,7 @@
 
 usage (with the bpy venv python):
   ENGINE=EEVEE python pipeline/anim.py STORY_DIR OUT_DIR [shot ...|all]
-  PREVIEW=1 PCT=30 ES=8 ... renders only frame 0 of each shot, for a fast framing check.
+  PREVIEW=1 PCT=30 ES=8 ... renders only frame 0 of each shot (or PREVIEW_AT=0.5: halfway), for a fast framing check.
   STILLS="w2:4.0,w3:2.5" PCT=100 ... renders single stills at those shot times (carousels).
 
 STORY_DIR/shots.py must define SHOTS = {"name": (setup_fn, duration_seconds)}.
@@ -43,9 +43,10 @@ def run(mod, name, out_root, preview=False):
     for f in range(n):
         p = os.path.join(out, f"{f:04d}.png")
         if os.path.exists(p) and not preview: continue
-        bpy.context.scene.frame_set(int(f / fps * 24), subframe=(f / fps * 24) % 1)   # clock for ready-made clips (24 fps)
-        upd(f / fps)
-        if _life: _life(f / fps)                          # blinks and glances for every character
+        t = dur * float(os.environ.get("PREVIEW_AT", 0)) if preview else f / fps   # PREVIEW_AT=0.6: preview 60% into the shot
+        bpy.context.scene.frame_set(int(t * 24), subframe=(t * 24) % 1)   # clock for ready-made clips (24 fps)
+        upd(t)
+        if _life: _life(t)                                # blinks and glances for every character
         scene.render(p)
     print(f"SHOT_DONE {name} frames={n} secs={time.time() - t0:.0f}", flush=True)
 
