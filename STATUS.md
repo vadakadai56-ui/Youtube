@@ -57,6 +57,8 @@ Render queue restarted 23 Nov: once-a-day (partly done), random-tuesday, memory-
 | 25 Nov 20:00 | Carousel, Same Window, 6 slides (Dustlight-Files carousels/same-window/) | id 438554030 |
 | 27 Nov 20:00 | Trial Reel, The Empty Swing, new hook "Why does he push an empty swing every night?" (media videos/trial-empty-swing.mp4) | id 438581674 |
 Weekly Instagram rhythm from 23 Nov: Trial Reels Tue and Fri 20:00, Carousels Wed and Sun 20:00 (Sun 29: Number Nine carousel, 6 slides, 20:00, id 438592054).
+Fri 27 afternoon, Once a Day (Blender 3D): YouTube 16:00 (438648368), Instagram Reel 18:00 (438650149), TikTok 18:00 (438650248), Story 19:30 (438650326), media videos/once-a-day.mp4.
+Sat 28 morning, A Random Tuesday (Remotion 2D scrapbook, the first 2D video; the 3D render was stopped): YouTube 10:00 (438650475), Instagram Reel 12:00 (438650576), TikTok 12:00 (438650681), Story 13:30 (438650782), media videos/random-tuesday.mp4.
 Lost Toy Room is not posted to Instagram (owner's choice, 21 Nov). Times follow Metricool's best Instagram hours (10:00 and 18:00 Riga); YouTube stays at 16:00, its best hour.
 
 ## TikTok (@dustlight00, formerly @divine.773, via Metricool, AI label on)
