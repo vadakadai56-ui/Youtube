@@ -245,6 +245,8 @@ def clay(loc, col, rot=0.0, h=1.0, name="clay", style="kid", hair=None, skin=(0.
     if mouth == "open": H.append(sphere((0, my, mz), hr * 0.16, blk, scale=(1, 0.4, 0.8)))
     elif mouth == "flat": H.append(cyl((0, my, mz), 0.012, hr * 0.4, blk, rot=(0, math.pi / 2, 0)))
     else: H.append(torus((0, my + 0.01, mz + hr * 0.08), hr * 0.22, 0.011, blk, rot=(math.pi / 2 - 0.25, 0, 0)))
+    base_mouth = H[-1]
+    talk = sphere((0, my, mz), hr * 0.16, blk, scale=(1, 0.4, 0.001)); H.append(talk)    # opened by say() while speaking
     hcol = hair or {"kid": (0.4, 0.25, 0.12), "adult": (0.3, 0.2, 0.12), "old": (0.95, 0.94, 0.92)}[style]
     hm = clay_mat("hair_" + name, hcol)
     if hat:
@@ -277,7 +279,8 @@ def clay(loc, col, rot=0.0, h=1.0, name="clay", style="kid", hair=None, skin=(0.
     root.location = loc; root.rotation_euler[2] = rot; root.scale = (h, h, h)
     if style == "old": root.rotation_euler[0] = 0.08
     return {"root": root, "head": head, "L": arms["L"], "R": arms["R"], "LL": legs["LL"], "LR": legs["LR"],
-            "cheek": cheek, "base": Vector(loc), "hand_z": az - 0.26, "arm_x": 0.2}
+            "cheek": cheek, "base": Vector(loc), "hand_z": az - 0.26, "arm_x": 0.2, "mouth": base_mouth, "talk": talk,
+            "mouth_scale": tuple(base_mouth.scale)}
 
 
 def dog(loc, rot=0.0, col=(0.96, 0.92, 0.84)):
@@ -299,6 +302,24 @@ def dog(loc, rot=0.0, col=(0.96, 0.92, 0.84)):
         if o.parent is None: o.parent = root
     root.location = loc; root.rotation_euler[2] = rot
     return {"root": root, "head": head, "tail": tail}
+
+
+def say(d, t, words):
+    """Lip flap: d's mouth opens and closes about once per syllable during each spoken word.
+    words = [(start, end), ...] in shot seconds, e.g. from words.json minus the shot's start. Clay characters only for now.
+    shortcut: syllables are guessed from word length (0.16 s each), not phonemes; upgrade if close-ups need real visemes."""
+    o = 0.0
+    for a, b in words:
+        if a <= t <= b:
+            n = max(1, round((b - a) / 0.16)); o = abs(math.sin(math.pi * n * (t - a) / max(b - a, 0.05)))
+    d["talk"].scale.z = 0.001 + 0.8 * o
+    d["talk"].scale.x = 0.8 + 0.2 * o
+    d["mouth"].scale = (0.001,) * 3 if o > 0.15 else d["mouth_scale"]
+
+
+def spans(words, t0, t1, shot_start):
+    """Word spans from a words.json list between global times t0 and t1, shifted into shot time."""
+    return [(a - shot_start, b - shot_start) for _, a, b in words if t0 <= a < t1]
 
 
 # ---------------------------------------------------------------- life: automatic blinks and glances for every character
@@ -378,6 +399,7 @@ def _weight(t):
 
 def _selfcheck():
     """Assert-based check of the math pieces that need no Blender scene."""
+    assert spans([["Not", 18.54, 18.8], ["x", 30, 31]], 18, 22, 14.72) == [(18.54 - 14.72, 18.8 - 14.72)]
     a = Vector((0, -1.0, 0)); c, sn = math.cos(0), math.sin(0)
     assert (a.x * c - a.y * sn, a.x * sn + a.y * c) == (0.0, -1.0)
     assert max(-0.12, min(0.12, -0.18 * -1.0)) == 0.12          # moving toward -y leans the top toward -y (positive x rotation)

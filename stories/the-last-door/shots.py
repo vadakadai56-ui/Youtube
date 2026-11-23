@@ -8,11 +8,13 @@ import scene                  # noqa
 scene.STYLE = "clay"
 from world import *           # noqa
 from world import cam as _cam
-from characters import clay, clay_mat
+from characters import clay, clay_mat, say, spans
 import bpy
 scene.LOOK = os.environ.get("LOOK") or "story"      # per-video grade (scene.LOOKS)
 
 _D = json.load(open(os.path.join(HERE, "durations.json")))
+_W = json.load(open(os.path.join(HERE, "words.json")))
+_S = {n: sum(list(_D.values())[:i]) for i, n in enumerate(_D)}      # shot start, global seconds
 GRANDAD = dict(col=(0.45, 0.35, 0.3), style="old", glasses=True, name="grandad")
 ME = dict(col=(0.3, 0.45, 0.7), style="kid", hair=(0.45, 0.28, 0.12), scarf=(0.9, 0.75, 0.3), name="me")
 AUNT = dict(col=(0.75, 0.45, 0.55), style="adult", hair=(0.25, 0.15, 0.1), name="aunt")
@@ -109,7 +111,9 @@ def d4(rng):            # But for eleven years... he never opened the last one. 
     room(rng); table(); a = advent((-0.14, 0.35, 0.575), opened=tuple(range(1, 25)), scale=0.65)
     g = clay((0.24, 0.8, 0), rot=0.25, **GRANDAD); k = clay((-0.22, -0.15, 0), rot=math.pi * 0.9, **ME)
     c = _cam((0.0, -1.2, 0.95), (0.05, 0.3, 0.72), lens=32, fstop=3.2)
+    lines = spans(_W, 18.5, 19.1, _S["d4"]) + spans(_W, 20.7, 21.5, _S["d4"])     # "Not yet," ... "Not this year."
     def upd(t):
+        say(g, t, lines)
         tap = abs(math.sin(t * 5)) * (3.6 < t < 5.0); g["L"].rotation_euler[0] = -1.0 - 0.15 * tap
         g["head"].rotation_euler[2] = 0.25 * math.sin(t * 1.1) * (t > 5.5); breathe(k, t)
         c.location.y = -1.2 + 0.04 * t
