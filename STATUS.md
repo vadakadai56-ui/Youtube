@@ -36,7 +36,7 @@ Built 22 Nov (shots previewed and fixed, edit configs written): all 10. Renders 
 | Mon 23 | Same Window, v3 cut (quick end + re-hook; media videos/same-window-v3.mp4; now in all 4 posts; scheduled: YT 10:00 uuid -3767051276132791506, IG 12:00 -6233062086669546750, TT 12:00 -6172103828770634222, IG Story 13:30 2165347083173970756) | A Normal Night (scheduled) |
 | Tue 24 | Huss Huss (scheduled: YT 10:00 uuid -7079588557884931580, IG 12:00 -6704071585776185936, TT 12:00 2712745511836271821) | The Sneeze v2, new hook (scheduled: YT 16:00 id 438549787, IG Reel 18:00 id 438549874, TT 18:00 id 438549972; no Story; 61 s; media videos/the-sneeze-v2.mp4) |
 | Wed 25 | Thanksgiving Timeline (scheduled: YT 10:00 id 438550882, IG Reel 12:00 id 438551053, TT 12:00 id 438551218, IG Story 13:30 id 438551591) | The Extra Plate (scheduled) |
-| Thu 26 | One Word (scheduled: YT 10:00 id 438551712, IG Reel 12:00 id 438551814, TT 12:00 id 438551900, IG Story 13:30 id 438551986) | Vol. 1 long-form (scheduled) |
+| Thu 26 | One Word **remake v3** (Quaternius family, toon, no outlines, gestures at 30 fps; swapped 24 Nov, old file kept as Dustlight-Files videos/one-word-v1.mp4). In the scheduler: YT 10:00, IG Reel 10:00, IG Story 13:30, TT 12:00 by hand | Vol. 1 long-form (scheduled) |
 | Fri 27 | Number Nine (scheduled: YT 10:00 id 438552101, IG Reel 12:00 id 438552182, TT 12:00 id 438552246, IG Story 13:30 id 438552343) | Once a Day (approved) |
 | Sat 28 | A Random Tuesday (approved) | Memory Timer, format 6 (approved) |
 | Sun 29 | First Snow (approved) | The Last Door (approved) |
