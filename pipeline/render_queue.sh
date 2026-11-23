@@ -1,6 +1,7 @@
 #!/bin/bash
 # Render stories one after another (only one render at a time on this machine). Resumable: finished frames are skipped.
-# usage: pipeline/render_queue.sh FRAMES_ROOT story [story ...]     frames go to FRAMES_ROOT/<story>/
+# usage: [EDIT=v2] pipeline/render_queue.sh FRAMES_ROOT story [story ...]     frames go to FRAMES_ROOT/<story>/
+# With EDIT set, each finished render is edited to out/<story>-$EDIT.mp4 (narration audio/<story>.mp3) and QC'd.
 ROOT=$1; shift
 cd "$(dirname "$0")/.."
 for s in "$@"; do
@@ -10,4 +11,7 @@ for s in "$@"; do
   PCT=50; ES=8; [ -f "stories/$s/render.env" ] && . "stories/$s/render.env"     # per-story overrides (e.g. PCT=75 for story videos)
   STYLE=lowpoly ENGINE=EEVEE PCT=$PCT ES=$ES ~/.dustlight-venv/bin/python pipeline/anim.py "stories/$s" "$ROOT/$s" all > "$ROOT/$s/render.log" 2>&1
   echo "END $s $(date -u +%H:%M) $(grep -c SHOT_DONE "$ROOT/$s/render.log") shots, errors: $(grep -c Traceback "$ROOT/$s/render.log")"
+  [ -n "$EDIT" ] && [ "$(grep -c SHOT_DONE "$ROOT/$s/render.log")" -gt 0 ] && ! grep -q Traceback "$ROOT/$s/render.log" && {   # EDIT=v2: edit + QC too
+    python3 pipeline/edit.py "stories/$s" "$ROOT/$s" "audio/$s.mp3" "out/$s-$EDIT.mp4" 2>&1 | tail -1
+    python3 pipeline/qc.py "out/$s-$EDIT.mp4" 2>&1 | tail -1; }
 done
