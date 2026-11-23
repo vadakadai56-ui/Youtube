@@ -45,6 +45,7 @@ def blocky(loc, shirt, pants=(0.2, 0.25, 0.4), skin="light", hair=None, style="k
               sphere((sx * hs * 0.2 + 0.008, ey - 0.008, hc + 0.035), 0.009, wht),
               cube((sx * hs * 0.2, ey, hc + 0.075), (0.05, 0.01, 0.012), blk, rot=(0, sx * 0.18, 0)),
               sphere((sx * hs * 0.32, ey + 0.004, hc - 0.03), 0.025, cheek, scale=(1, 0.3, 0.7))]
+    m0 = len(H)
     if mouth == "flat":                             # deadpan line
         H.append(cube((0, ey, hc - 0.05), (0.06, 0.01, 0.012), blk))
     elif mouth == "open":                           # surprised "o"
@@ -52,6 +53,7 @@ def blocky(loc, shirt, pants=(0.2, 0.25, 0.4), skin="light", hair=None, style="k
     else:
         for k in range(5):                          # little smile
             x = -0.03 + k * 0.015; H.append(sphere((x, ey, hc - 0.05 + 10 * x * x), 0.007, blk, seg=8))
+    TALK = _talk(H, m0, sphere((0, ey, hc - 0.055), 0.024, blk, scale=(0.8, 0.3, 0.001)))
     hcol = hair or {"kid": (0.22, 0.14, 0.08), "gran": (0.93, 0.92, 0.9), "dad": (0.15, 0.1, 0.07), "mum": (0.45, 0.26, 0.12)}[style]
     hm = mat("bhair_" + name, hcol, 0.9, sheen=0.4, noise=0.2)
     top = hc + hs / 2
@@ -94,7 +96,7 @@ def blocky(loc, shirt, pants=(0.2, 0.25, 0.4), skin="light", hair=None, style="k
         if o.parent is None: o.parent = root
     root.location = loc; root.rotation_euler[2] = rot; root.scale = (h, h, h)
     return {"root": root, "head": head, "L": arms["L"], "R": arms["R"], "LL": legs["LL"], "LR": legs["LR"],
-            "cheek": cheek, "base": Vector(loc), "hand_z": hz - 0.06 - arm_len, "arm_x": wide / 2 + 0.05}
+            "cheek": cheek, "base": Vector(loc), "hand_z": hz - 0.06 - arm_len, "arm_x": wide / 2 + 0.05, **TALK}
 
 
 def stride(d, t, speed=1.0, direction=(0, -1), amp=0.6, rate=2.0):
@@ -154,12 +156,14 @@ def bean(loc, col, rot=0.0, h=1.0, name="bean", style="kid", mouth="smile", glas
               sphere((sx * r * 0.32, ey - r * 0.17, ez + r * 0.07), r * 0.06, wht),
               sphere((sx * r * 0.62, ey + r * 0.12, ez - r * 0.38), r * 0.13, cheek, scale=(1, 0.35, 0.7))]
     mz = ez - r * 0.5; my = -r - 0.006                          # the mouth sits on the cylinder surface
+    m0 = len(H)
     if mouth == "flat": H.append(cube((0, my, mz), (r * 0.35, 0.01, 0.014), blk))
     elif mouth == "open": H.append(sphere((0, my + 0.004, mz - 0.01), r * 0.14, blk, scale=(0.9, 0.3, 1.0)))
     elif mouth == "worried":
         for k in range(5): x = (-2 + k) * r * 0.1; H.append(sphere((x, my, mz - 0.012 * (2 - abs(k - 2))), 0.009, blk, seg=8))
     else:
         for k in range(5): x = (-2 + k) * r * 0.1; H.append(sphere((x, my, mz + 0.03 * (x / (r * 0.2)) ** 2), 0.009, blk, seg=8))
+    TALK = _talk(H, m0, sphere((0, my + 0.004, mz - 0.01), r * 0.14, blk, scale=(0.9, 0.3, 0.001)))
     top = feet_h + tall
     if glasses or style == "gran":
         fm = mat("beanglass", (0.5, 0.33, 0.22), 0.3, metal=0.6)
@@ -195,7 +199,7 @@ def bean(loc, col, rot=0.0, h=1.0, name="bean", style="kid", mouth="smile", glas
         if o.parent is None: o.parent = root
     root.location = loc; root.rotation_euler[2] = rot; root.scale = (h, h, h)
     return {"root": root, "head": head, "L": arms["L"], "R": arms["R"], "LL": legs["LL"], "LR": legs["LR"],
-            "cheek": cheek, "base": Vector(loc), "hand_z": az - 0.18, "arm_x": r * 1.02}
+            "cheek": cheek, "base": Vector(loc), "hand_z": az - 0.18, "arm_x": r * 1.02, **TALK}
 
 
 def clay_mat(name, col, rough=0.75):
@@ -241,12 +245,11 @@ def clay(loc, col, rot=0.0, h=1.0, name="clay", style="kid", hair=None, skin=(0.
         H += [sphere((sx * hr * 0.38, -hr * 0.86, hz + hr * 0.12), hr * 0.2, wht, scale=(1, 0.5, 1.15)),
               sphere((sx * hr * 0.38, -hr * 0.95, hz + hr * 0.1), hr * 0.11, blk, scale=(1, 0.5, 1.1)),
               sphere((sx * hr * 0.62, -hr * 0.75, hz - hr * 0.22), hr * 0.16, cheek, scale=(1, 0.4, 0.75))]
-    my = -hr * 0.9; mz = hz - hr * 0.42
+    my = -hr * 0.9; mz = hz - hr * 0.42; m0 = len(H)
     if mouth == "open": H.append(sphere((0, my, mz), hr * 0.16, blk, scale=(1, 0.4, 0.8)))
     elif mouth == "flat": H.append(cyl((0, my, mz), 0.012, hr * 0.4, blk, rot=(0, math.pi / 2, 0)))
     else: H.append(torus((0, my + 0.01, mz + hr * 0.08), hr * 0.22, 0.011, blk, rot=(math.pi / 2 - 0.25, 0, 0)))
-    base_mouth = H[-1]
-    talk = sphere((0, my, mz), hr * 0.16, blk, scale=(1, 0.4, 0.001)); H.append(talk)    # opened by say() while speaking
+    TALK = _talk(H, m0, sphere((0, my, mz), hr * 0.16, blk, scale=(1, 0.4, 0.001)))
     hcol = hair or {"kid": (0.4, 0.25, 0.12), "adult": (0.3, 0.2, 0.12), "old": (0.95, 0.94, 0.92)}[style]
     hm = clay_mat("hair_" + name, hcol)
     if hat:
@@ -279,8 +282,7 @@ def clay(loc, col, rot=0.0, h=1.0, name="clay", style="kid", hair=None, skin=(0.
     root.location = loc; root.rotation_euler[2] = rot; root.scale = (h, h, h)
     if style == "old": root.rotation_euler[0] = 0.08
     return {"root": root, "head": head, "L": arms["L"], "R": arms["R"], "LL": legs["LL"], "LR": legs["LR"],
-            "cheek": cheek, "base": Vector(loc), "hand_z": az - 0.26, "arm_x": 0.2, "mouth": base_mouth, "talk": talk,
-            "mouth_scale": tuple(base_mouth.scale)}
+            "cheek": cheek, "base": Vector(loc), "hand_z": az - 0.26, "arm_x": 0.2, **TALK}
 
 
 def dog(loc, rot=0.0, col=(0.96, 0.92, 0.84)):
@@ -304,6 +306,12 @@ def dog(loc, rot=0.0, col=(0.96, 0.92, 0.84)):
     return {"root": root, "head": head, "tail": tail}
 
 
+def _talk(H, m0, talk):
+    """Remember a head's mouth parts (H[m0:]) and add the hidden open mouth say() uses."""
+    H.append(talk)
+    return {"mouth": [(o, tuple(o.scale)) for o in H[m0:-1]], "talk": talk}
+
+
 def say(d, t, words):
     """Lip flap: d's mouth opens and closes about once per syllable during each spoken word.
     words = [(start, end), ...] in shot seconds, e.g. from words.json minus the shot's start. Clay characters only for now.
@@ -314,7 +322,7 @@ def say(d, t, words):
             n = max(1, round((b - a) / 0.16)); o = abs(math.sin(math.pi * n * (t - a) / max(b - a, 0.05)))
     d["talk"].scale.z = 0.001 + 0.8 * o
     d["talk"].scale.x = 0.8 + 0.2 * o
-    d["mouth"].scale = (0.001,) * 3 if o > 0.15 else d["mouth_scale"]
+    for m, sc in d["mouth"]: m.scale = (0.001,) * 3 if o > 0.15 else sc
 
 
 def spans(words, t0, t1, shot_start):

@@ -21,8 +21,11 @@ def peg(loc, body_col, kind="walter", rot=0.0, scarf=None, h=1.0, hair=None):
     for sx in (-1, 1):
         H += [sphere((sx * 0.05, -0.135, 0.805), 0.018, blk), sphere((sx * 0.05 + 0.006, -0.15, 0.812), 0.006, wht),
               sphere((sx * 0.088, -0.118, 0.765), 0.026, cheek, scale=(1, 0.4, 0.8))]
+    m0 = len(H)
     for k in range(7):                                                   # painted dotted smile
         x = -0.036 + k * 0.012; H.append(sphere((x, -0.146 + abs(x) * 0.3, 0.748 + 12 * x * x), 0.0065, blk, seg=8))
+    H.append(sphere((0, -0.146, 0.75), 0.02, blk, scale=(0.9, 0.3, 0.001)))   # hidden open mouth for characters.say()
+    TALK = {"mouth": [(o, tuple(o.scale)) for o in H[m0:-1]], "talk": H[-1]}
     hair_w = mat("whitehair", WHITE, 0.9, sheen=0.5)
     if kind == "walter":
         frame = mat("glasses", (0.15, 0.12, 0.1), 0.3, metal=0.7)
@@ -72,7 +75,7 @@ def peg(loc, body_col, kind="walter", rot=0.0, scarf=None, h=1.0, hair=None):
     for o in P + [head, arms["L"], arms["R"]]:
         if o.parent is None: o.parent = root
     root.location = loc; root.rotation_euler[2] = rot; root.scale = (h, h, h)
-    return {"root": root, "head": head, "L": arms["L"], "R": arms["R"], "cheek": cheek, "base": Vector(loc)}
+    return {"root": root, "head": head, "L": arms["L"], "R": arms["R"], "cheek": cheek, "base": Vector(loc), **TALK}
 
 
 def walk(d, t, speed=1.0, direction=(0, -1)):

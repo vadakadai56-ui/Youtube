@@ -58,6 +58,7 @@ if __name__ == "__main__":
             nm, t = item.split(":"); t = float(t)
             scene.reset(); upd = mod.SHOTS[nm][0](random.Random(11))
             for k in range(0, int(t * FPSA) + 1): upd(k / FPSA)   # step up to t so stateful shots end in the right place
+            upd(t)                                                # then land on t itself, not the last whole frame before it
             if _life: _life(t)
             scene.render(os.path.join(out_root, f"{nm}_{t:g}.png")); print("STILL", nm, t, flush=True)
         sys.exit(0)
