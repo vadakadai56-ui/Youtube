@@ -66,3 +66,15 @@ Rotate through all four formats with equal slots, plus new formats as they appea
 | **Voice** | George, warm storyteller, slow | Young, flat, deadpan first person; no drama in the voice | Energetic second-person narrator, quick | Young first person, cheerful, a bit proud | Calm, curious second-person narrator, a little dry |
 | **Music** | Piano and pads, minor to major | Silence or low drone under the scare, a horror sting, then a dry comic "deflate" sound on the reveal | Bouncy plucks, a "rewind" whoosh on each use of the power, darker at the cost | Plucky upbeat music, a triumphant hit at the payoff | Soft ambient pulse, a tick or pop on every number change, a rise at the twist |
 | **Ending** | Callback to the first line | "So yeah…" deadpan sign-off | Open cliffhanger | "Comment / type your…" prompt | Twist line, "What number… tell me in the comments", "follow for the next what if" |
+
+## On-screen hook templates (owner's "6 viral hooks" clip, 23 Nov 2026)
+The on-screen hook (`HOOK` in edit_config.py) shows for the first ~2.5 s, above the captions, and must not repeat the first spoken line.
+Pick the template that fits the story; the story must pay it off.
+1. **"Is it possible to …?"** — a superpower or challenge. *Is it possible to ace every test with one sneeze?*
+2. **"Let's come clean about …"** — a confession or relatable home story. *Let's come clean about Thanksgiving in my house.*
+3. **"Everyone says X. Nobody says this."** — a twist on the expected answer. *Everyone says 'family'. Nobody says this.*
+4. **"People are beginning to realise …"** — a fact that sounds new. *People are beginning to realise they forget most of today by tomorrow.*
+5. **"Why does he/she …?"** — a strange routine whose reason is the twist. *Why does he push an empty swing every night?*
+6. **A plain statement of the strange thing** — when the image already raises the question. *She waved at every train for 70 years.*
+Also, from the retention clip: end on the payoff (`QUICK_END`, no end card), and add a mid-video re-hook (`REHOOK`, e.g. "Wait for 2026…") just before the slowest stretch.
+Scores and notes on each hook: `channel/hook-scores.md`.

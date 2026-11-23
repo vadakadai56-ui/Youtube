@@ -33,12 +33,13 @@ if __name__ == "__main__":
     src = sys.argv[1]; name = sys.argv[2] if len(sys.argv) > 2 else os.path.basename(src)
     if not os.path.isdir(os.path.join(REPO, ".git")): sys.exit(f"no clone at {REPO}")
     os.makedirs(os.path.join(REPO, "videos"), exist_ok=True)
-    dst = os.path.join(REPO, "videos", name)
-    upload_copy(src, dst)
+    # pull BEFORE copying: git refuses to rebase with the new file unstaged
     if subprocess.run(["git", "rev-parse", "-q", "--verify", "HEAD"], cwd=REPO, capture_output=True).returncode == 0:
         run("git", "pull", "-q", "--rebase", "origin", "main", cwd=REPO)
     else:
         run("git", "checkout", "-q", "-b", "main", cwd=REPO)             # first upload into an empty repo
+    dst = os.path.join(REPO, "videos", name)
+    upload_copy(src, dst)
     run("git", "add", os.path.join("videos", name), cwd=REPO)
     run("git", "commit", "-qm", f"Add {name}{ATTR}", cwd=REPO)
     run("git", "-c", "push.negotiate=true", "push", "-q", "origin", "main", cwd=REPO)
