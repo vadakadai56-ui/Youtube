@@ -1,0 +1,253 @@
+<title>Dustlight Scheduler</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=TASA+Orbiter:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow column (a phone first), a status strip, then the queue grouped by day; cards open in place to edit. */
+:root {
+  --bg: #f4f6f5; --layer: #ffffff; --border: #dde3e1; --fg: #121716; --feint: #66706d; --deep: #e9edec;
+  --yellow: oklch(.72 .16 85); --rind: oklch(.56 .14 155); --blueberry: oklch(.52 .18 255);
+  --blackcurrant: oklch(.5 .18 302); --dragonfruit: oklch(.56 .2 345); --watermelon: oklch(.56 .21 27); --error: #d83a34;
+  --sans: "TASA Orbiter", "Inter", system-ui, sans-serif; --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d1111; --layer: #13181a; --border: #1e2427; --fg: #ededec; --feint: #7a8180; --deep: #060607;
+  --yellow: oklch(.88 .18 96); --rind: oklch(.76 .15 155); --blueberry: oklch(.68 .18 255);
+  --blackcurrant: oklch(.64 .18 302); --dragonfruit: oklch(.72 .2 345); --watermelon: oklch(.67 .22 26.43); --error: #ff5f57;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0d1111; --layer: #13181a; --border: #1e2427; --fg: #ededec; --feint: #7a8180; --deep: #060607;
+  --yellow: oklch(.88 .18 96); --rind: oklch(.76 .15 155); --blueberry: oklch(.68 .18 255);
+  --blackcurrant: oklch(.64 .18 302); --dragonfruit: oklch(.72 .2 345); --watermelon: oklch(.67 .22 26.43); --error: #ff5f57;
+  color-scheme: dark }
+
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--sans); -webkit-font-smoothing: antialiased;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+.wrap { max-width: 720px; margin: 0 auto; padding-block: 28px 64px; display: grid; gap: 22px }
+.kicker { font: 500 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--feint) }
+h1 { font-size: clamp(28px, 7vw, 40px); line-height: 1.05; font-weight: 600; letter-spacing: -.02em; margin: 6px 0 0; text-wrap: balance }
+.lede { color: var(--feint); margin: 8px 0 0; max-width: 60ch }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums }
+
+.strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--border); border-radius: 10px; background: var(--layer); overflow: hidden }
+.strip > div { padding: 12px 14px; display: grid; gap: 4px; min-width: 0 }
+.strip > div + div { border-left: 1px solid var(--border) }
+.strip b { font: 500 22px/1 var(--mono); font-variant-numeric: tabular-nums }
+@media (max-width: 520px) { .strip { grid-template-columns: repeat(2, minmax(0, 1fr)) } .strip > div:nth-child(3) { border-left: 0 } .strip > div:nth-child(n+3) { border-top: 1px solid var(--border) } }
+.next { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  background: repeating-linear-gradient(119deg, transparent 0 7px, color-mix(in srgb, var(--fg) 5%, transparent) 7px 8.5px), var(--layer) }
+.next .t { font: 500 13px var(--mono); color: var(--feint) }
+.next .ttl { font-weight: 600; min-width: 0 }
+
+.bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
+.chip { font: 500 12px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--border); background: transparent;
+  color: var(--feint); padding: 8px 10px; border-radius: 999px; cursor: pointer; transition: color .3s var(--ease), border-color .3s var(--ease), background .3s var(--ease) }
+.chip[aria-pressed="true"] { color: var(--fg); border-color: var(--fg); background: color-mix(in srgb, var(--fg) 6%, transparent) }
+.chip:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--yellow); outline-offset: 2px }
+.spacer { flex: 1 }
+.btn { font: 600 14px var(--sans); border-radius: 6px; padding: 9px 14px; cursor: pointer; border: 1px solid var(--fg); background: var(--fg); color: var(--bg);
+  transition: transform .4s var(--ease), opacity .3s } .btn:active { transform: scale(.97) }
+.btn.ghost { background: transparent; color: var(--fg); border-color: var(--border) }
+.btn.danger { background: transparent; color: var(--error); border-color: color-mix(in srgb, var(--error) 45%, transparent) }
+.btn[disabled] { opacity: .5; cursor: default }
+
+.day { display: grid; gap: 8px }
+.day h2 { margin: 6px 0 0; font-size: 13px }
+.post { border: 1px solid var(--border); border-radius: 10px; background: var(--layer); overflow: hidden; animation: rise .7s var(--ease) both }
+@keyframes rise { from { transform: translateY(8px); opacity: .001 } to { transform: none; opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { .post { animation: none } * { transition: none !important } }
+.head { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 14px; cursor: pointer; width: 100%;
+  background: none; border: 0; color: inherit; text-align: left; font: inherit }
+.head .time { font: 500 15px var(--mono); font-variant-numeric: tabular-nums }
+.head .main { min-width: 0; display: grid; gap: 3px }
+.head .ttl { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.tags { display: flex; gap: 6px; flex-wrap: wrap }
+.tag { font: 500 10.5px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: 4px 6px; border-radius: 3px;
+  color: var(--c); background: color-mix(in oklch, var(--c) 12%, transparent) }
+.pill { font: 500 11px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 6px 8px; border-radius: 999px; white-space: nowrap;
+  color: var(--c); border: 1px solid color-mix(in oklch, var(--c) 40%, transparent) }
+.body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .55s var(--ease) }
+.post.open .body { grid-template-rows: 1fr }
+.body > div { overflow: hidden; min-width: 0 }
+.form { border-top: 1px solid var(--border); padding: 14px; display: grid; gap: 12px }
+.row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px }
+@media (max-width: 520px) { .row { grid-template-columns: minmax(0, 1fr) } }
+label { display: grid; gap: 6px; min-width: 0 }
+input, select, textarea { font: 14px var(--sans); color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 9px 10px; width: 100%; min-width: 0 }
+textarea { min-height: 96px; resize: vertical; line-height: 1.45 }
+.media { font: 12px var(--mono); color: var(--feint); word-break: break-all }
+.media a { color: var(--blueberry) }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
+.note { font-size: 13px; color: var(--feint) }
+.note.err { color: var(--error) }
+.empty { border: 1px dashed var(--border); border-radius: 10px; padding: 26px 18px; text-align: center; color: var(--feint) }
+.add { border: 1px solid var(--border); border-radius: 10px; background: var(--layer) }
+.add[hidden] { display: none !important }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(20px); opacity: 0;
+  background: var(--fg); color: var(--bg); font: 500 13px var(--mono); padding: 10px 14px; border-radius: 999px; transition: all .5s var(--ease); pointer-events: none }
+.toast.on { opacity: 1; transform: translateX(-50%) }
+footer { color: var(--feint); font-size: 13px; max-width: 62ch }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kicker">Dustlight · publishing desk · Europe/Riga</div>
+    <h1>Dustlight Scheduler</h1>
+    <p class="lede">Every upcoming post on YouTube, Instagram, TikTok and Pinterest. Change a time or caption here and Claude publishes it when it is due, checking every hour.</p>
+  </header>
+
+  <section class="strip" aria-label="Summary">
+    <div><span class="kicker">Scheduled</span><b id="nSched">0</b></div>
+    <div><span class="kicker">Posted</span><b id="nPosted">0</b></div>
+    <div><span class="kicker">By hand</span><b id="nHand">0</b></div>
+    <div><span class="kicker">Failed</span><b id="nFailed">0</b></div>
+  </section>
+
+  <div class="next" id="next"><span class="kicker">Next up</span><span class="ttl" id="nextTtl">Loading the queue…</span><span class="t" id="nextT"></span></div>
+
+  <div class="bar" role="group" aria-label="Filter by platform">
+    <button class="chip" data-p="all" aria-pressed="true">All</button>
+    <button class="chip" data-p="youtube" aria-pressed="false">YouTube</button>
+    <button class="chip" data-p="instagram" aria-pressed="false">Instagram</button>
+    <button class="chip" data-p="tiktok" aria-pressed="false">TikTok</button>
+    <button class="chip" data-p="pinterest" aria-pressed="false">Pinterest</button>
+    <span class="spacer"></span>
+    <button class="chip" id="showDone" aria-pressed="false">Show posted</button>
+    <button class="btn" id="addBtn">New post</button>
+  </div>
+
+  <section class="add" id="addBox" hidden aria-label="New post"><div class="form" id="addForm"></div></section>
+
+  <main id="list"><div class="empty" id="state">Loading the queue…</div></main>
+
+  <footer>Times are Riga time. Instagram and YouTube go out automatically. TikTok and Pinterest can't be posted by Claude yet, so they show "By hand" with the caption ready to copy. A post goes out within the hour it is due.</footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const PLAT = { youtube: ["YouTube", "--watermelon"], instagram: ["Instagram", "--dragonfruit"], tiktok: ["TikTok", "--blueberry"], pinterest: ["Pinterest", "--blackcurrant"] };
+const KINDS = { youtube: ["short", "video"], instagram: ["reel", "story", "trial", "carousel"], tiktok: ["video"], pinterest: ["pin"] };
+const STATUS = { scheduled: ["Scheduled", "--yellow"], queued: ["Queued on YouTube", "--rind"], posted: ["Posted", "--rind"], manual: ["By hand", "--blueberry"],
+  paused: ["Paused", "--feint"], failed: ["Failed", "--error"] };
+let posts = [], filter = "all", showDone = false, openId = null, col = null;
+const $ = (s, r = document) => r.querySelector(s);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove("on"), 2200); }
+// "2026-11-24T12:00:00+02:00" -> Riga wall clock parts; Riga is +02:00 all winter (no DST change before March).
+const day = at => (at || "").slice(0, 10), hm = at => (at || "").slice(11, 16);
+function dayLabel(d) { const dt = new Date(d + "T12:00:00+02:00"); return dt.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "short", timeZone: "Europe/Riga" }); }
+function nowRiga() { return new Date().toLocaleString("sv-SE", { timeZone: "Europe/Riga" }).replace(" ", "T").slice(0, 16); }
+const done = p => p.status === "posted";
+
+function render() {
+  const n = s => posts.filter(p => p.status === s).length;
+  $("#nSched").textContent = n("scheduled") + n("queued"); $("#nPosted").textContent = n("posted"); $("#nHand").textContent = n("manual"); $("#nFailed").textContent = n("failed");
+  const now = nowRiga(), up = posts.filter(p => ["scheduled", "queued", "manual"].includes(p.status) && p.at.slice(0, 16) >= now).sort((a, b) => a.at.localeCompare(b.at))[0];
+  $("#nextTtl").textContent = up ? up.title : "Nothing scheduled"; $("#nextT").textContent = up ? `${PLAT[up.platform]?.[0] || up.platform} · ${dayLabel(day(up.at))} ${hm(up.at)}` : "";
+  const list = $("#list"); list.replaceChildren();
+  const shown = posts.filter(p => (filter === "all" || p.platform === filter) && (showDone || !done(p))).sort((a, b) => a.at.localeCompare(b.at));
+  if (!shown.length) { list.append(el("div", "empty", posts.length ? "No posts match this filter." : "No posts yet. Tap New post to add the first one.")); return; }
+  let cur = null, box = null;
+  shown.forEach((p, i) => {
+    if (day(p.at) !== cur) { cur = day(p.at); box = el("section", "day"); const h = el("h2", "kicker", dayLabel(cur)); box.append(h); list.append(box); }
+    box.append(card(p, i));
+  });
+}
+
+function tag(text, color) { const t = el("span", "tag", text); t.style.setProperty("--c", `var(${color})`); return t; }
+function card(p, i) {
+  const c = el("article", "post" + (openId === p.id ? " open" : "")); c.style.animationDelay = Math.min(i, 12) * 35 + "ms";
+  const h = el("button", "head"); h.setAttribute("aria-expanded", openId === p.id);
+  const main = el("div", "main"), tags = el("div", "tags");
+  const [pn, pc] = PLAT[p.platform] || [p.platform, "--feint"]; tags.append(tag(pn, pc), tag(p.kind || "", "--feint"));
+  main.append(el("span", "ttl", p.title || "(untitled)"), tags);
+  const [sn, sc] = STATUS[p.status] || [p.status, "--feint"]; const pill = el("span", "pill", sn); pill.style.setProperty("--c", `var(${sc})`);
+  h.append(el("span", "time", hm(p.at)), main, pill);
+  h.onclick = () => { openId = openId === p.id ? null : p.id; render(); };
+  const body = el("div", "body"), inner = el("div"); body.append(inner);
+  if (openId === p.id) inner.append(editor(p));
+  c.append(h, body); return c;
+}
+
+function field(lbl, input) { const l = el("label"); l.append(el("span", "kicker", lbl), input); return l; }
+function editor(p) {
+  const f = el("form", "form"); f.onsubmit = e => e.preventDefault();
+  const when = el("input"); when.type = "datetime-local"; when.id = "at-" + p.id; when.value = (p.at || "").slice(0, 16);
+  const st = el("select"); st.id = "st-" + p.id; ["scheduled", "paused", "manual", "posted", "failed", "queued"].forEach(s => { const o = el("option", null, STATUS[s][0]); o.value = s; st.append(o); }); st.value = p.status;
+  const ttl = el("input"); ttl.id = "tt-" + p.id; ttl.value = p.title || "";
+  const cap = el("textarea"); cap.id = "cp-" + p.id; cap.value = p.caption || "";
+  const fc = el("input"); fc.id = "fc-" + p.id; fc.value = p.first_comment || "";
+  const r1 = el("div", "row"); r1.append(field("When (Riga)", when), field("Status", st));
+  f.append(r1, field(p.platform === "youtube" ? "Title" : "Name", ttl), field(p.platform === "youtube" ? "Description" : "Caption", cap), field("First comment", fc));
+  const media = el("div", "media"); (Array.isArray(p.media) ? p.media : [p.media]).filter(Boolean).forEach((u, k) => {
+    if (k) media.append(document.createTextNode(" · "));
+    if (/^https:\/\//.test(u)) { const a = el("a", null, u.split("/").pop()); a.href = u; a.target = "_blank"; a.rel = "noopener"; media.append(a); } else media.append(document.createTextNode(u));
+  });
+  f.append(field("Media", media));
+  if (p.result || p.error) f.append(el("div", "note" + (p.error ? " err" : ""), p.error || p.result));
+  const acts = el("div", "actions"), save = el("button", "btn", "Save"), copy = el("button", "btn ghost", "Copy caption"), del = el("button", "btn danger", "Delete");
+  save.type = copy.type = del.type = "button";
+  save.onclick = async () => {
+    save.disabled = true;
+    try { await col.doc(p.id).update({ at: when.value + ":00+02:00", status: st.value, title: ttl.value, caption: cap.value, first_comment: fc.value, edited_at: new Date().toISOString(), error: null }); toast("Saved"); }
+    catch (e) { toast(e?.code === "not_granted" || e?.code === "permission_denied" ? "You can view this queue but not change it" : "Couldn't save. Try again."); }
+    save.disabled = false;
+  };
+  copy.onclick = async () => { try { await navigator.clipboard.writeText(cap.value + (fc.value ? "\n\n" + fc.value : "")); toast("Caption copied"); } catch { cap.select(); toast("Select and copy the caption"); } };
+  let armed = false;
+  del.onclick = async () => {
+    if (!armed) { armed = true; del.textContent = "Tap again to delete"; setTimeout(() => { armed = false; del.textContent = "Delete"; }, 4000); return; }
+    try { await col.doc(p.id).delete(); openId = null; toast("Deleted"); } catch { toast("Couldn't delete. Try again."); }
+  };
+  acts.append(save, copy, el("span", "spacer"), del); f.append(acts);
+  return f;
+}
+
+function addForm() {
+  const f = $("#addForm"); f.replaceChildren();
+  const plat = el("select"); plat.id = "new-plat"; Object.entries(PLAT).forEach(([k, [n]]) => { const o = el("option", null, n); o.value = k; plat.append(o); });
+  const kind = el("select"); kind.id = "new-kind";
+  const fillKinds = () => { kind.replaceChildren(); KINDS[plat.value].forEach(k => { const o = el("option", null, k); o.value = k; kind.append(o); }); };
+  plat.onchange = fillKinds; fillKinds();
+  const when = el("input"); when.type = "datetime-local"; when.id = "new-at"; when.value = nowRiga().slice(0, 11) + "18:00";
+  const ttl = el("input"); ttl.id = "new-title"; ttl.placeholder = "e.g. The Snowman Nobody Builds";
+  const media = el("input"); media.id = "new-media"; media.placeholder = "https://… video or image link (several: separate with spaces)";
+  const cap = el("textarea"); cap.id = "new-cap"; const fc = el("input"); fc.id = "new-fc";
+  const r1 = el("div", "row"), r2 = el("div", "row"); r1.append(field("Platform", plat), field("Type", kind)); r2.append(field("When (Riga)", when), field("Name or title", ttl));
+  const acts = el("div", "actions"), ok = el("button", "btn", "Add to queue"), cancel = el("button", "btn ghost", "Cancel"), note = el("span", "note");
+  ok.type = cancel.type = "button";
+  ok.onclick = async () => {
+    if (!ttl.value.trim() || !when.value) { note.textContent = "Add a name and a time first."; note.className = "note err"; return; }
+    const m = media.value.trim().split(/\s+/).filter(Boolean);
+    ok.disabled = true;
+    try {
+      await col.add({ platform: plat.value, kind: kind.value, at: when.value + ":00+02:00", title: ttl.value.trim(), media: m.length > 1 ? m : (m[0] || ""),
+        caption: cap.value, first_comment: fc.value, status: ["tiktok", "pinterest"].includes(plat.value) ? "manual" : "scheduled", created_at: new Date().toISOString() });
+      $("#addBox").hidden = true; toast("Added to the queue");
+    } catch { note.textContent = "Couldn't add it. Try again."; note.className = "note err"; }
+    ok.disabled = false;
+  };
+  cancel.onclick = () => { $("#addBox").hidden = true; };
+  acts.append(ok, cancel, note);
+  f.append(r1, r2, field("Media", media), field("Caption", cap), field("First comment", fc), acts);
+}
+
+document.querySelectorAll(".chip[data-p]").forEach(b => b.onclick = () => {
+  filter = b.dataset.p; document.querySelectorAll(".chip[data-p]").forEach(x => x.setAttribute("aria-pressed", x === b)); render();
+});
+$("#showDone").onclick = e => { showDone = !showDone; e.currentTarget.setAttribute("aria-pressed", showDone); render(); };
+$("#addBtn").onclick = () => { const b = $("#addBox"); if (b.hidden) { addForm(); b.hidden = false; $("#new-title").focus(); } else b.hidden = true; };
+setInterval(render, 60000);
+
+(async () => {
+  const timer = setTimeout(() => { if (!posts.length) $("#state").textContent = "The queue is taking a while to load. Pull to refresh in a moment."; }, 10000);
+  const db = await window.claude?.use?.("db");
+  if (!db) { clearTimeout(timer); $("#state").textContent = "Sign in to claude.ai to see the queue."; $("#nextTtl").textContent = "Sign in to see the queue"; $("#addBtn").disabled = true; return; }
+  col = db.collection("posts");
+  col.onSnapshot(snap => { clearTimeout(timer); posts = snap.docs.map(d => ({ id: d.id, ...d.data() })); render(); },
+    () => { clearTimeout(timer); $("#state").textContent = "Couldn't load the queue. Reopen the page to try again."; });
+})();
+</script>
