@@ -72,3 +72,5 @@ def sound(S):
     bark(S, C["a9"] + 2.4); bark(S, C["a9"] + 2.8)
     S.add(S.pad([261.6, 329.6, 392.0, 523.3], 5.0, 0.2, 2.5), C["a10"], 0.08)
     for j, m in enumerate([72, 76, 79, 84, 88]): S.add(S.bell(S.note(m), 1.2), C["a10"] + 0.2 + j * 0.2, 0.05)
+REHOOK = (C["a7"] + 0.2, "Wait for the third call…")
+HOOK = "Is it possible to use up a word for the whole day?"
