@@ -1,0 +1,332 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Grown Up</title>
+<style>
+@font-face { font-family: M; src: url("assets/fonts/InterDisplay-Medium.otf"); }
+@font-face { font-family: B; src: url("assets/fonts/InterDisplay-Bold.otf"); }
+html, body { margin: 0; background: #000; } canvas { display: block; width: 100vw; height: auto; }
+</style></head><body><canvas id="c"></canvas>
+<script>
+// Grown Up: beat-for-beat on a reference edit, new topic. Page contract: renderAt(t), TOTAL, ready, EVENTS, ?t=, ?scale=.
+const W = 1440, H = 1080, END = 20.5, q = new URLSearchParams(location.search), SCALE = parseFloat(q.get('scale') || '1');
+// ---- every beat in one place (seconds) ----
+const T = { card: 0.22, para: 0.55, star: 2.0, orb: 3.6, sil: 4.2, shadow: 6.0, ring: 6.5, burst: 7.5, bills: 8.1, slideA: 9.2, quiet: 9.85,
+            slideB: 10.6, worry: 11.05, hole: 12.05, holeFill: 13.45, hand: 13.75, home: [15.95, 16.25, 16.5, 16.75, 17.0], scatter: 17.15, knot: 19.9 };
+const PAPER = '#e7e5e1', NIGHT = '#0e0c0c', INK = '#1d1b1b', RED = '#e2321f', CREAM = '#f2ede6';
+window.EVENTS = [
+  { name: 'cut', t: T.card }, { name: 'whoosh', t: T.para }, { name: 'whoosh', t: T.star }, { name: 'riser', t: 2.3 }, { name: 'impact', t: T.orb },
+  { name: 'shimmer', t: 4.6 }, { name: 'whoosh', t: T.shadow }, { name: 'pop', t: T.ring }, { name: 'swipe', t: 6.9 }, { name: 'impact', t: T.burst },
+  { name: 'hit', t: T.bills }, { name: 'whoosh', t: T.slideA }, { name: 'hit', t: T.quiet }, { name: 'whoosh', t: T.slideB }, { name: 'hit', t: T.worry },
+  { name: 'riser', t: 12.6 }, { name: 'impact', t: T.hand }, ...T.home.map(t => ({ name: 'hit', t })), { name: 'whoosh', t: T.scatter }, { name: 'impact', t: T.knot }];
+
+const cv = document.getElementById('c'); cv.width = W * SCALE; cv.height = H * SCALE;
+const ctx = cv.getContext('2d');
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x)), lerp = (a, b, t) => a + (b - a) * t;
+const sm = x => { x = clamp(x); return x * x * (3 - 2 * x); }, eo = x => 1 - Math.pow(1 - clamp(x), 3), eo5 = x => 1 - Math.pow(1 - clamp(x), 5);
+const back = (x, s = 1.7) => { x = clamp(x) - 1; return 1 + (s + 1) * x ** 3 + s * x ** 2; };
+const rng = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const off = (w, h) => { const c = document.createElement('canvas'); c.width = w * SCALE; c.height = h * SCALE; const x = c.getContext('2d'); x.scale(SCALE, SCALE); return [c, x]; };
+let WORDS = [];
+
+// ---- pixel icons ----
+const PAL = { R: '#de2828', W: '#fffaf0', Y: '#f6c426', O: '#c48014', D: '#46464c', S: '#bec0c6', K: '#1e1e22', B: '#4678c8', G: '#3c9646', L: '#8cd264',
+  T: '#c4603c', C: '#eedebe', E: '#c4aa82', A: '#9a9aa0', N: '#2c6e34', P: '#f08ca0' };
+const GRID = {
+  bills: ['GGGGGGGGGGGGGG', 'GLLLLLLLLLLLLG', 'GLGGGGWWGGGGLG', 'GLGGGNWWNGGGLG', 'GLGGNLWWLNGGLG', 'GLGGGNWWNGGGLG', 'GLGGGGWWGGGGLG', 'GLLLLLLLLLLLLG', 'GGGGGGGGGGGGGG'],
+  mug: ['.A..A..A...', '..A..A..A..', 'RRRRRRRR...', 'RWRRRRRRRR.', 'RWRRRRRR.RR', 'RRRRRRRR..R', 'RRRRRRRR.RR', 'RRRRRRRRRR.', '.RRRRRR....'],
+  phone: ['KKKKKKKK', 'KDDDDDDK', 'KBBBBBBK', 'KBWBBBBK', 'KBBBBBBK', 'KBBBBWBK', 'KBBBBBBK', 'KBBBBBBK', 'KBBBBBBK', 'KBBBBBBK', 'KDDDDDDK', 'KDDSSDDK', 'KKKKKKKK'],
+  lamp: ['....YYYY....', '...YWWYYY...', '..YYYYYYYY..', '.YYYYYYYYYY.', '......DD....', '.....DD.....', '....DD......', '...DD.......', '....DD......', '.....DD.....', '......DD....', '...DDDDDDD..', '..DDDDDDDDD.'],
+  clock: ['.RR......RR.', 'RRR......RRR', '..RRRRRRRR..', '.RWWWWWWWWR.', 'RWWWWKWWWWWR', 'RWWWWKWWWWWR', 'RWWWWKWWWWWR', 'RWWWWKKKWWWR', 'RWWWWWWWWWWR', 'RWWWWWWWWWWR', '.RWWWWWWWWR.', '..RRRRRRRR..', '.R........R.'],
+  keys: ['.YYY..........', 'YOOOY.........', 'YO.OYYYYYYYYYY', 'YOOOY....Y.Y.Y', '.YYY.....Y.Y..'],
+  coin: ['..YYYYYY..', '.YYYYYYYY.', 'YYOOOOOOYY', 'YYOYYWYOYY', 'YYOYYWYOYY', 'YYOYYWYOYY', 'YYOYYWYOYY', 'YYOOOOOOYY', '.YYYYYYYY.', '..YYYYYY..'],
+  plant: ['....GG....', '.GG.GG.GG.', '.GGGLGGGG.', '..GGLGLG..', 'GG.GLLG.GG', '.GGGLGGGG.', '...GLG....', '.TTTTTTTT.', '..TTTTTT..', '..TCTTTT..', '..TTTTTT..', '...TTTT...'],
+  heart: ['.RRR...RRR.', 'RRWRR.RRRRR', 'RWRRRRRRRRR', 'RRRRRRRRRRR', '.RRRRRRRRR.', '..RRRRRRR..', '...RRRRR...', '....RRR....', '.....R.....'],
+  house: ['.....RR.....', '....RRRR....', '...RRRRRR...', '..RRRRRRRR..', '.RRRRRRRRRR.', 'RRRRRRRRRRRR', '.CCCCCCCCCC.', '.CBBCCCCDDC.', '.CBBCCCCDDC.', '.CCCCCCCDDC.', '.CCCCCCCDDC.'],
+};
+const ICON = {}, SHADOWICON = {};
+function buildIcon(name) {
+  const g = GRID[name], h = g.length, w = Math.max(...g.map(r => r.length));
+  const mk = (fill) => { const c = document.createElement('canvas'); c.width = w + 2; c.height = h + 2; const x = c.getContext('2d');
+    const on = (yy, xx) => yy >= 0 && yy < h && xx >= 0 && xx < w && g[yy][xx] && g[yy][xx] !== '.';
+    for (let y = -1; y <= h; y++) for (let xx = -1; xx <= w; xx++) {
+      if (on(y, xx)) { x.fillStyle = fill || PAL[g[y][xx]]; x.fillRect(xx + 1, y + 1, 1, 1); }
+      else if (on(y - 1, xx) || on(y + 1, xx) || on(y, xx - 1) || on(y, xx + 1)) { x.fillStyle = fill || '#120f0f'; x.fillRect(xx + 1, y + 1, 1, 1); } }
+    return c; };
+  ICON[name] = mk(); SHADOWICON[name] = mk('#0b0a0a');
+}
+Object.keys(GRID).forEach(buildIcon);
+// draw an icon centred at (x,y); px = screen pixels per icon pixel; sx squashes horizontally (fake 3D spin)
+function icon(name, x, y, px, rot = 0, sx = 1, alpha = 1, shadow = 0) {
+  const c = ICON[name]; if (px * Math.abs(sx) < 0.05 || alpha <= 0) return;
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(sx, 1); ctx.globalAlpha = alpha; ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(c, -c.width * px / 2, -c.height * px / 2, c.width * px, c.height * px);
+  if (shadow > 0) { ctx.globalAlpha = alpha * shadow; ctx.drawImage(SHADOWICON[name], -c.width * px / 2, -c.height * px / 2, c.width * px, c.height * px); }
+  ctx.restore();
+}
+
+// ---- backgrounds and grain ----
+function paper(tone = PAPER) {
+  ctx.fillStyle = tone; ctx.fillRect(0, 0, W, H);
+  const g = ctx.createRadialGradient(W * 0.5, H * 0.45, H * 0.2, W * 0.5, H * 0.5, H * 0.95);
+  g.addColorStop(0, 'rgba(255,255,255,0.35)'); g.addColorStop(1, 'rgba(60,55,50,0.28)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+function night(glow = 'rgba(70,18,14,0.55)') {
+  ctx.fillStyle = NIGHT; ctx.fillRect(0, 0, W, H);
+  const g = ctx.createRadialGradient(W * 0.5, H * 0.6, 50, W * 0.5, H * 0.6, H * 0.9);
+  g.addColorStop(0, glow); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+const GRAIN = [0, 1, 2].map(k => { const c = document.createElement('canvas'); c.width = 720; c.height = 540; const x = c.getContext('2d'), d = x.createImageData(720, 540), r = rng(k + 11);
+  for (let i = 0; i < d.data.length; i += 4) { const v = 128 + (r() - 0.5) * 120; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } x.putImageData(d, 0, 0); return c; });
+function grain(t) {
+  const f = Math.floor(t * 25), r = rng(f); ctx.save(); ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = 0.16;
+  ctx.drawImage(GRAIN[f % 3], -r() * 40, -r() * 40, W + 60, H + 60); ctx.restore();
+}
+function vignette(k) {
+  const g = ctx.createRadialGradient(W * 0.55, H * 0.5, H * lerp(0.7, 0.12, k), W * 0.55, H * 0.5, H * lerp(1.1, 0.55, k));
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(8,6,6,${lerp(0.25, 1, k)})`); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+
+// ---- text ----
+const words = (a, b) => WORDS.filter(w => w[1] >= a && w[1] < b);
+function typed(t, ws) {
+  const out = []; for (const [w, s, e] of ws) { if (t < s) break; out.push(t >= e ? w : w.slice(0, Math.max(1, Math.round(w.length * (t - s) / Math.max(0.08, e - s))))); }
+  return out.join(' ').toLowerCase();
+}
+function caption(t, ws, x, y, { size = 32, color = INK, align = 'left', cursor = true } = {}) {
+  ctx.font = `${size}px B`; ctx.textBaseline = 'middle'; const s = typed(t, ws);
+  const full = ws.map(w => w[0]).join(' ').toLowerCase(), fw = ctx.measureText(full).width;
+  const x0 = align === 'center' ? x - fw / 2 : align === 'right' ? x - fw : x;
+  ctx.fillStyle = color; ctx.fillText(s, x0, y);
+  if (cursor && Math.floor(t * 2.2) % 2 === 0) ctx.fillRect(x0 + ctx.measureText(s).width + 8, y - size * 0.55, 3, size * 1.1);
+}
+function bigWord(t, word, wordTime, x, y, color = CREAM) {   // word types on as spoken, block cursor blinks after it
+  ctx.font = `64px B`; ctx.textBaseline = 'middle'; ctx.letterSpacing = '-2px';
+  const n = t < wordTime ? 0 : Math.min(word.length, Math.ceil((t - wordTime) / 0.045));
+  ctx.fillStyle = color; ctx.fillText(word.slice(0, n), x, y);
+  const cx = x + ctx.measureText(word).width + 34; ctx.letterSpacing = '0px';
+  if (n === 0 || Math.floor(t * 2.4) % 2 === 0) ctx.fillRect(cx, y - 32, 9, 64);
+  if (n > 0 && n < word.length) { ctx.fillStyle = color; ctx.fillRect(x + ctx.measureText(word.slice(0, n)).width + 4, y - 30, 120, 60); }   // the white "typing" block
+}
+
+// ---- strokes, stars ----
+function brush(pts, k, width, color, alpha = 1, taper = true) {
+  const n = Math.max(2, Math.floor(pts.length * clamp(k))); ctx.save(); ctx.strokeStyle = color; ctx.globalAlpha = alpha; ctx.lineCap = 'round';
+  for (let i = 0; i < n - 1; i++) { ctx.lineWidth = taper ? width * Math.sin(Math.PI * (i + 1) / pts.length) + 1 : width; ctx.beginPath(); ctx.moveTo(...pts[i]); ctx.lineTo(...pts[i + 1]); ctx.stroke(); }
+  ctx.restore();
+}
+const curve = (f, n = 60) => Array.from({ length: n }, (_, i) => f(i / (n - 1)));
+function star4(x, y, r, color, rot = 0, thin = 1, glow = 0) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.beginPath();
+  for (let i = 0; i <= 120; i++) { const a = i / 120 * Math.PI * 2, c = Math.cos(a), s = Math.sin(a); ctx.lineTo(r * Math.sign(c) * Math.abs(c) ** (3 * thin), r * 1.25 * Math.sign(s) * Math.abs(s) ** (3 * thin)); }
+  ctx.fillStyle = color; if (glow) { ctx.shadowColor = color; ctx.shadowBlur = glow; } ctx.fill(); ctx.restore();
+}
+
+// ---- Noah: profile silhouette and reaching hand ----
+const PROFILE = [[0, 1400], [0, 1200], [120, 1100], [300, 1050], [360, 980], [340, 880], [260, 820], [200, 700], [190, 560], [230, 420], [320, 310], [450, 250], [580, 240],
+  [700, 270], [790, 340], [840, 430], [860, 520], [880, 600], [900, 640], [890, 680], [920, 760], [960, 820], [930, 850], [900, 860], [910, 900], [895, 920], [905, 950],
+  [880, 975], [870, 1010], [830, 1040], [760, 1050], [700, 1040], [680, 1100], [720, 1150], [900, 1230], [1000, 1300], [1000, 1400]];
+function profilePath() { const p = new Path2D(); PROFILE.forEach(([x, y], i) => i ? p.lineTo(x, y) : p.moveTo(x, y)); p.closePath();
+  [[540, 300, 120]].forEach(([x, y, r]) => { p.moveTo(x + r, y); p.ellipse(x, y, r, r, 0, 0, Math.PI * 2); }); return p; }
+const PPATH = profilePath();
+function noah(x, y, s, mode, alpha = 1, blur = 0) {   // mode: warm | red | shadow
+  ctx.save(); ctx.globalAlpha = alpha; if (blur) ctx.filter = `blur(${blur}px)`; ctx.translate(x, y); ctx.scale(s, s);
+  let g;
+  if (mode === 'shadow') { g = ctx.createLinearGradient(0, 200, 1000, 1400); g.addColorStop(0, 'rgba(70,58,46,0.75)'); g.addColorStop(1, 'rgba(120,108,96,0.5)'); }
+  else { g = ctx.createRadialGradient(780, 1250, 60, 600, 800, 950);
+    if (mode === 'red') { g.addColorStop(0, '#ff6a3a'); g.addColorStop(1, '#a8120c'); }
+    else { g.addColorStop(0, '#fff0b0'); g.addColorStop(0.3, '#ffb648'); g.addColorStop(0.7, '#ff6a1e'); g.addColorStop(1, '#e8420f'); } }
+  if (mode !== 'shadow') { ctx.shadowColor = mode === 'red' ? 'rgba(255,40,20,0.8)' : 'rgba(255,120,40,0.55)'; ctx.shadowBlur = 60 * s * SCALE; }
+  ctx.fillStyle = g; ctx.fill(PPATH); ctx.restore();
+}
+function handShape(x) {   // open hand reaching up, palm to camera (box 900 x 1500): tapered, gently curled fingers
+  x.fillStyle = '#000';
+  const blob = (cx, cy, r) => { x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill(); };
+  const finger = (bx, by, ang, ln, w0, curl) => { let a = ang * Math.PI / 180, px = bx, py = by;
+    for (let i = 0; i <= 40; i++) { const u = i / 40; blob(px, py, lerp(w0, w0 * 0.55, u) / 2); a += curl / 40; px += Math.cos(a) * ln / 40; py += Math.sin(a) * ln / 40; } };
+  for (let i = 0; i <= 30; i++) blob(450 + 10 * Math.sin(i / 10), lerp(1500, 900, i / 30), lerp(115, 100, i / 30));   // forearm and wrist
+  x.beginPath(); x.ellipse(455, 800, 175, 200, 0.05, 0, Math.PI * 2); x.fill();
+  finger(310, 690, -118, 330, 84, 0.35); finger(405, 640, -97, 410, 88, 0.22); finger(505, 650, -80, 390, 84, -0.18); finger(590, 720, -58, 300, 74, -0.38);
+  finger(300, 910, -150, 260, 96, 0.5);   // thumb
+}
+const [HAND, hx] = off(900, 1500); handShape(hx);
+hx.globalCompositeOperation = 'source-in'; { const g = hx.createLinearGradient(0, 200, 0, 1500); g.addColorStop(0, '#ff5a1e'); g.addColorStop(0.45, '#ff9a34'); g.addColorStop(1, '#ffd88a'); hx.fillStyle = g; hx.fillRect(0, 0, 900, 1500); }
+
+// ---- shots ----
+const RING = ['keys', 'bills', 'mug', 'phone', 'plant', 'lamp', 'clock', 'coin', 'heart'];
+function ring(t, cx, cy, R, px, popAt, pull = 0, hole = 0) {
+  RING.forEach((n, i) => {
+    const a0 = -Math.PI / 2 + i * Math.PI * 2 / RING.length, a = a0 + 0.22 * (t - T.ring) + pull * 3.2;
+    const r = R * (1 - eo(pull)), s = back((t - popAt - i * 0.03) / 0.3) * (1 - sm(pull * 1.15));
+    icon(n, cx + r * Math.cos(a), cy + r * Math.sin(a) * 0.82, px * s, 0.12 * Math.sin(t * 1.6 + i) + pull * 2, 1, 1, sm(hole * 1.4 - i * 0.05));
+  });
+}
+function shot1(t) {   // mustard "how" card
+  ctx.fillStyle = '#e6b52a'; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = '#3a2a10'; ctx.lineWidth = 3; ctx.setLineDash([22, 16]); [70, H - 120].forEach(y => { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }); ctx.setLineDash([]);
+  const z = 1 + 0.25 * t; ctx.save(); ctx.translate(W * 0.5, H * 0.47); ctx.scale(z, z);
+  ctx.font = '300px B'; ctx.letterSpacing = '-12px'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#3a2a10'; ctx.fillText('how', 0, 0);
+  ctx.restore(); ctx.textAlign = 'left'; ctx.letterSpacing = '0px';
+}
+function shot2(t) {   // paper: "how" + black bar exit, then the question types with a signature
+  paper();
+  const k = eo((t - T.card) / 0.33);
+  if (k < 1) { const x = lerp(280, -1500, k); ctx.font = '300px B'; ctx.letterSpacing = '-12px'; ctx.fillStyle = INK; ctx.textBaseline = 'middle'; ctx.fillText('how', x, H * 0.47);
+    ctx.letterSpacing = '0px'; ctx.fillRect(x + 640, H * 0.47 - 110, 1100, 190);
+    brush(curve(u => [x + 500 + 900 * u, H * 0.47 + 120 + 20 * Math.sin(u * 9)]), 1, 5, INK, 0.8, false); }
+  if (t < T.para) return;
+  // faint ink smudges drifting
+  ctx.save(); ctx.filter = 'blur(14px)'; brush(curve(u => [900 + 300 * u, 170 + 60 * Math.sin(u * 4) - 40 * (t - 0.5)]), sm((t - 0.6) / 0.6), 46, '#8d8a86', 0.35); ctx.restore();
+  // pen signature writing on
+  const sig = curve(u => { const a = u * Math.PI * 7; return [560 + 340 * u + 40 * Math.sin(a), 700 - 60 * Math.abs(Math.sin(a * 0.5)) + 30 * Math.cos(a)]; }, 140);
+  const sk = sm((t - 0.7) / 0.9); brush(sig, sk, 4, INK, 1 - sm((t - 1.7) / 0.3), false);
+  if (t > 1.05 && t < 1.7) { const tip = curve(u => [1010 + 30 * Math.sin(u * 3), 500 + 260 * u], 30); brush(tip, sm((t - 1.05) / 0.35), 4, INK, 1 - sm((t - 1.45) / 0.25), false); }
+  // bracket flick around the caption
+  const bk = clamp((t - 0.75) / 0.12) * (1 - clamp((t - 0.95) / 0.1));
+  if (bk > 0) { ctx.strokeStyle = INK; ctx.globalAlpha = bk; ctx.lineWidth = 3; ctx.strokeRect(410, 470, 640, 70); ctx.globalAlpha = 1; }
+  caption(t, words(0, 3.5), W / 2, H / 2, { align: 'center' });
+}
+function shot3(t) {   // objects blow past, cyan star swells from the left, vignette irises in
+  paper();
+  const k = (t - T.star);
+  // streaks
+  if (k < 0.5) for (let i = 0; i < 7; i++) { const r = rng(i + 3); const y = 200 + r() * 700, x = lerp(W + 200, -300, eo5((k - r() * 0.15) / 0.5));
+    brush([[x, y], [x + 260, y - 40]], 1, 4, '#5a5652', 0.5 * (1 - k * 2), false); }
+  [['keys', 0.58, 0.26, 6], ['mug', 0.72, 0.32, 7], ['coin', 0.62, 0.72, 8], ['phone', 0.86, 0.68, 6], ['plant', 0.42, 0.8, 6.5]].forEach(([n, fx, fy, px], i) => {
+    const e = eo5((k - i * 0.05) / 0.55); icon(n, lerp(W + 300, fx * W, e) - 30 * k, lerp(fy * H - 200, fy * H, e) + 12 * Math.sin(t * 2 + i), px, -0.6 * (1 - e) + 0.1 * Math.sin(t + i)); });
+  caption(t, words(0, 3.5), W / 2, H / 2, { align: 'center' });
+  const s = eo((k - 0.25) / 1.2), irisK = sm((t - 3.1) / 0.5);
+  vignette(irisK);
+  star4(-30, H * 0.5, lerp(0, 520, s) + 1600 * sm((t - 3.35) / 0.25) ** 2, '#38d8ff', 0, 1, 50);
+  star4(-30, H * 0.5, lerp(0, 380, s), '#1a52ff', 0, 1.2, 0);
+}
+function shot4(t) {   // red orb burst resolving into Noah
+  night(); const k = (t - T.orb) / (T.sil - T.orb);
+  noah(330, 120, 0.95, 'red', sm(k * 1.4), 18 * (1 - k));
+  const g = ctx.createRadialGradient(860, 520, 10, 860, 520, lerp(380, 120, eo(k)));
+  g.addColorStop(0, `rgba(255,70,40,${0.95 - 0.7 * k})`); g.addColorStop(1, 'rgba(255,30,20,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  caption(t, words(3.7, 4.7), 90, H * 0.5, { color: CREAM });
+}
+function shot5(t) {   // orange profile with the white orbit ring
+  night('rgba(40,12,10,0.4)'); const k = (t - T.sil) / (T.shadow - T.sil), z = 0.95 + 0.05 * k;
+  noah(330 - 20 * k, 120 - 30 * k, z, 'warm', 1);
+  if (t > 4.5 && t < 5.6) {   // comet ring around the head
+    const p = (t - 4.5) / 1.1, cx = 330 + 560 * z, cy = 120 + 480 * z;
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(-0.55); ctx.lineCap = 'round';
+    for (let i = 0; i < 30; i++) { const a = lerp(-2.6, 3.6, p) - i * 0.05; ctx.strokeStyle = `rgba(255,248,240,${(1 - i / 30) * (1 - sm((p - 0.85) / 0.15))})`; ctx.lineWidth = 5 - i * 0.12;
+      ctx.beginPath(); ctx.ellipse(0, 0, 470, 150, 0, a - 0.05, a); ctx.stroke(); }
+    ctx.restore(); }
+  caption(t, t < 4.9 ? words(3.7, 4.7) : words(4.9, 6), 90, H * 0.5, { color: CREAM });
+}
+function shot6(t) {   // drains to a grey shadow on paper, slides down and blurs out
+  const k = (t - T.shadow) / (T.ring - T.shadow); paper('#c7c3be');
+  noah(330, 120 + 260 * eo(k), 1.0, 'shadow', 1 - sm((k - 0.4) / 0.6), 4 + 30 * k);
+  ctx.globalAlpha = 1 - sm(k / 0.6); caption(t, words(4.9, 6), 90, H * 0.5, { color: '#6d6862', cursor: false }); ctx.globalAlpha = 1;
+}
+function shot7(t) {   // ring of grown-up things; ink sweep; bills burst
+  paper(); const z = 1 + 0.04 * (t - T.ring);
+  ctx.save(); ctx.translate(W / 2, H / 2); ctx.scale(z, z); ctx.translate(-W / 2, -H / 2);
+  ring(t, W / 2, H * 0.52, 390, 13, T.ring);
+  const sw = curve(u => [W * 0.3 + 420 * Math.cos(-2.2 + 3.4 * u), H * 0.5 + 300 * Math.sin(-2.2 + 3.4 * u)]);
+  if (t > 6.9 && t < 7.6) brush(sw, sm((t - 6.9) / 0.35), 130, '#141212', 1 - sm((t - 7.25) / 0.35));
+  const b = (t - T.burst) / 0.6;
+  if (b > 0) { const bx = W * 0.5 + 360 * Math.cos(-Math.PI / 2 + Math.PI * 2 / 9 + 0.22 * (t - T.ring)), by = H * 0.52 + 295 * Math.sin(-Math.PI / 2 + Math.PI * 2 / 9 + 0.22 * (t - T.ring));
+    for (let i = 0; i < 10; i++) { const a = i * 0.63, r0 = 70 + 160 * eo(b), r1 = r0 + 70 * (1 - b); ctx.strokeStyle = '#f6c426'; ctx.lineWidth = 8 * (1 - b); ctx.beginPath(); ctx.moveTo(bx + r0 * Math.cos(a), by + r0 * Math.sin(a)); ctx.lineTo(bx + r1 * Math.cos(a), by + r1 * Math.sin(a)); ctx.stroke(); }
+    ctx.fillStyle = `rgba(255,214,90,${0.5 * (1 - b)})`; ctx.beginPath(); ctx.arc(bx, by, 60 + 200 * eo(b), 0, 7); ctx.fill(); }
+  ctx.restore();
+  if (t > T.bills - 0.08) { ctx.fillStyle = `rgba(255,255,255,${(t - T.bills + 0.08) / 0.08})`; ctx.fillRect(0, 0, W, H); }
+}
+function card(t, t0, t1, name, word, wordTime, fx) {   // dark one-word card: object left, word right
+  night('rgba(60,14,12,0.35)'); const k = (t - t0) / (t1 - t0);
+  fx(k);
+  const e = eo5((t - t0) / 0.45);
+  icon(name, lerp(W * 0.24, W * 0.34, e) + 30 * k, H * 0.5 + 10 * Math.sin(t * 3), lerp(34, 24, e), lerp(-0.5, -0.08, e) + 0.06 * k, Math.cos(lerp(1.2, 0.15, e) + 0.3 * k));
+  bigWord(t, word, wordTime, W * 0.58, H * 0.5);
+}
+function shot8(t) { card(t, T.bills, T.slideA, 'bills', 'bills.', T.bills + 0.3, k => { star4(W * 0.36, H * 0.46, lerp(80, 260, eo(k * 3)), RED, 0.5 + 0.3 * k, 1.6); }); }
+function shot10(t) { card(t, T.quiet, T.slideB, 'lamp', 'quiet.', T.quiet + 0.3, k => {
+  brush(curve(u => [lerp(-80, W * 0.62, u), lerp(H + 60, H * 0.18, u) + 50 * Math.sin(u * 3)]), eo(k * 2.5), 190, RED, 1, true);
+  const g = ctx.createRadialGradient(W * 0.36, H * 0.6, 10, W * 0.36, H * 0.6, 320); g.addColorStop(0, 'rgba(255,220,120,0.35)'); g.addColorStop(1, 'rgba(255,220,120,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); }); }
+function shot12(t) { card(t, T.worry, T.hole, 'clock', 'worry.', T.worry + 0.3, k => {
+  const r = rng(5); const z = curve(u => [W * 0.12 + W * 0.48 * u + 60 * Math.sin(u * 22), H * 0.3 + 380 * (r() * 0.15 + Math.abs(Math.sin(u * 7)))], 90);
+  brush(z, eo(k * 2), 5, RED, 0.9, false);
+  for (let i = 0; i < 6; i++) { const a = i * 1.05 + Math.sin(t * 20) * 0.04, r0 = 210 + 12 * Math.sin(t * 25 + i); ctx.strokeStyle = RED; ctx.lineWidth = 9; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(W * 0.34 + r0 * Math.cos(a), H * 0.5 + r0 * Math.sin(a)); ctx.lineTo(W * 0.34 + (r0 + 40) * Math.cos(a), H * 0.5 + (r0 + 40) * Math.sin(a)); ctx.stroke(); }
+  ctx.save(); ctx.translate(W * 0.34, H * 0.5); ctx.rotate(0.08 * Math.sin(t * 40)); ctx.translate(-W * 0.34, -H * 0.5); }); ctx.restore(); }
+function slide(t, t0, list) {   // objects slide right to left across paper
+  paper(); const k = (t - t0);
+  list.forEach(([n, fy, px, d], i) => { const x = lerp(W + 400, -500, eo((k - i * 0.05) / 0.75)) + d;
+    for (let g = 3; g >= 0; g--) icon(n, x + g * 40, fy * H, px, 0, 1, g ? 0.12 : 1); });
+  brush([[W, H * 0.12], [W * 0.82, H * 0.13]], 1, 6, RED, 0.9 * (1 - k * 2), false);
+}
+function shot13(t) {   // the ring returns, a black hole pulls everything in, then fills the frame
+  paper(); const pull = sm((t - 12.9) / 0.6), hole = sm((t - 12.4) / 1.0);
+  const r = 14 + 90 * hole + 1300 * sm((t - T.holeFill) / 0.3) ** 2;
+  ring(t, W / 2, H * 0.5, 400, 12, T.hole, pull, hole);
+  ctx.save(); ctx.filter = 'blur(8px)';
+  [0, 1, 2].forEach(i => brush(curve(u => { const a = u * 4 + i * 2.1 + (t - 12) * 2; const rr = 420 * (1 - u * 0.8); return [W / 2 + rr * Math.cos(a), H / 2 + rr * Math.sin(a) * 0.8]; }), sm((t - 12.6 - i * 0.1) / 0.5), 26, '#2a2726', 0.5 * (1 - sm((t - 13.4) / 0.3))));
+  ctx.restore();
+  ctx.fillStyle = NIGHT; ctx.beginPath(); ctx.arc(W / 2, H / 2, r, 0, 7); ctx.fill();
+  if (t < T.holeFill) caption(t, words(12, 13.6), W / 2, H * 0.88, { align: 'center' });
+}
+const EMBERS = Array.from({ length: 26 }, (_, i) => { const r = rng(i + 40); return [r() * W, r() * H, 0.3 + r() * 0.7, r() * 6]; });
+function shot14(t) {   // Noah's hand reaching for the phone
+  night('rgba(70,22,14,0.5)'); const k = (t - T.hand), e = eo(k / 0.9);
+  EMBERS.forEach(([x, y, s, ph]) => { const yy = (y - 60 * k * s * 3 + H) % H; ctx.fillStyle = `rgba(255,${140 + 60 * s},60,${0.5 * s})`; ctx.fillRect(x + 10 * Math.sin(t + ph), yy, 3 * s, 7 * s); });
+  ctx.save(); if (k < 0.4) ctx.filter = `blur(${24 * (1 - k / 0.4)}px)`;
+  const sway = 0.03 * Math.sin(t * 1.2), hx0 = W * 0.52, hy0 = lerp(H + 380, H * 0.36, e);
+  ctx.translate(hx0, hy0); ctx.rotate(-0.12 + sway); ctx.drawImage(HAND, -230, -160, 460, 767); ctx.restore();
+  const glow = sm((t - 14.5) / 0.5);
+  if (glow > 0) { const px = W * 0.58, py = H * 0.17 + 8 * Math.sin(t * 2);
+    const g = ctx.createRadialGradient(px, py, 10, px, py, 200); g.addColorStop(0, `rgba(120,170,255,${0.45 * glow})`); g.addColorStop(1, 'rgba(120,170,255,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    icon('phone', px, py, 11 * back((t - 14.5) / 0.4), 0.15 + 0.04 * Math.sin(t * 9), 1, 1); }
+  caption(t, words(13.8, 14.9), W * 0.4, H * 0.5, { color: CREAM, align: 'right', cursor: t < 14.95 });
+  caption(t, words(14.9, 16.2), W * 0.64, H * 0.5, { color: CREAM });
+  if (t > 15.7) { ctx.fillStyle = `rgba(190,186,182,${sm((t - 15.7) / 0.25) * 0.85})`; ctx.fillRect(0, 0, W, H); }
+}
+const HX = [0.08, 0.36, 0.64, 0.92], HOME_OBJ = ['house', 'mug', 'keys', 'phone', 'heart'];
+function shot15(t) {   // H · O · M · E across fast cuts, letters fixed, one object per cut
+  const i = T.home.filter(x => t >= x).length - 1, bg = ['paper', 'night', 'red', 'night', 'night'][i];
+  if (bg === 'paper') paper(); else if (bg === 'red') { ctx.fillStyle = '#d8261c'; ctx.fillRect(0, 0, W, H); } else night();
+  const col = bg === 'paper' ? INK : CREAM, n = Math.min(4, i + 1);
+  ctx.font = '46px B'; ctx.textBaseline = 'middle'; ctx.textAlign = 'center'; ctx.fillStyle = col;
+  for (let j = 0; j < n; j++) ctx.fillText('HOME'[j], HX[j] * W, H * 0.5); ctx.textAlign = 'left';
+  const k = (t - T.home[i]) / 0.27, ox = lerp(HX[Math.min(i, 3)], HX[Math.min(i + 1, 3)], 0.5);
+  icon(HOME_OBJ[i], i === 4 ? W * 0.5 : ox * W + 40 * k, H * 0.5, 6.5 * back(k * 2), 0.2 * (1 - k), Math.cos((1 - eo(k * 1.5)) * 1.3));
+}
+const SCAT = [[0.16, 0.76, -1.2], [0.56, 0.22, 0.8], [0.84, 0.8, 2.6], [0.3, 0.3, -2.4]];
+function shot16(t) {   // ink swirls, letters scatter and drift, red pen loops, final knot
+  paper(); const k = t - T.scatter;
+  ctx.save(); ctx.filter = 'blur(5px)';
+  [[0.2, 0.3], [0.7, 0.25], [0.6, 0.75]].forEach(([fx, fy], i) => brush(curve(u => [fx * W + 260 * Math.sin(u * 4 + i) * u, fy * H + 200 * Math.cos(u * 3 + i)]), sm(k / 0.3), 34, '#1a1818', 0.75 * (1 - sm((k - 0.3) / 0.4))));
+  ctx.restore();
+  const knot = sm((t - T.knot) / 0.5);
+  ctx.font = '46px B'; ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
+  'HOME'.split('').forEach((c, j) => {
+    const [sx, sy, sr] = SCAT[j], e = eo((k - 0.05 * j) / 0.6), dx = 18 * Math.sin(t * 0.7 + j), dy = 14 * Math.cos(t * 0.6 + j);
+    let x = lerp(HX[j] * W, sx * W, e) + dx, y = lerp(H * 0.5, sy * H, e) + dy; x = lerp(x, W / 2 + (j - 1.5) * 40, knot); y = lerp(y, H / 2, knot);
+    ctx.save(); ctx.translate(x, y); ctx.rotate(sr * e * 0.5 + 0.2 * Math.sin(t + j)); ctx.fillStyle = INK; ctx.fillText(c, 0, 0);
+    const lk = sm((t - 18.6 - 0.25 * j) / 0.6);   // red pen loop around the letter
+    if (lk > 0) { ctx.strokeStyle = RED; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.ellipse(4, 2, 40, 30, 0.4, 0, Math.PI * 2 * lk); ctx.stroke(); }
+    ctx.restore();
+    ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(lerp(sx * W + 120, W / 2, knot), lerp(sy * H - 60, H / 2, knot), 4, 0, 7); ctx.fill();
+  });
+  ctx.textAlign = 'left';
+  if (knot > 0) {   // ink knot ties them together
+    const r = rng(9);
+    for (let i = 0; i < 5; i++) { const a = r() * 6.28, b = a + 2 + r() * 2;
+      brush(curve(u => { const aa = lerp(a, b + 4, u); return [W / 2 + 120 * Math.cos(aa) * (1 - u * 0.4), H / 2 + 90 * Math.sin(aa * 1.3)]; }), knot, 16, '#121010', 1);
+      brush(curve(u => { const aa = lerp(b, a + 6, u); return [W / 2 + 200 * Math.cos(aa), H / 2 + 150 * Math.sin(aa * 0.8)]; }), knot, 3, RED, 0.9, false); }
+  }
+}
+function render(t) {
+  ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0); ctx.filter = 'none'; ctx.globalAlpha = 1;
+  if (t < T.card) shot1(t); else if (t < T.star) shot2(t); else if (t < T.orb) shot3(t); else if (t < T.sil) shot4(t);
+  else if (t < T.shadow) shot5(t); else if (t < T.ring) shot6(t); else if (t < T.bills) shot7(t); else if (t < T.slideA) shot8(t);
+  else if (t < T.quiet) slide(t, T.slideA, [['plant', 0.42, 22, 0], ['bills', 0.56, 20, 300], ['mug', 0.48, 22, 660], ['heart', 0.45, 24, 980]]);
+  else if (t < T.slideB) shot10(t); else if (t < T.worry) slide(t, T.slideB, [['phone', 0.5, 22, 0], ['coin', 0.5, 26, 340], ['keys', 0.52, 22, 740]]);
+  else if (t < T.hole) shot12(t); else if (t < T.hand) shot13(t); else if (t < T.home[0]) shot14(t); else if (t < T.scatter) shot15(t); else shot16(t);
+  ctx.filter = 'none'; ctx.globalAlpha = 1; grain(t);
+}
+window.TOTAL = END; window.renderAt = t => render(t);
+window.ready = Promise.all([document.fonts.load('46px B'), document.fonts.load('34px M'), fetch('words_placed.json').then(r => r.json()).then(w => WORDS = w)])
+  .then(() => { if (q.has('t')) render(parseFloat(q.get('t'))); else (function tick(n) { render((n / 1000) % END); requestAnimationFrame(tick); })(0); return true; });
+</script></body></html>
