@@ -8,8 +8,9 @@ Layouts are crop boxes on the 1920x1080 stream: face = the face cam, game = the 
 import argparse, os, subprocess, sys
 import numpy as np
 
-LAYOUTS = {   # (x, y, w, h) on 1920x1080
-    "asianjeff": dict(face=(0, 318, 590, 322), game=(620, 190, 1040, 740)),   # cam left; chat, "Rice today" and his own caption bar cut off
+LAYOUTS = {   # (x, y, w, h) on 1920x1080 (check each clip: he moves and resizes his cam between streams)
+    "asianjeff": dict(face=(0, 318, 590, 322), game=(620, 190, 1040, 740)),   # 19 Nov: cam left; chat, "Rice today" and his caption bar cut off
+    "asianjeff2": dict(face=(0, 370, 452, 340), game=(560, 200, 1100, 740)),  # from 20 Nov: smaller cam, lower
 }
 FONT_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "edit-kit", "03 Fonts & Captions", "Fonts")
 PUNCH = {"what", "no", "bro", "wait", "why", "how", "scared", "crazy", "insane", "help", "run", "money", "gone"}
@@ -21,6 +22,16 @@ def words(src, start, end):
                           "-f", "f32le", "-"], capture_output=True).stdout
     segs, _ = WhisperModel("small.en", device="cpu", compute_type="int8").transcribe(np.frombuffer(raw, np.float32), word_timestamps=True)
     return [(w.word.strip(), w.start, w.end) for s in segs for w in s.words if w.word.strip()]
+
+
+import re
+_MASK = [(r"fuck", "f*ck"), (r"shit", "sh*t"), (r"bitch", "b*tch"), (r"damn", "d*mn"), (r"dick", "d*ck"), (r"\bass(es)?\b", "a**")]
+
+
+def clean(w):
+    """Mask swear words in on-screen captions (the audio stays as it is): FUCKING -> F*CKING. Reach drops on visible swearing."""
+    for pat, rep in _MASK: w = re.sub(pat, rep, w, flags=re.I)
+    return w
 
 
 def ass_time(t):
@@ -45,7 +56,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     ev, chunk = [], []
     def flush():
         if not chunk: return
-        txt = " ".join(("{\\c&H00D7FF&}" + w.upper() + "{\\c&HFFFFFF&}") if w.strip(".,!?'").lower() in PUNCH else w.upper() for w, _, _ in chunk)
+        txt = " ".join(("{\\c&H00D7FF&}" + clean(w).upper() + "{\\c&HFFFFFF&}") if w.strip(".,!?'").lower() in PUNCH else clean(w).upper() for w, _, _ in chunk)
         ev.append(f"Dialogue: 0,{ass_time(chunk[0][1])},{ass_time(max(chunk[-1][2], chunk[0][1] + 0.35))},Cap,,0,0,0,,{{\\pos(540,960)\\fscx80\\fscy80\\t(0,80,\\fscx100\\fscy100)}}{txt}")
         chunk.clear()
     for w in ws:
