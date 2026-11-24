@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Storyboard</title>
+<style>
+  /* Use the brand's own font for the whole board. */
+  @font-face { font-family: Brand; src: url("/usr/share/fonts/opentype/inter/InterDisplay-Medium.otf"); font-weight: 400; }
+  @font-face { font-family: Brand; src: url("/usr/share/fonts/opentype/inter/InterDisplay-Bold.otf"); font-weight: 600 700; }
+  * { box-sizing: border-box; } html, body { margin: 0; background: #0B0B10; color: #f2f2f4; font-family: Brand, system-ui, sans-serif; }
+  .board { width: 1920px; padding: 40px 30px; } h1 { margin: 0 0 6px; font-size: 42px; font-weight: 600; letter-spacing: -1.2px; } h1 span { color: #8a8a94; font-weight: 400; }
+  .sub { font-size: 18px; color: #b9b9c1; margin-bottom: 26px; max-width: 1700px; line-height: 1.45; }
+  .grid { display: grid; grid-template-columns: repeat(4, 450px); gap: 30px 26px; }
+  .frame { position: relative; width: 450px; height: 253px; border-radius: 10px; overflow: hidden; background: #111; }
+  .frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .num { position: absolute; left: 12px; top: 10px; width: 44px; height: 44px; border-radius: 50%; background: #fff; color: #000; font-weight: 700; font-size: 22px; display: flex; align-items: center; justify-content: center; z-index: 2; }
+  .hl { position: absolute; left: 0; right: 0; top: 16px; text-align: center; font-weight: 600; font-size: 24px; letter-spacing: -0.8px; }
+  .t { font-size: 13px; color: #7d7d87; margin-top: 10px; } .b { font-size: 19px; font-weight: 600; margin: 2px 0 4px; }
+  .vo { margin-top: 6px; font-size: 14.5px; color: #8BA5FD; } .d { font-size: 14.5px; color: #b9b9c1; line-height: 1.45; }
+  .mv { margin-top: 7px; font-size: 13.5px; color: #F5D04E; line-height: 1.4; } .tr { margin-top: 7px; font-size: 13.5px; color: #1FE39A; line-height: 1.4; }
+</style></head><body>
+<div class="board"><h1>Grown Up <span>· beat-for-beat on the reference edit · storyboard</span></h1>
+  <div class="sub">20.5 s, 4:3, 25 fps. Each frame is the REFERENCE shot being matched; the new version swaps topic, words, icons and character (Noah). No watermark. Blue = voiceover, yellow = what moves, green = how this shot becomes the next.</div>
+  <div class="grid" id="g"></div></div>
+<script>
+// [time, frame image (or ''), field colour, headline on the frame, title, VO line, description, motion, transition]
+const S = [
+ ['0.0–0.5s','assets/frames/1.jpg','#e9b928','','Hook: “how” card','“How…”','Mustard card, bold “how” between dashed lines.','“how” slides left; a black bar sweeps in after it.','The bar wipes to paper.'],
+ ['0.5–2.0s','assets/frames/2.jpg','#e6e4e0','','The question types','“…do you know… you’ve finally grown up?”','Grainy paper, small caption typing word by word, a pen signature drawing itself, faint ink smudges.','Signature strokes write on; caption bracket flicks in.','Objects blow in from the right.'],
+ ['2.0–3.6s','assets/frames/3.jpg','#e6e4e0','','Star flash','','Pixel keys, mug, coin, phone tumble past the caption.','A cyan four-point star swells from the left edge; vignette closes in.','A red orb bursts into the dark.'],
+ ['3.6–4.2s','assets/frames/4.jpg','#120e0e','','Red burst','“You don’t feel it.”','Dark room, red glow resolving into Noah’s profile.','Orb dissolves into the silhouette.','Holds on Noah.'],
+ ['4.2–6.0s','assets/frames/5.jpg','#120e0e','','Noah, orange profile','“You just notice it.”','Orange-gradient side profile, small left caption with cursor.','A thin white orbit ring loops his head; slow push.','Gradient drains to grey shadow.'],
+ ['6.0–6.5s','assets/frames/6.jpg','#bdb9b4','','Grey shadow wipe','','Silhouette turns into a soft grey shadow on paper.','Shadow slides down and blurs out.','White paper fills; the ring of objects pops in.'],
+ ['6.5–8.1s','assets/frames/7.jpg','#e6e4e0','','Ring of grown-up things','','Pixel ring: keys, bills, mug, phone, plant, lamp, clock, coin.','Ring rotates; a black ink stroke sweeps through; the bills burst.','The burst flashes to dark.'],
+ ['8.1–9.2s','assets/frames/8.jpg','#120e0e','','Card 1: bills.','“In the bills.”','Big pixel bills, word right with blinking cursor.','Red star slash behind; bills rotate toward camera.','Objects slide across white.'],
+ ['9.2–9.8s','assets/frames/9.jpg','#e6e4e0','','Slide past','','Plant, mug, heart slide right to left.','Fast lateral slide with motion blur.','Red swoosh wipes to dark.'],
+ ['9.8–10.6s','assets/frames/10.jpg','#120e0e','','Card 2: quiet.','“In the quiet.”','Pixel desk lamp, word right.','Red diagonal swoosh paints across.','Wipe to white slide.'],
+ ['10.6–11.0s','assets/frames/11.jpg','#e6e4e0','','Slide past','','Phone, coin, keys slide past.','Same slide direction as shot 9.','Red scribble cuts to dark.'],
+ ['11.0–12.0s','assets/frames/12.jpg','#120e0e','','Card 3: worry.','“In the worry.”','Pixel alarm clock, red tick marks shaking off it.','Red scribble draws on; clock rattles.','Back to the ring on white.'],
+ ['12.0–13.7s','assets/frames/13.jpg','#e6e4e0','','Black hole','“Until one day…”','Ring returns, a black dot grows in the middle.','Objects spiral in; ink strokes swirl; pieces turn to ink blots.','Blurred whip to dark.'],
+ ['13.7–15.9s','assets/frames/14.jpg','#120e0e','','Noah reaches','“…you call your mum… just to hear her voice.”','Orange hand reaching up toward a small pixel phone, captions either side.','Hand rises and opens; embers drift.','Hard cut to white: H.'],
+ ['16.0–17.1s','assets/frames/15.jpg','#d8261c','','H · O · M · E','','Letters spelled across fast cuts (white, dark, red, dark), an object per letter: key, mug, phone.','Each cut adds one letter and swaps the object.','Ink swirls flood the frame.'],
+ ['17.2–20.5s','assets/frames/16.jpg','#e6e4e0','','Letters scatter','','HOME letters drift scattered on paper, red pen loops circle them.','Slow drift and rotation, then ink knots tie them together.','End.'],
+];
+document.getElementById('g').innerHTML = S.map(([t, img, bg, hl, b, vo, d, mv, tr], i) => `<div><div class="frame" style="background:${bg}"><div class="num">${i + 1}</div>${img ? `<img src="${img}">` : ''}${hl ? `<div class="hl">${hl}</div>` : ''}</div>
+  <div class="t">${t}</div><div class="b">${b}</div>${vo ? `<div class="vo">${vo}</div>` : ''}<div class="d">${d}</div>${mv ? `<div class="mv">${mv}</div>` : ''}<div class="tr">→ ${tr}</div></div>`).join('');
+</script></body></html>
