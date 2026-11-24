@@ -70,10 +70,11 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("src"); ap.add_argument("out"); ap.add_argument("--hook", required=True)
     ap.add_argument("--start", type=float, default=0.0); ap.add_argument("--end", type=float, default=None); ap.add_argument("--layout", default="asianjeff")
+    ap.add_argument("--face", help="x,y,w,h of the face cam on the 1920x1080 stream, overriding the layout (cams move between streams)")
     a = ap.parse_args()
     dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", a.src], capture_output=True, text=True).stdout)
     end = min(a.end or dur, dur)
-    L = LAYOUTS[a.layout]; fx, fy, fw, fh = L["face"]; gx, gy, gw, gh = L["game"]
+    L = LAYOUTS[a.layout]; fx, fy, fw, fh = map(int, a.face.split(",")) if a.face else L["face"]; gx, gy, gw, gh = L["game"]
     face_h = round(1080 * fh / fw / 2) * 2; game_h = 1920 - face_h
     ass = a.out + ".ass"; write_ass(ass, words(a.src, a.start, end), a.hook)
     vf = (f"[0:v]split[a][b];[a]crop={fw}:{fh}:{fx}:{fy},scale=1080:{face_h}[f];"
