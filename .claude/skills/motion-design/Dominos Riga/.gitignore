@@ -1,0 +1,4 @@
+# Raw site dumps and the licensed Gotham Pro font stay local, not in git.
+site/
+*.ttf
+out/
