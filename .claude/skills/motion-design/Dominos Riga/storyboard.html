@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Storyboard</title>
+<style>
+  /* Use the brand's own font for the whole board. */
+  @font-face { font-family: Brand; src: url("assets/Montserrat-SemiBold.ttf"); font-weight: 400; }
+  @font-face { font-family: Brand; src: url("assets/Montserrat-Black.ttf"); font-weight: 600 700; }
+  * { box-sizing: border-box; } html, body { margin: 0; background: #0B0B10; color: #f2f2f4; font-family: Brand, system-ui, sans-serif; }
+  .board { width: 1920px; padding: 40px 30px; } h1 { margin: 0 0 6px; font-size: 42px; font-weight: 600; letter-spacing: -1.2px; } h1 span { color: #8a8a94; font-weight: 400; }
+  .sub { font-size: 18px; color: #b9b9c1; margin-bottom: 26px; max-width: 1700px; line-height: 1.45; }
+  .grid { display: grid; grid-template-columns: repeat(7, 246px); gap: 30px 20px; }
+  .frame { position: relative; width: 246px; height: 437px; border-radius: 10px; overflow: hidden; background: #111; }
+  .frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .num { position: absolute; left: 12px; top: 10px; width: 44px; height: 44px; border-radius: 50%; background: #fff; color: #000; font-weight: 700; font-size: 22px; display: flex; align-items: center; justify-content: center; z-index: 2; }
+  .hl { position: absolute; left: 0; right: 0; top: 16px; text-align: center; font-weight: 600; font-size: 24px; letter-spacing: -0.8px; }
+  .t { font-size: 13px; color: #7d7d87; margin-top: 10px; } .b { font-size: 19px; font-weight: 600; margin: 2px 0 4px; }
+  .vo { margin-top: 6px; font-size: 14.5px; color: #8BA5FD; } .d { font-size: 14.5px; color: #b9b9c1; line-height: 1.45; }
+  .mv { margin-top: 7px; font-size: 13.5px; color: #F5D04E; line-height: 1.4; } .tr { margin-top: 7px; font-size: 13.5px; color: #1FE39A; line-height: 1.4; }
+</style></head><body>
+<div class="board"><h1>Domino's Riga <span>· 2+1 ad · 15 s · 9:16 · storyboard</span></h1>
+  <div class="sub">Internal pitch. One continuous move: the domino tile's dot becomes the pizza, pizzas become the 2+1, the +1 badge becomes the code card, the card becomes the logo. No voiceover, music + sound. Yellow = what moves, green = how this shot becomes the next.</div>
+  <div class="grid" id="g"></div></div>
+<script>
+// [time, frame image (or ''), field colour, headline on the frame, title, VO line, description, motion, transition]
+const S = [
+  ['0.0–1.5s','frames/1.png','#006491','','Hook: the tile','','Domino\'s blue fills the screen. The red-blue domino tile flies in and lands dead centre.','Fast spin-in, eases out. Tile squashes 8% before the next move.','The tile\'s white dot grows towards camera.'],
+  ['1.5–2.2s','frames/2.png','#006491','','Dot fills the frame','','The white dot swells to fill the screen.','One continuous grow, no stop.','The white disc is the pizza\'s plate: pepperoni eases in from 93% to 100%.'],
+  ['2.2–5.0s','frames/3.png','#E31837','','Hero: pepperoni','','Pepperoni pizza turns slowly, centre, on red. Soft steam, background out of focus.','Slow spin + slow push in. Line rises word by word: “Tieši no krāsns.”','Camera pulls back; the pizza slides into a pair.'],
+  ['5.0–7.5s','frames/4.png','#081E34','','Buy 2','','Pepperoni and Margherita side by side on dark navy.','Second pizza arrives from the right on the same curve. “Pērc 2 picas”','A third pizza drops in from above.'],
+  ['7.5–10.0s','frames/5.png','#081E34','','Get 1 as a gift','','BBQ lands on top. Red “+1” badge stamps on.','Small flash when it lands. “un saņem 1 dāvanā!”','The red +1 badge grows and floods the frame red.'],
+  ['10.0–12.5s','frames/6.png','#E31837','','The code','','White card: “Atlaides kods MORE”, “2+1” above.','Letters of MORE type in one by one, card drifts slowly closer.','The card shrinks and folds into the domino tile.'],
+  ['12.5–15.0s','frames/7.png','#006491','','End card','','Logo, “2+1 · kods MORE”, dominospizza.lv, small terms line.','Wordmark slides out from the tile. Light sweep. No camera drift.','End.'],
+];
+document.getElementById('g').innerHTML = S.map(([t, img, bg, hl, b, vo, d, mv, tr], i) => `<div><div class="frame" style="background:${bg}"><div class="num">${i + 1}</div>${img ? `<img src="${img}">` : ''}${hl ? `<div class="hl">${hl}</div>` : ''}</div>
+  <div class="t">${t}</div><div class="b">${b}</div>${vo ? `<div class="vo">${vo}</div>` : ''}<div class="d">${d}</div>${mv ? `<div class="mv">${mv}</div>` : ''}<div class="tr">→ ${tr}</div></div>`).join('');
+</script></body></html>
