@@ -2,3 +2,5 @@
 site/
 *.ttf
 out/
+sound/result/
+sound/music_bed.wav
