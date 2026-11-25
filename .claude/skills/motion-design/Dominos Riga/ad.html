@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="lv"><head><meta charset="utf-8"><title>Domino's Riga 2+1</title>
+<style>
+  @font-face { font-family: M; src: url("assets/Montserrat-Black.ttf"); font-weight: 900; }
+  @font-face { font-family: M; src: url("assets/Montserrat-ExtraBold.ttf"); font-weight: 800; }
+  @font-face { font-family: M; src: url("assets/Montserrat-SemiBold.ttf"); font-weight: 600; }
+  html,body{margin:0;background:#000;height:100%} body{display:flex;align-items:center;justify-content:center}
+  canvas{height:100vh;aspect-ratio:9/16;display:block}
+</style></head><body><canvas id="c"></canvas>
+<script>
+// Domino's Riga 2+1 pitch ad. 2D canvas, 1080x1920, page contract: renderAt(t), TOTAL, ready, EVENTS, ?t=, ?scale=.
+// Every beat time lives in B, so re-timing is a one-line change.
+const B = { land: 1.1, zoom: 1.35, zoomEnd: 2.0, l1: 2.4, l1out: 4.5, pull: 4.8, l2: 5.3, drop: 7.4, stamp: 8.0, l3: 8.1,
+  lout: 9.35, flood: 9.6, card: 9.95, code: 10.45, fold: 12.2, logo: 12.9, l4: 13.4, sweep: 13.9, END: 15 };
+const W = 1080, H = 1920, CX = 540, q = new URLSearchParams(location.search), SCALE = parseFloat(q.get('scale') || '1');
+const BLUE = '#006491', RED = '#E31837', NAVY = '#0B2A44';
+const cv = document.getElementById('c'); cv.width = W * SCALE; cv.height = H * SCALE; const MAIN = cv.getContext('2d');
+const mk = () => { const c = document.createElement('canvas'); c.width = cv.width; c.height = cv.height; return c; };
+const TMP = mk(), ACC = mk(), SW = mk(); let ctx;
+const clamp01 = v => Math.max(0, Math.min(1, v)), lerp = (a, b, k) => a + (b - a) * k, prog = (t, a, b) => clamp01((t - a) / (b - a));
+const outExpo = k => (k = clamp01(k)) >= 1 ? 1 : 1 - Math.pow(2, -10 * k), outCubic = k => 1 - Math.pow(1 - clamp01(k), 3);
+const inOutCubic = k => { k = clamp01(k); return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; }, sine = k => 0.5 - 0.5 * Math.cos(Math.PI * clamp01(k));
+const img = s => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = s; });
+let LOGO, P = {};
+
+// Logo geometry, measured from the PNG (2000x500): tile, its red-half dot, wordmark, visible bounding box.
+const G = { tile: [107, 42, 513, 448], tileC: [309.5, 244.5], dot: [378, 176], dotR: 31.5, redHalf: 90.5,
+  word: [520, 150, 1932, 450], box: [107, 42, 1931, 447] };
+const TILE0 = 1.3, ROT0 = -200;                      // tile's landing size (x image px) and start spin
+const LS = 0.49, LCY = 860;                          // end logo scale and the y of its visible centre
+const logoX = x => CX + (x - (G.box[0] + G.box[2]) / 2) * LS, logoY = y => LCY + (y - (G.box[1] + G.box[3]) / 2) * LS;
+const HERO = 780, PAIR = 430, PLATE = 1.05;          // pizza diameters on screen; the white plate is 5% wider
+
+function drawTileImg(x, y, s, rot, a = 1) {          // the logo's tile, centred on (x, y)
+  ctx.save(); ctx.globalAlpha = a; ctx.translate(x, y); ctx.rotate(rot * Math.PI / 180); ctx.scale(s, s);
+  const [x0, y0, x1, y1] = G.tile; ctx.drawImage(LOGO, x0, y0, x1 - x0, y1 - y0, x0 - G.tileC[0], y0 - G.tileC[1], x1 - x0, y1 - y0); ctx.restore();
+}
+function pizza(im, x, y, d, rot, a = 1, k = 1) {     // white plate + pizza; k scales the pizza alone (93% -> 100% ease-in)
+  if (a <= 0) return; ctx.save(); ctx.globalAlpha = 1; ctx.translate(x, y);
+  ctx.shadowColor = 'rgba(0,0,0,0.28)'; ctx.shadowBlur = d * 0.08 * SCALE; ctx.shadowOffsetY = d * 0.03 * SCALE;
+  ctx.beginPath(); ctx.arc(0, 0, d / 2 * PLATE, 0, 7); ctx.fillStyle = '#fff'; ctx.fill(); ctx.shadowColor = 'transparent';
+  ctx.globalAlpha = a; ctx.rotate(rot * Math.PI / 180); const s = d * k / 470; ctx.drawImage(im, -240 * s, -240 * s, 480 * s, 480 * s); ctx.restore();
+}
+function words(str, y, size, w, col, tIn, tOut, t, stagger = 0.08) {   // word by word: blur -> sharp with a small rise, leaves the same way
+  ctx.save(); ctx.font = `${w} ${size}px M`; ctx.letterSpacing = `${-0.03 * size}px`; ctx.textBaseline = 'middle';
+  const ws = str.split(' '), sp = ctx.measureText(' ').width, wd = ws.map(s => ctx.measureText(s).width), tot = wd.reduce((a, b) => a + b, 0) + sp * (ws.length - 1);
+  let x = CX - tot / 2;
+  ws.forEach((s, i) => {
+    const ki = outCubic(prog(t, tIn + i * stagger, tIn + i * stagger + 0.55)), ko = tOut ? sine(prog(t, tOut + i * 0.04, tOut + i * 0.04 + 0.3)) : 0, a = ki * (1 - ko);
+    if (a > 0.003) { ctx.globalAlpha = a; ctx.filter = `blur(${((1 - ki) * 14 + ko * 10) * SCALE}px)`; ctx.fillStyle = col; ctx.fillText(s, x, y + (1 - ki) * 34 - ko * 24); }
+    x += wd[i] + sp;
+  });
+  ctx.restore();
+}
+function steam(t) {                                  // soft wisps rising off the hero pizza
+  const a0 = sine(prog(t, B.zoomEnd + 0.3, B.zoomEnd + 1)) * (1 - sine(prog(t, B.pull - 0.2, B.pull + 0.4)));
+  if (a0 <= 0) return; ctx.save();
+  for (let i = 0; i < 5; i++) { const ph = ((t * 0.35 + i / 5) % 1), x = CX + Math.sin(i * 2.3 + t * 0.9) * 160, y = 900 - ph * 520, r = 90 + ph * 110;
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, `rgba(255,255,255,${0.16 * a0 * Math.sin(Math.PI * ph)})`); g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g; ctx.fillRect(x - r, y - r, r * 2, r * 2); }
+  ctx.restore();
+}
+
+function frame(t) {
+  ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0); ctx.globalAlpha = 1; ctx.filter = 'none';
+  // 1-2 Tile spins in, lands, squashes, then the camera flies into its red half until the dot is the plate
+  if (t < B.zoomEnd) {
+    ctx.fillStyle = BLUE; ctx.fillRect(0, 0, W, H);
+    const kl = outExpo(prog(t, 0, B.land)), kz = inOutCubic(prog(t, B.zoom, B.zoomEnd));
+    const squash = 1 - 0.08 * Math.sin(Math.PI * prog(t, B.land + 0.05, B.zoom + 0.08));
+    const s = Math.exp(lerp(Math.log(TILE0 * lerp(0.15, 1, kl) * (1 + 0.04 * prog(t, B.land, B.zoom))), Math.log(HERO / 2 * PLATE / G.dotR), kz));
+    const rot = lerp(ROT0, 0, kl) + 45 * kz;          // keeps turning the same way, ending with the red half square to camera
+    const ax = lerp(G.tileC[0], G.dot[0], kz), ay = lerp(G.tileC[1], G.dot[1], kz);
+    ctx.save(); ctx.translate(CX, H / 2); ctx.scale(squash > 0 ? 1 / squash : 1, squash); ctx.rotate(rot * Math.PI / 180); ctx.scale(s, s); ctx.translate(-ax, -ay);
+    ctx.drawImage(LOGO, G.tile[0], G.tile[1], G.tile[2] - G.tile[0], G.tile[3] - G.tile[1], G.tile[0], G.tile[1], G.tile[2] - G.tile[0], G.tile[3] - G.tile[1]);
+    const v = prog(s, 3, 5);                          // sharp vector red half + dot over the PNG once the camera gets close
+    if (v > 0) { ctx.globalAlpha = v; ctx.translate(G.dot[0], G.dot[1]); ctx.rotate(-Math.PI / 4); ctx.fillStyle = RED;
+      ctx.fillRect(-G.redHalf, -G.redHalf, G.redHalf * 2, G.redHalf * 2); ctx.beginPath(); ctx.arc(0, 0, G.dotR, 0, 7); ctx.fillStyle = '#fff'; ctx.fill(); }
+    ctx.restore(); return;
+  }
+  // 3-5 Red field: hero pizza, pull back to a pair, third pizza drops in, +1 badge stamps on
+  ctx.fillStyle = RED; ctx.fillRect(0, 0, W, H);
+  const kin = outCubic(prog(t, B.zoomEnd, B.zoomEnd + 0.6)), kp = inOutCubic(prog(t, B.pull, B.pull + 0.9)), kd = outExpo(prog(t, B.drop, B.drop + 0.8));
+  const push = 1 + 0.05 * prog(t, B.zoomEnd, B.pull), spin = t * 9;
+  const d1 = lerp(HERO * push, PAIR, kp), x1 = lerp(CX, 300, kp), y1 = lerp(H / 2, 1060, kp) + 200 * kd;
+  const x2 = lerp(1500, 780, outExpo(prog(t, B.pull + 0.25, B.pull + 1.3))), y2 = 1060 + 200 * kd;
+  steam(t);
+  if (t > B.pull) pizza(P.mar, x2, y2, PAIR, -spin * 0.8);
+  pizza(P.pep, x1, y1, d1, spin, kin, lerp(0.93, 1, kin));
+  if (t > B.drop) pizza(P.bbq, CX, lerp(-400, 850, kd), PAIR, spin * 0.7 + 40);
+  words('Tieši no krāsns.', 400, 96, 900, '#fff', B.l1, B.l1out, t);
+  words('Pērc 2 picas', 390, 104, 900, '#fff', B.l2, B.lout, t);
+  words('un saņem 1 dāvanā!', 500, 80, 900, '#fff', B.l3, B.lout, t);
+  // +1 badge: stamps down from 130% (no bounce), a ring flashes, then it squashes and floods the frame blue
+  const ks = outExpo(prog(t, B.stamp, B.stamp + 0.45));
+  if (ks > 0) {
+    const kf = inOutCubic(prog(t, B.flood, B.flood + 0.7)), sq = 1 - 0.08 * Math.sin(Math.PI * prog(t, B.flood - 0.2, B.flood + 0.05));
+    const bx = lerp(740, CX, kf), by = lerp(700, H / 2, kf), r = Math.exp(lerp(Math.log(112 * lerp(1.3, 1, ks) * sq), Math.log(2300), kf));
+    const ring = prog(t, B.stamp + 0.15, B.stamp + 0.75);
+    if (ring > 0 && ring < 1) { ctx.save(); ctx.globalAlpha = 0.6 * (1 - ring); ctx.strokeStyle = '#fff'; ctx.lineWidth = 10 * (1 - ring) + 2; ctx.beginPath(); ctx.arc(740, 700, 112 + ring * 120, 0, 7); ctx.stroke(); ctx.restore(); }
+    ctx.save(); ctx.globalAlpha = ks; ctx.beginPath(); ctx.arc(bx, by, r, 0, 7); ctx.fillStyle = BLUE; ctx.fill();
+    ctx.globalAlpha = ks * (1 - prog(t, B.flood, B.flood + 0.25)); ctx.font = '900 96px M'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#fff'; ctx.fillText('+1', bx - 4, by + 4); ctx.restore();
+  }
+  if (t < B.card) return;
+  // 6 Blue field (the flood has covered the frame by flood + 0.7): the code card rises during the flood. 7 It folds into the logo tile
+  if (t >= B.flood + 0.7) { ctx.fillStyle = BLUE; ctx.fillRect(0, 0, W, H); }
+  const kc = outCubic(prog(t, B.card, B.card + 0.6)), kfo = inOutCubic(prog(t, B.fold, B.logo)), push2 = 1 + 0.04 * prog(t, B.card, B.fold);
+  const tx = logoX(G.tileC[0]), ty = logoY(G.tileC[1]), tileS = LS;
+  // card 860x420 is a domino shape: it turns -45 degrees and shrinks onto the tile (whose long side is ~400 image px)
+  const cs = lerp(push2 * lerp(0.93, 1, kc), tileS * 400 / 860, kfo), cxp = lerp(CX, tx, kfo), cyp = lerp(1010, ty, kfo), cr = -45 * kfo;
+  const swap = prog(t, B.fold + 0.45, B.logo);
+  ctx.save(); ctx.globalAlpha = kc * (1 - swap); ctx.translate(cxp, cyp); ctx.rotate(cr * Math.PI / 180); ctx.scale(cs, cs);
+  ctx.shadowColor = 'rgba(0,0,0,0.25)'; ctx.shadowBlur = 50 * SCALE * cs; ctx.shadowOffsetY = 18 * SCALE * cs;
+  ctx.beginPath(); ctx.roundRect(-430, -210, 860, 420, 48); ctx.fillStyle = '#fff'; ctx.fill(); ctx.restore();
+  const ta = 1 - prog(t, B.fold, B.fold + 0.25);
+  if (ta > 0) {
+    ctx.save(); ctx.globalAlpha = ta; ctx.translate(CX, 1010); ctx.scale(push2, push2); ctx.translate(-CX, -1010);
+    words('Atlaides kods', 905, 54, 800, RED, B.code - 0.2, 0, t);
+    ctx.font = '900 190px M'; const lw = [...'MORE'].map(ch => ctx.measureText(ch).width - 4); let lx = CX - lw.reduce((a, b) => a + b) / 2;
+    [...'MORE'].forEach((ch, i) => { const k = outCubic(prog(t, B.code + 0.15 * i, B.code + 0.15 * i + 0.45));
+      if (k > 0) { ctx.save(); ctx.font = '900 190px M'; ctx.textBaseline = 'middle'; ctx.fillStyle = BLUE; ctx.globalAlpha = k; ctx.filter = `blur(${(1 - k) * 12 * SCALE}px)`;
+        ctx.fillText(ch, lx, 1060 + (1 - k) * 30); ctx.restore(); }
+      lx += lw[i]; });
+    words('2+1', 650, 230, 900, '#fff', B.card + 0.2, 0, t);
+    ctx.restore();
+  }
+  if (swap > 0) {
+    drawTileImg(tx, ty, tileS, 0, swap);
+    // wordmark slides out from behind the tile, clipped at the tile's right edge
+    const kw = outExpo(prog(t, B.logo, B.logo + 0.9)), clipX = logoX(G.tile[2]);
+    ctx.save(); ctx.beginPath(); ctx.rect(clipX, 0, W - clipX, H); ctx.clip(); ctx.globalAlpha = kw;
+    const off = (1 - kw) * -380; ctx.drawImage(LOGO, G.word[0], G.word[1], G.word[2] - G.word[0], G.word[3] - G.word[1], logoX(G.word[0]) + off, logoY(G.word[1]), (G.word[2] - G.word[0]) * LS, (G.word[3] - G.word[1]) * LS);
+    ctx.restore();
+    // light sweep across the whole logo
+    const k = prog(t, B.sweep, B.sweep + 0.8);
+    if (k > 0 && k < 1) { const s = SW.getContext('2d'); s.setTransform(1, 0, 0, 1, 0, 0); s.clearRect(0, 0, SW.width, SW.height); s.setTransform(SCALE, 0, 0, SCALE, 0, 0);
+      s.drawImage(LOGO, logoX(0), logoY(0), 2000 * LS, 500 * LS); s.globalCompositeOperation = 'source-atop';
+      const x = lerp(logoX(G.box[0]) - 300, logoX(G.box[2]) + 300, sine(k)), g = s.createLinearGradient(x - 140, 0, x + 140, 0);
+      g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.5, 'rgba(255,255,255,0.55)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+      s.fillStyle = g; s.fillRect(0, 0, W, H); s.globalCompositeOperation = 'source-over';
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(SW, 0, 0); ctx.restore(); }
+  }
+  words('2+1 · kods MORE', 1080, 66, 900, '#fff', B.l4, 0, t);
+  words('dominospizza.lv', 1170, 50, 600, '#fff', B.l4 + 0.25, 0, t);
+  words('M vai L izmēra picas · min. pasūtījums €12,50', 1760, 27, 600, 'rgba(255,255,255,0.8)', B.l4 + 0.5, 0, t, 0.02);
+  words('Noteikumi un ierobežojumi dominospizza.lv', 1805, 27, 600, 'rgba(255,255,255,0.8)', B.l4 + 0.55, 0, t, 0.02);
+}
+
+const SUB = 8, SHUTTER = 0.5 / 25;                    // motion blur: 8 sub-frames over a 180-degree shutter at 25 fps
+function render(t) {
+  const A = ACC.getContext('2d'); A.setTransform(1, 0, 0, 1, 0, 0); A.globalAlpha = 1; A.clearRect(0, 0, ACC.width, ACC.height);
+  for (let i = 0; i < SUB; i++) { const ts = Math.max(0, Math.min(B.END, t + (i / (SUB - 1) - 0.5) * SHUTTER));
+    ctx = TMP.getContext('2d'); frame(ts); A.globalAlpha = 1 / (i + 1); A.drawImage(TMP, 0, 0); }
+  MAIN.setTransform(1, 0, 0, 1, 0, 0); MAIN.drawImage(ACC, 0, 0);
+}
+window.TOTAL = B.END; window.renderAt = t => render(t);
+window.EVENTS = [['tile_whoosh', 0], ['tile_land', B.land], ['zoom_whoosh', B.zoom], ['pizza_in', B.zoomEnd], ['line1', B.l1], ['pull_whoosh', B.pull],
+  ['pizza2_slide', B.pull + 0.25], ['line2', B.l2], ['drop_whoosh', B.drop], ['drop_land', B.drop + 0.35], ['badge_stamp', B.stamp], ['flood_whoosh', B.flood],
+  ['card_in', B.card], ['type_M', B.code], ['type_O', B.code + 0.15], ['type_R', B.code + 0.3], ['type_E', B.code + 0.45], ['fold_whoosh', B.fold],
+  ['logo_land', B.logo], ['end_text', B.l4], ['sweep', B.sweep]].map(([name, t]) => ({ name, t }));
+window.ready = Promise.all([img('assets/dominos_logo.8a9a8ffbe4ab.png'), img('assets/PepperoniTOP.png'), img('assets/MargheritaTOP.png'), img('assets/BarbecueTOP.png'),
+  document.fonts.load('900 40px M'), document.fonts.load('800 40px M'), document.fonts.load('600 40px M')]).then(([l, a, b, c]) => {
+  LOGO = l; P = { pep: a, mar: b, bbq: c };
+  if (q.has('t')) render(parseFloat(q.get('t'))); else (function tick(n) { render((n / 1000) % B.END); requestAnimationFrame(tick); })(0);
+  return true;
+});
+</script></body></html>
