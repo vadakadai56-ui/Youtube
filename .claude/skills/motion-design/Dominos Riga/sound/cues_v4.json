@@ -125,15 +125,8 @@
      "gain_db": -10,
      "max_dur": 0.9
     }
-   ]
-  },
-  {
-   "t": 9.55,
-   "label": "pull back to logo",
-   "file": "/root/brand-sfx/whoosh/swirling-whoosh.mp3",
-   "role": "whoosh",
-   "anchor": "peak",
-   "gain_db": -2
+   ],
+   "anchor": "peak"
   },
   {
    "t": 9.3,
@@ -157,6 +150,14 @@
    "file": "/root/brand-sfx/wood/impactWood_light_003.ogg",
    "role": "foley",
    "gain_db": -7
+  },
+  {
+   "t": 9.55,
+   "label": "pull back to logo",
+   "file": "/root/brand-sfx/whoosh/swirling-whoosh.mp3",
+   "role": "whoosh",
+   "anchor": "peak",
+   "gain_db": -2
   },
   {
    "t": 11.8,
@@ -184,26 +185,26 @@
   },
   {
    "t": 12.9,
-   "label": "type M",
-   "file": "/root/brand-sfx/click/typewriter-soft-click.mp3",
+   "label": "key M",
+   "file": "/root/brand-sfx/keys/keypress-003.wav",
    "role": "click"
   },
   {
    "t": 13.0,
-   "label": "type O",
-   "file": "/root/brand-sfx/click/typewriter-soft-click.mp3",
+   "label": "key O",
+   "file": "/root/brand-sfx/keys/keypress-011.wav",
    "role": "click"
   },
   {
    "t": 13.1,
-   "label": "type R",
-   "file": "/root/brand-sfx/click/typewriter-soft-click.mp3",
+   "label": "key R",
+   "file": "/root/brand-sfx/keys/keypress-019.wav",
    "role": "click"
   },
   {
    "t": 13.2,
-   "label": "type E",
-   "file": "/root/brand-sfx/click/typewriter-soft-click.mp3",
+   "label": "key E",
+   "file": "/root/brand-sfx/keys/keypress-027.wav",
    "role": "click"
   },
   {
