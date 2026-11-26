@@ -1,0 +1,769 @@
+<title>Dustlight Jar</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Dustlight makes short animated stories about the things we forgot. Seven keepsakes from the stories fall into a jar under a lamp at three in the morning, drawn live in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500;12..96,75..100,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one fixed WebGL stage (a jar under a lamp at 3 a.m.) behind; chapters scroll over it.
+   Copy sits on the free side of each camera shot; the jar chapter is tall with a sticky caption card. */
+:root{
+  --night:#0b0c11;      /* the room after midnight */
+  --panel:#12131a;
+  --paper:#efe5d2;      /* text */
+  --lamp:#f3a640;       /* the pendant bulb: buttons, kickers, bars */
+  --lamp-2:#ffc477;
+  --window:#7fa3dc;     /* the street through the glass: tags, secondary marks */
+  --muted:rgba(239,229,210,.66);
+  --line:rgba(239,229,210,.16);
+  --f-display:"Bricolage Grotesque","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Instrument Sans",system-ui,-apple-system,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+html,body{background:var(--night);color:var(--paper)}
+body{font-family:var(--f-body);font-size:16.5px;line-height:1.55;overflow-x:clip}
+a{color:inherit}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;opacity:0;transition:opacity 1.6s ease}
+#gl.ready{opacity:1}
+#dim{position:fixed;inset:0;z-index:1;pointer-events:none;background:var(--night);opacity:0}
+#loader{position:fixed;inset:0;z-index:6;display:grid;place-items:center;background:var(--night);transition:opacity .9s ease .2s}
+#loader.done{opacity:0;pointer-events:none}
+#loader span{font-family:var(--f-mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+
+/* chrome */
+header{position:fixed;top:0;left:0;right:0;z-index:5;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;
+  padding-top:calc(18px + env(safe-area-inset-top,0px));padding-bottom:14px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  background:linear-gradient(180deg,rgba(11,12,17,.75),transparent)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--f-display);font-weight:800;font-size:21px;letter-spacing:.02em;font-stretch:80%}
+.brand i{width:12px;height:12px;border-radius:50%;background:var(--lamp);box-shadow:0 0 14px 3px rgba(243,166,64,.55)}
+nav{display:flex;gap:28px}
+nav a{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-decoration:none;color:var(--muted)}
+nav a:hover,nav a:focus-visible{color:var(--paper)}
+.right{justify-self:end;display:flex;align-items:center;gap:16px}
+.latest{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:right;text-decoration:none;line-height:1.5}
+.latest b{color:var(--paper);font-weight:500}
+.latest::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--lamp);margin-right:8px;vertical-align:1px}
+.btn{display:inline-flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;padding:13px 20px;border:1px solid var(--line);color:var(--paper);background:rgba(11,12,17,.35);border-radius:2px;white-space:nowrap}
+.btn.hot{background:var(--lamp);border-color:var(--lamp);color:#1a1205}
+.btn:hover{border-color:var(--lamp-2)}
+.btn.hot:hover{background:var(--lamp-2)}
+.btn.sm{padding:10px 14px;font-size:11px}
+:focus-visible{outline:2px solid var(--lamp-2);outline-offset:3px}
+
+main{position:relative;z-index:3}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.kicker{display:flex;align-items:center;gap:12px;font-family:var(--f-mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--lamp)}
+.kicker::before{content:"";width:34px;height:1px;background:var(--lamp)}
+h1,h2,h3{font-family:var(--f-display);font-weight:800;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(4rem,12vw,10rem);line-height:.86;font-stretch:78%;letter-spacing:-.02em}
+h2{font-size:clamp(2.6rem,5.6vw,4.6rem);line-height:.95;font-stretch:85%}
+p{margin:0}
+.lede{color:var(--muted);max-width:33rem;font-size:1.06rem}
+
+/* hero */
+#hero{min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding-block:120px 34px}
+#hero .copy{display:grid;gap:22px;max-width:48rem;margin-left:clamp(0px,4vw,60px)}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.ctas .link{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--paper);text-decoration:none;border-bottom:1px solid var(--lamp);padding-bottom:3px;margin-left:8px}
+.foot-notes{display:flex;justify-content:space-between;gap:16px;margin-top:56px;font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(239,229,210,.42)}
+
+/* the jar: tall chapter, sticky card */
+#jar{height:560vh}
+#jar .stick{position:sticky;top:0;height:100svh;display:flex;align-items:center;justify-content:flex-end}
+.card{width:min(420px,100%);background:rgba(15,16,22,.86);border:1px solid var(--line);padding:30px 32px;display:grid;gap:18px;margin-right:clamp(0px,4vw,60px);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.card .intro{display:grid;gap:14px}
+.card h3{font-size:2rem;line-height:1;font-stretch:88%}
+.card hr{border:0;border-top:1px solid var(--line);margin:4px 0}
+.count{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;color:var(--muted);font-variant-numeric:tabular-nums}
+.item-name{font-family:var(--f-display);font-weight:800;font-size:clamp(2.2rem,4vw,3.1rem);line-height:.95;font-stretch:82%}
+.item-story{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.08em;color:var(--window)}
+.item-line{color:var(--muted);min-height:3.1em}
+.item-link{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--lamp-2)}
+.item-link:hover{color:var(--paper)}
+.bars{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.bars i{height:3px;background:var(--line);position:relative;overflow:hidden}
+.bars i b{position:absolute;inset:0;background:var(--lamp);transform-origin:left;transform:scaleX(0)}
+.fade{transition:opacity .25s ease}
+
+/* stories */
+#stories{padding-block:22vh 16vh}
+.panel{max-width:820px;background:rgba(13,14,20,.9);border:1px solid var(--line);padding:clamp(22px,4vw,44px);display:grid;gap:30px;margin-left:clamp(0px,4vw,60px)}
+.group h3{font-size:1.8rem;font-stretch:88%;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.group h3 small{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.list{list-style:none;margin:18px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;column-gap:36px}
+.list li{border-top:1px solid var(--line);padding:16px 0 18px;display:grid;gap:6px;min-width:0}
+.row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.row strong{font-weight:600;font-size:1.05rem}
+.tag{font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--window);border:1px solid rgba(127,163,220,.45);padding:2px 6px;border-radius:2px}
+.date{margin-left:auto;font-family:var(--f-mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.list p{color:var(--muted);font-size:.95rem}
+.list a.watch{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--lamp-2);text-decoration:none;justify-self:start}
+
+/* how */
+#how{min-height:100svh;display:flex;align-items:center;justify-content:flex-end;padding-block:18vh}
+#how .copy{max-width:36rem;display:grid;gap:22px;margin-right:clamp(0px,4vw,60px)}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.steps li{display:grid;grid-template-columns:3.2rem 1fr;gap:14px;border-top:1px solid var(--line);padding:16px 0}
+.steps li span{font-family:var(--f-mono);font-size:12px;color:var(--lamp);padding-top:3px}
+.steps li strong{display:block;font-weight:600}
+.steps li p{color:var(--muted);font-size:.95rem}
+
+/* watch */
+#watch{min-height:100svh;display:flex;align-items:center;padding-block:18vh}
+#watch .copy{max-width:46rem;display:grid;gap:22px;margin-left:clamp(0px,4vw,60px)}
+.where{display:grid;grid-template-columns:repeat(auto-fit,minmax(13.5rem,1fr));gap:12px}
+.where a{display:grid;gap:4px;text-decoration:none;border:1px solid var(--line);background:rgba(13,14,20,.78);padding:16px;min-width:0}
+.where a:hover{border-color:var(--lamp)}
+.where b{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--lamp)}
+.where span{font-weight:600;overflow-wrap:anywhere}
+.where small{color:var(--muted);font-size:.85rem}
+footer{position:relative;z-index:3;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--line);background:var(--night);padding-block:22px 30px;font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;color:var(--muted)}
+
+.nogl-note{display:none;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.nogl .nogl-note{display:block}
+
+@media (max-width:860px){
+  nav{display:none}
+  header{grid-template-columns:1fr auto}
+  .latest{display:none}
+  #hero{padding-block:52vh 28px}
+  h1{font-size:clamp(3.6rem,19vw,6rem)}
+  #jar .stick{align-items:flex-end;justify-content:center;padding-bottom:16px}
+  .card{padding:20px 20px;gap:12px;margin:0}
+  .card .intro{display:none}
+  .item-line{min-height:0}
+  .list{grid-template-columns:1fr}
+  .panel{margin:0}
+  #how,#watch{align-items:flex-end;justify-content:flex-start;padding-block:46vh 8vh}
+  #how .copy,#watch .copy{margin:0}
+  .where{grid-template-columns:1fr}
+  .foot-notes{display:none}
+}
+@media (prefers-reduced-motion:reduce){#gl,#loader,.fade{transition:none}}
+</style>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+<div id="dim"></div>
+<div id="loader"><span>Turning on the lamp</span></div>
+
+<header class="wrap">
+  <a class="brand" href="#hero"><i></i>DUSTLIGHT</a>
+  <nav aria-label="Sections"><a href="#jar">The jar</a><a href="#stories">Stories</a><a href="#how">How</a><a href="#watch">Watch</a></nav>
+  <div class="right">
+    <a class="latest" id="latest" href="https://www.youtube.com/shorts/0V0MVYXim_I" target="_blank" rel="noopener">Latest: <b>The Empty Swing</b><br>21 Nov on YouTube</a>
+    <a class="btn hot sm" href="https://www.youtube.com/@the.dustlight.stories" target="_blank" rel="noopener">Watch</a>
+  </div>
+</header>
+
+<main>
+  <section id="hero" class="wrap" data-cue="hero">
+    <div class="copy">
+      <div class="kicker">Stories about the things we forgot</div>
+      <h1>Dustlight</h1>
+      <p class="lede">Seven things somebody forgot, hanging over a jar at three in the morning. Each one is from a story we made. Scroll, and they come home.</p>
+      <div class="ctas">
+        <a class="btn hot" href="https://www.youtube.com/@the.dustlight.stories" target="_blank" rel="noopener">Watch on YouTube</a>
+        <a class="btn" href="https://www.instagram.com/dustlightstories/" target="_blank" rel="noopener">Instagram</a>
+        <a class="link" href="#stories">Every story</a>
+      </div>
+      <p class="nogl-note">This browser can't draw the 3D jar. Everything else on the page works.</p>
+    </div>
+    <div class="foot-notes"><span>Scroll, and the forgotten things fall in</span><span>Drawn live in your browser. No photos, no video.</span></div>
+  </section>
+
+  <section id="jar" class="wrap" data-cue="jar" aria-label="The jar">
+    <div class="stick">
+      <div class="card" aria-live="polite">
+        <div class="intro">
+          <div class="kicker">The jar</div>
+          <h3>Seven things somebody forgot.</h3>
+          <hr>
+        </div>
+        <div class="count" id="count">01 / 07</div>
+        <div class="fade" id="itemBox" style="display:grid;gap:10px">
+          <div class="item-name" id="itemName">Bun-Bun</div>
+          <div class="item-story" id="itemStory">The Lost Toy Room · Part 1</div>
+          <p class="item-line" id="itemLine">Every toy you lost is waiting in this room.</p>
+          <a class="item-link" id="itemLink" href="https://www.youtube.com/shorts/8DlR4Mf9Mx4" target="_blank" rel="noopener">Watch the story →</a>
+        </div>
+        <div class="bars" id="bars" aria-hidden="true"></div>
+        <div class="count" id="landed">0 of 7 in the jar</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="stories" class="wrap" data-cue="stories">
+    <div class="panel">
+      <div style="display:grid;gap:16px">
+        <div class="kicker">Stories</div>
+        <h2>Every story so far.</h2>
+        <p class="lede">Every video picks its own look and its own kind of story. Most run under a minute; a few come in parts.</p>
+      </div>
+      <div class="group">
+        <h3>Out now <small>YouTube Shorts</small></h3>
+        <ul class="list" id="outNow"></ul>
+      </div>
+      <div class="group">
+        <h3>Finished, coming soon <small>dates to come</small></h3>
+        <ul class="list" id="soon"></ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="how" class="wrap" data-cue="how">
+    <div class="copy">
+      <div class="kicker">How it's made</div>
+      <h2>Four steps, every story.</h2>
+      <ol class="steps">
+        <li><span>01</span><div><strong>The script</strong><p>Written with Claude, then read and approved by a person before anything is built.</p></div></li>
+        <li><span>02</span><div><strong>The voice</strong><p>Narrated with an AI voice, then timed word by word so the captions land on the beat.</p></div></li>
+        <li><span>03</span><div><strong>The picture</strong><p>Each story picks its own look: built in 3D in Blender, or drawn in 2D.</p></div></li>
+        <li><span>04</span><div><strong>The edit</strong><p>Captions, sound and music, then mastered to the loudness YouTube expects.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="watch" class="wrap" data-cue="watch">
+    <div class="copy">
+      <div class="kicker">Watch</div>
+      <h2>Every story starts as dust in a beam of light.</h2>
+      <p class="lede">New stories most weeks. Follow wherever you watch.</p>
+      <div class="where">
+        <a href="https://www.youtube.com/@the.dustlight.stories" target="_blank" rel="noopener"><b>YouTube</b><span>@the.dustlight.stories</span><small>Shorts and long-form</small></a>
+        <a href="https://www.instagram.com/dustlightstories/" target="_blank" rel="noopener"><b>Instagram</b><span>@dustlightstories</span><small>Reels and carousels</small></a>
+        <a href="https://www.tiktok.com/@dustlight00" target="_blank" rel="noopener"><b>TikTok</b><span>@dustlight00</span><small>The same stories, vertical</small></a>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="wrap"><span>DUSTLIGHT · stories about the things we forgot · 2026</span><span>Drawn live in your browser · 0 photos · 0 video files</span></footer>
+
+<script>
+/* ---------- the channel's facts: everything the page lists ---------- */
+const CHANNEL = 'https://www.youtube.com/@the.dustlight.stories';
+// fall order; each keepsake is from a published story
+const ITEMS = [
+  { name: 'Bun-Bun', story: 'The Lost Toy Room · Part 1', line: 'Every toy you lost is waiting in this room.', href: 'https://www.youtube.com/shorts/8DlR4Mf9Mx4' },
+  { name: 'A toy telephone', story: 'The Lost Toy Room · Part 2', line: 'The lost toy room got a phone call.', href: 'https://www.youtube.com/shorts/kfaWF7kWvTY' },
+  { name: 'A music box', story: 'The Lost Toy Room · Part 3', line: 'She forgot everyone, except this song.', href: 'https://www.youtube.com/shorts/jG9lEuLbcAE' },
+  { name: 'The last key', story: 'The Lost Toy Room · Finale', line: "The lost toy room's last rule.", href: 'https://www.youtube.com/shorts/9re0uEIczkI' },
+  { name: 'The second cup', story: 'The Second Cup', line: 'He makes two cups of tea every morning. Nobody knows why.', href: CHANNEL },
+  { name: 'A swing seat', story: 'The Empty Swing', line: 'Every evening at 6, he pushes an empty swing.', href: 'https://www.youtube.com/shorts/0V0MVYXim_I' },
+  { name: 'A piece of the river', story: 'The Ice Hotel', line: 'Every winter, they build a hotel out of a frozen river.', href: CHANNEL },
+];
+const OUT_NOW = [
+  { title: 'The Lost Toy Room', tag: 'Series · 4 parts', date: '19 Nov', line: 'Every toy you lost is waiting in this room. Four parts, two hours apart.', href: 'https://www.youtube.com/shorts/8DlR4Mf9Mx4' },
+  { title: 'The Second Cup', tag: 'Story', date: '20 Nov', line: 'He makes two cups of tea every morning. Nobody knows why.', href: CHANNEL },
+  { title: 'The Empty Swing', tag: 'Story', date: '21 Nov', line: 'Every evening at 6, he pushes an empty swing.', href: 'https://www.youtube.com/shorts/0V0MVYXim_I' },
+  { title: 'The Ice Hotel', tag: 'Story', date: '22 Nov', line: 'Every winter, they build a hotel out of a frozen river.', href: CHANNEL },
+];
+const SOON = [
+  { title: 'The Extra Plate', tag: 'Story', line: 'Every Thanksgiving, for nine years, Margaret sets one extra plate.' },
+  { title: 'A Normal Night', tag: 'POV', line: 'In my town, a normal night is terrifying.' },
+  { title: 'Same Window', tag: 'Story', line: 'Same window. Seventy years apart. She waves at every train.' },
+  { title: 'Number Nine', tag: 'Story', line: 'The whole street turns its lights on at once. Except number nine.' },
+  { title: 'Once a Day', tag: 'What if', line: 'In my town, you can say each word only once a day.' },
+  { title: 'Memory Timer', tag: 'What if', line: 'What if you could see how long someone will remember this moment?' },
+  { title: 'First Snow', tag: 'Story', line: 'Every year, Grandma wins the sledge race. Nobody knows how.' },
+  { title: 'The Last Door', tag: 'Story', line: "Grandad's advent calendar has twenty-five doors. He never opens the last one." },
+];
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+document.getElementById('outNow').innerHTML = OUT_NOW.map(s => `<li><div class="row"><strong>${esc(s.title)}</strong><span class="tag">${esc(s.tag)}</span><span class="date">${s.date}</span></div><p>${esc(s.line)}</p><a class="watch" href="${s.href}" target="_blank" rel="noopener">Watch →</a></li>`).join('');
+document.getElementById('soon').innerHTML = SOON.map(s => `<li><div class="row"><strong>${esc(s.title)}</strong><span class="tag">${esc(s.tag)}</span></div><p>${esc(s.line)}</p></li>`).join('');
+setTimeout(() => document.getElementById('loader').classList.add('done'), 8000);   // never trap the page behind the loader
+document.getElementById('bars').innerHTML = ITEMS.map(() => '<i><b></b></i>').join('');
+</script>
+
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+
+const V2 = THREE.Vector2, V3 = THREE.Vector3;
+const clamp01 = v => Math.min(1, Math.max(0, v));
+const ease = t => { t = clamp01(t); return t * t * (3 - 2 * t); };
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const phone = matchMedia('(pointer: coarse)').matches || innerWidth < 700;
+const loader = document.getElementById('loader');
+
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gl'), antialias: false, powerPreference: 'high-performance' });
+  if (!renderer.capabilities.isWebGL2) throw new Error('webgl2');
+} catch (e) {
+  document.body.classList.add('nogl'); loader.classList.add('done');
+  throw e;
+}
+let pixelRatio = Math.min(devicePixelRatio, phone ? 1.75 : 2);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+/* Units: centimetres. The jar stands on the table at the origin; its lip is at y = 22.6. */
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x07080c);
+scene.fog = new THREE.Fog(0x07080c, 160, 420);
+const camera = new THREE.PerspectiveCamera(30, 1, 1, 2000);
+
+/* ---------- light: one warm pendant, a cold window, a faint studio for the glass ---------- */
+{
+  const s = new THREE.Scene();
+  const panel = (w, h, power, color, pos) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(power), side: THREE.DoubleSide }));
+    m.position.set(...pos); m.lookAt(0, 0, 0); s.add(m);
+  };
+  panel(10, 10, 6, 0xffc27a, [0, 30, 0]);        // the pendant
+  panel(40, 24, 1.1, 0x6d8fd0, [0, 6, -30]);      // the window
+  panel(3, 30, 2.2, 0xffffff, [26, 6, 14]);       // a strip for glass edges
+  const pm = new THREE.PMREMGenerator(renderer);
+  scene.environment = pm.fromScene(s, 0.03).texture; pm.dispose();
+  scene.environmentIntensity = .45;
+}
+const LAMP_Y = 56;
+const spot = new THREE.SpotLight(0xffb867, 9, 0, .62, .55, 0);
+spot.position.set(0, LAMP_Y - 2, 0); spot.target.position.set(0, 0, 0);
+spot.castShadow = true;
+spot.shadow.mapSize.set(phone ? 1024 : 2048, phone ? 1024 : 2048);
+spot.shadow.camera.near = 10; spot.shadow.camera.far = 90;
+spot.shadow.bias = -.0004; spot.shadow.normalBias = .03;
+scene.add(spot, spot.target);
+const windowLight = new THREE.DirectionalLight(0x7b9be0, 1.1);
+windowLight.position.set(-30, 30, -80);
+scene.add(windowLight, new THREE.HemisphereLight(0x26304a, 0x0c0905, .55));
+
+/* ---------- the room ---------- */
+function woodTexture() {
+  const c = document.createElement('canvas'); c.width = c.height = 1024;
+  const g = c.getContext('2d');
+  g.fillStyle = '#3b2617'; g.fillRect(0, 0, 1024, 1024);
+  for (let i = 0; i < 1500; i++) {
+    const y = Math.random() * 1024;
+    g.strokeStyle = Math.random() < .55 ? `rgba(18,9,3,${Math.random() * .09})` : `rgba(140,92,52,${Math.random() * .07})`;
+    g.lineWidth = .6 + Math.random() * 2.6; g.beginPath(); g.moveTo(0, y);
+    for (let x = 0; x <= 1024; x += 48) g.lineTo(x, y + Math.sin(x * .004 + i) * 5);
+    g.stroke();
+  }
+  g.fillStyle = 'rgba(8,4,1,.55)';
+  for (let y = 0; y < 1024; y += 256) g.fillRect(0, y, 1024, 2);   // plank seams
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(2, 2); t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return t;
+}
+const table = new THREE.Mesh(new THREE.PlaneGeometry(320, 170), new THREE.MeshStandardMaterial({ map: woodTexture(), roughness: .72, metalness: 0 }));
+table.rotation.x = -Math.PI / 2; table.position.z = -20; table.receiveShadow = true;
+scene.add(table);
+
+// the window behind: the street out of focus, rain on the glass
+const windowMat = new THREE.ShaderMaterial({
+  uniforms: { uTime: { value: 0 } },
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }`,
+  fragmentShader: `uniform float uTime; varying vec2 vUv;
+    float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+    vec3 layer(vec2 uv, float scale, float size, float bright){
+      vec2 g = uv * scale, id = floor(g), f = fract(g) - .5; vec3 c = vec3(0.);
+      for (int y = -1; y <= 1; y++) for (int x = -1; x <= 1; x++) {
+        vec2 o = vec2(x, y), cid = id + o; float r = h(cid);
+        if (r < .5) continue;
+        vec2 p = o + vec2(h(cid + 1.3), h(cid + 2.7)) - .5 - f;
+        float s = size * (.55 + .45 * h(cid + 5.1)), d = length(p);
+        float disc = smoothstep(s, s * .86, d) * (.6 + .4 * smoothstep(s * .5, s, d));
+        vec3 col = mix(vec3(1., .6, .26), vec3(.42, .62, 1.), step(.62, h(cid + 9.)));
+        col = mix(col, vec3(1., .9, .72), step(.9, h(cid + 11.)));
+        c += col * disc * bright * (.78 + .22 * sin(uTime * .6 + r * 40.));
+      }
+      return c;
+    }
+    void main(){
+      vec2 uv = vUv * vec2(2., 1.);
+      vec3 c = mix(vec3(.02, .03, .06), vec3(.006, .008, .016), vUv.y);
+      c += layer(uv + vec2(uTime * .004, 0.), 5., .36, .3) * smoothstep(.95, .2, vUv.y);
+      c += layer(uv + vec2(3.1, 1.7), 10., .3, .2);
+      vec2 r = vec2(vUv.x * 90., vUv.y * 2.5 + uTime * .5); float col = floor(r.x);
+      float s = fract(r.y + h(vec2(col, 1.)));
+      float streak = smoothstep(0., .015, s) * smoothstep(.14, .015, s) * step(.72, h(vec2(col, 3.))) * smoothstep(.5, .3, abs(fract(r.x) - .5));
+      c += vec3(.55, .65, .85) * streak * .05;
+      gl_FragColor = vec4(c, 1.);
+    }`,
+  fog: false,
+});
+const win = new THREE.Mesh(new THREE.PlaneGeometry(300, 150), windowMat);
+win.position.set(0, 62, -104);
+scene.add(win);
+const frameMat = new THREE.MeshStandardMaterial({ color: 0x0b0a0a, roughness: .9 });
+for (const [w, h, x, y] of [[3.5, 150, 0, 62], [300, 3.5, 0, 70], [300, 6, 0, -12], [3.5, 150, -100, 62], [3.5, 150, 100, 62]]) {
+  const bar = new THREE.Mesh(new THREE.BoxGeometry(w, h, 3), frameMat); bar.position.set(x, y, -102); scene.add(bar);
+}
+
+/* ---------- lathe helper: closed profiles, counter-clockwise so normals face out ---------- */
+function rounded(pts, r = .25, steps = 3) {
+  const out = [], n = pts.length;
+  for (let i = 0; i < n; i++) {
+    const p = pts[i];
+    if (p.x === 0) { out.push(p.clone()); continue; }   // keep points on the axis
+    const a = pts[(i + n - 1) % n], b = pts[(i + 1) % n];
+    const p0 = p.clone().addScaledVector(a.clone().sub(p).normalize(), r);
+    const p1 = p.clone().addScaledVector(b.clone().sub(p).normalize(), r);
+    for (let k = 0; k <= steps; k++) { const t = k / steps; out.push(new V2().addScaledVector(p0, (1 - t) ** 2).addScaledVector(p, 2 * t * (1 - t)).addScaledVector(p1, t * t)); }
+  }
+  return out;
+}
+const lathe = (pts, r, seg = 96) => new THREE.LatheGeometry(rounded(pts.map(([x, y]) => new V2(x, y)), r), seg);
+
+/* ---------- materials ---------- */
+const M = {
+  glass: new THREE.MeshPhysicalMaterial({ color: 0xf4fbff, metalness: 0, roughness: .03, transmission: 1, thickness: .5, ior: 1.5, envMapIntensity: 1.4, specularIntensity: 1 }),
+  tin: new THREE.MeshPhysicalMaterial({ color: 0xbfb6a4, metalness: 1, roughness: .32, anisotropy: .7 }),
+  fur: new THREE.MeshPhysicalMaterial({ color: 0xcdb293, roughness: 1, sheen: 1, sheenRoughness: .5, sheenColor: new THREE.Color(0xfff0dc) }),
+  furLight: new THREE.MeshPhysicalMaterial({ color: 0xead9c0, roughness: 1, sheen: 1, sheenColor: new THREE.Color(0xffffff) }),
+  bead: new THREE.MeshPhysicalMaterial({ color: 0x0c0806, roughness: .15, clearcoat: 1 }),
+  toyRed: new THREE.MeshPhysicalMaterial({ color: 0xb02a22, roughness: .35, clearcoat: 1, clearcoatRoughness: .15 }),
+  wood: new THREE.MeshStandardMaterial({ color: 0x7a4a26, roughness: .6 }),
+  woodDark: new THREE.MeshStandardMaterial({ color: 0x4a2a14, roughness: .55 }),
+  brass: new THREE.MeshPhysicalMaterial({ color: 0xd9ae62, metalness: 1, roughness: .18 }),
+  porcelain: new THREE.MeshPhysicalMaterial({ color: 0xf3efe8, roughness: .25, clearcoat: 1, clearcoatRoughness: .05 }),
+  rope: new THREE.MeshStandardMaterial({ color: 0xb39a72, roughness: .95 }),
+  // opaque on purpose: a transmissive cube inside the transmissive jar would not show
+  ice: new THREE.MeshPhysicalMaterial({ color: 0x9fc4ea, roughness: .08, clearcoat: 1, clearcoatRoughness: .02, ior: 1.31, specularIntensity: 1, emissive: 0x1d3550, emissiveIntensity: .6 }),
+};
+const mesh = (geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; return m; };
+
+/* ---------- the jar and its lid ---------- */
+const jar = mesh(lathe([[0, 0], [8.6, 0], [9, .6], [9, 19], [8.2, 20.5], [7.6, 21], [7.6, 22.4], [7.9, 22.6], [7.2, 22.6], [7.2, 21.2], [7.8, 20.4], [8.62, 19], [8.62, 1], [0, 1]], .18, 128), M.glass);
+jar.castShadow = false;
+scene.add(jar);
+
+/* ---------- the keepsakes: each a few primitives, each with an air pose and a rest pose ---------- */
+function bunny() {
+  const g = new THREE.Group();
+  const body = mesh(new THREE.SphereGeometry(2.2, 32, 24), M.fur, 0, 0, 0); body.scale.set(1, 1.05, .9);
+  const head = mesh(new THREE.SphereGeometry(1.55, 32, 24), M.fur, 0, 3.1, .2);
+  const muzzle = mesh(new THREE.SphereGeometry(.55, 20, 14), M.furLight, 0, 2.85, 1.5); muzzle.scale.set(1.2, .8, .8);
+  const ears = [-1, 1].map(s => { const e = mesh(new THREE.CapsuleGeometry(.42, 1.9, 6, 14), M.fur, s * .6, 5, .1); e.rotation.z = -s * .2; e.scale.z = .55; return e; });
+  const eyes = [-1, 1].map(s => mesh(new THREE.SphereGeometry(.17, 12, 8), M.bead, s * .55, 3.4, 1.32));
+  const feet = [-1, 1].map(s => { const f = mesh(new THREE.SphereGeometry(.75, 18, 12), M.furLight, s * 1.05, -1.75, .9); f.scale.set(1, .6, 1.3); return f; });
+  const tail = mesh(new THREE.SphereGeometry(.6, 16, 12), M.furLight, 0, -.4, -1.95);
+  g.add(body, head, muzzle, ...ears, ...eyes, ...feet, tail);
+  return g;
+}
+function telephone() {
+  const g = new THREE.Group();
+  const bar = mesh(new THREE.CapsuleGeometry(.55, 5, 6, 16), M.toyRed); bar.rotation.z = Math.PI / 2;
+  const ends = [-1, 1].map(s => mesh(new THREE.CylinderGeometry(1.25, 1.05, 1.3, 24), M.toyRed, s * 3, -.85, 0));
+  const grills = [-1, 1].map(s => mesh(new THREE.CylinderGeometry(.8, .8, .05, 20), M.woodDark, s * 3, -1.52, 0));
+  g.add(bar, ...ends, ...grills);
+  return g;
+}
+function musicBox() {
+  const g = new THREE.Group();
+  const box = mesh(new RoundedBoxGeometry(5, 2.6, 3.4, 2, .15), M.wood);
+  const lidPivot = new THREE.Group(); lidPivot.position.set(0, 1.3, -1.7); lidPivot.rotation.x = -.55;
+  lidPivot.add(mesh(new RoundedBoxGeometry(5.1, .45, 3.5, 2, .12), M.woodDark, 0, .22, 1.75));
+  const drum = mesh(new THREE.CylinderGeometry(.45, .45, 3, 18), M.brass, 0, .9, 0); drum.rotation.z = Math.PI / 2;
+  const crank = mesh(new THREE.CylinderGeometry(.12, .12, 1.2, 8), M.brass, 3.05, 0, 0); crank.rotation.z = Math.PI / 2;
+  const arm = mesh(new THREE.BoxGeometry(.18, 1.1, .18), M.brass, 3.6, -.45, 0);
+  const knob = mesh(new THREE.SphereGeometry(.24, 12, 8), M.woodDark, 3.6, -1.05, .2);
+  g.add(box, lidPivot, drum, crank, arm, knob);
+  return g;
+}
+function key() {
+  const g = new THREE.Group();
+  g.add(mesh(new THREE.TorusGeometry(1.1, .28, 14, 32), M.brass, -3.1, 0, 0));
+  const shank = mesh(new THREE.CylinderGeometry(.27, .27, 5.2, 14), M.brass, .55, 0, 0); shank.rotation.z = Math.PI / 2;
+  g.add(shank, mesh(new THREE.BoxGeometry(.9, 1.5, .32), M.brass, 2.65, -.75, 0), mesh(new THREE.BoxGeometry(.45, .9, .32), M.brass, 1.7, -.45, 0));
+  return g;
+}
+function teacup() {
+  const g = new THREE.Group();
+  g.add(mesh(lathe([[0, 0], [1.6, 0], [1.75, .3], [2.6, 2.4], [3, 4.2], [2.86, 4.3], [2.72, 4.1], [2.38, 2.6], [1.5, .6], [0, .6]], .08, 64), M.porcelain));
+  const handle = mesh(new THREE.TorusGeometry(1, .22, 12, 28, Math.PI * 1.25), M.porcelain, 3.05, 2.5, 0); handle.rotation.z = -Math.PI * .62;
+  g.add(handle);
+  const band = mesh(new THREE.TorusGeometry(2.93, .05, 6, 64), M.brass, 0, 4.12, 0); band.rotation.x = Math.PI / 2;
+  g.add(band);
+  return g;
+}
+function swing() {
+  const g = new THREE.Group();
+  g.add(mesh(new RoundedBoxGeometry(6.5, .5, 2.4, 2, .16), M.wood));
+  for (const s of [-1, 1]) for (const z of [-.8, .8]) {
+    const r = mesh(new THREE.CylinderGeometry(.07, .07, 5.4, 6), M.rope, s * 2.9, 2.9, z * .4); r.rotation.x = -z * .12; g.add(r);
+  }
+  return g;
+}
+function ice() {
+  const g = new THREE.Group();
+  g.add(mesh(new RoundedBoxGeometry(3.6, 3.6, 3.6, 3, .45), M.ice));
+  return g;
+}
+function lid() {
+  const g = new THREE.Group();
+  const cap = mesh(lathe([[0, 0], [8.15, 0], [8.15, 1.7], [7.8, 1.95], [0, 1.95]], .15, 128), M.tin);
+  cap.castShadow = false;   // it hangs right under the lamp and would black out the jar
+  g.add(cap);
+  return g;
+}
+const R = (x, y, z) => new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z));
+// air: where it hangs for the hero; rest: where it lands in the jar (rest poses keep clear of the walls)
+const KEEPSAKES = [
+  { make: bunny,     air: [-10, 31, 3],  airR: R(.2, .7, -.3),  rest: [-3.2, 3.4, -1.4], restR: R(0, .5, 0) },
+  { make: telephone, air: [9, 38, -2],   airR: R(.4, -.3, .55), rest: [2.6, 2.7, 3.6],   restR: R(0, -.6, .1) },
+  { make: musicBox,  air: [-3, 43, -5],  airR: R(-.3, .8, .2),  rest: [3.4, 2.32, -2.8], restR: R(0, -.4, 0) },
+  { make: key,       air: [12, 29, 4],   airR: R(.9, .2, 1.1),  rest: [-1.4, 6.1, 3.4],  restR: R(1.45, .3, .45) },
+  { make: teacup,    air: [-14, 40, -1], airR: R(.5, 0, -.65),  rest: [3.2, 3.65, -2.6], restR: R(0, 1.1, .05) },
+  { make: swing,     air: [3, 49, 1],    airR: R(.2, .3, .25),  rest: [-.8, 9.3, -1.3],  restR: R(.3, .9, -.35) },
+  { make: ice,       air: [-6, 50, 4],   airR: R(.6, .7, .3),   rest: [-4.4, 7.6, 2.4],  restR: R(.4, .7, .2) },
+  { make: lid,       air: [.8, 27.5, 1], airR: R(.32, 0, .18),  rest: [0, 22.62, 0],     restR: R(0, 0, 0) },
+];
+for (const [i, k] of KEEPSAKES.entries()) {
+  k.obj = k.make(); scene.add(k.obj);
+  k.air = new V3(...k.air); k.rest = new V3(...k.rest);
+  k.start = i === 7 ? .86 : i * .125;   // the lid closes the jar last
+  k.landedAt = -99; k.done = false;
+}
+
+/* ---------- the pendant, its cone of light and the dust in it ---------- */
+const shade = mesh(lathe([[0, 6], [2.2, 6], [3, 4], [9, 0], [8.6, 0], [2.7, 3.7], [1.9, 5.6], [0, 5.6]], .12, 96),
+  new THREE.MeshStandardMaterial({ color: 0x1c2a24, metalness: .6, roughness: .4, side: THREE.DoubleSide }));
+shade.position.y = LAMP_Y; shade.castShadow = false; scene.add(shade);
+const bulb = new THREE.Mesh(new THREE.SphereGeometry(1.6, 24, 16), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffd29a).multiplyScalar(8), fog: false }));
+bulb.position.y = LAMP_Y + 1.2; scene.add(bulb);
+const cord = new THREE.Mesh(new THREE.CylinderGeometry(.12, .12, 80, 6), new THREE.MeshBasicMaterial({ color: 0x050505 }));
+cord.position.y = LAMP_Y + 46; scene.add(cord);
+
+const CONE_H = LAMP_Y - 1;
+const coneGeo = new THREE.CylinderGeometry(3.2, 34, CONE_H, 64, 1, true); coneGeo.translate(0, CONE_H / 2, 0);
+const coneMat = new THREE.ShaderMaterial({
+  uniforms: { uOn: { value: 1 } },
+  vertexShader: `varying float vH; varying float vEdge;
+    void main(){ vH = position.y / ${CONE_H.toFixed(1)}; vec4 mv = modelViewMatrix * vec4(position,1.);
+      vEdge = abs(dot(normalize(normalMatrix * normal), normalize(-mv.xyz))); gl_Position = projectionMatrix * mv; }`,
+  fragmentShader: `uniform float uOn; varying float vH; varying float vEdge;
+    void main(){ float a = pow(vEdge, 3.) * (.25 + .75 * vH) * .07 * uOn; gl_FragColor = vec4(vec3(1., .78, .5) * a, a); }`,
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false,
+});
+scene.add(new THREE.Mesh(coneGeo, coneMat));
+
+const dustMat = (base, size) => new THREE.ShaderMaterial({
+  uniforms: { uTime: { value: 0 }, uBase: { value: base }, uSize: { value: size }, uScale: { value: 1 } },
+  vertexShader: `attribute float aSeed; uniform float uTime, uSize, uScale; varying float vSeed;
+    void main(){ vec3 p = position;
+      p += vec3(sin(uTime * .21 + aSeed * 17.), 0., cos(uTime * .19 + aSeed * 11.)) * 1.6;
+      p.y += mod(-uTime * .5 + aSeed * 60., 60.) - 30.;
+      vec4 mv = modelViewMatrix * vec4(p, 1.); vSeed = aSeed;
+      gl_PointSize = uSize * (.5 + fract(aSeed * 7.3)) * uScale / -mv.z; gl_Position = projectionMatrix * mv; }`,
+  fragmentShader: `uniform float uBase, uTime; varying float vSeed;
+    void main(){ float a = smoothstep(.5, 0., length(gl_PointCoord - .5)) * uBase * (.55 + .45 * sin(uTime * 1.7 + vSeed * 50.));
+      gl_FragColor = vec4(vec3(1., .85, .6) * a, a); }`,
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+});
+function points(count, pick, mat) {
+  const pos = new Float32Array(count * 3), seed = new Float32Array(count);
+  for (let i = 0; i < count; i++) { pick(pos, i * 3); seed[i] = Math.random(); }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1));
+  const p = new THREE.Points(g, mat); p.frustumCulled = false; return p;
+}
+const coneDust = dustMat(.7, .32), roomDust = dustMat(.16, .26);
+scene.add(points(phone ? 500 : 900, (a, o) => {           // inside the lamp's cone
+  const y = 3 + Math.random() * (CONE_H - 6), R = 3.2 + 30.8 * (1 - y / CONE_H);
+  const r = R * Math.sqrt(Math.random()) * .9, t = Math.random() * Math.PI * 2;
+  a[o] = Math.cos(t) * r; a[o + 1] = y; a[o + 2] = Math.sin(t) * r;
+}, coneDust));
+scene.add(points(phone ? 160 : 300, (a, o) => {
+  a[o] = (Math.random() - .5) * 160; a[o + 1] = Math.random() * 70; a[o + 2] = (Math.random() - .5) * 120;
+}, roomDust));
+
+// a puff of dust where each keepsake lands
+const PUFF = 40;
+const puffMat = new THREE.ShaderMaterial({
+  uniforms: { uAge: { value: new Array(8).fill(99) }, uRest: { value: KEEPSAKES.map(k => k.rest.clone()) }, uScale: { value: 1 } },
+  vertexShader: `attribute vec3 aDir; attribute float aItem; uniform float uAge[8]; uniform vec3 uRest[8]; uniform float uScale; varying float vA;
+    void main(){ int i = int(aItem); float t = uAge[i];
+      vec3 p = uRest[i] + aDir * (1. - exp(-t * 3.)) * 4. + vec3(0., t * 1.4, 0.);
+      vA = t < 1.8 ? (1. - t / 1.8) * .45 : 0.;
+      vec4 mv = modelViewMatrix * vec4(p, 1.); gl_PointSize = .5 * uScale / -mv.z; gl_Position = projectionMatrix * mv; }`,
+  fragmentShader: `varying float vA; void main(){ float a = smoothstep(.5, 0., length(gl_PointCoord - .5)) * vA; gl_FragColor = vec4(vec3(1., .88, .7) * a, a); }`,
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+});
+{
+  const n = PUFF * 8, dir = new Float32Array(n * 3), item = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const v = new V3(Math.random() - .5, Math.random() * .6, Math.random() - .5).normalize().multiplyScalar(.4 + Math.random() * .6);
+    dir.set([v.x, v.y, v.z], i * 3); item[i] = Math.floor(i / PUFF);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+  g.setAttribute('aDir', new THREE.BufferAttribute(dir, 3));
+  g.setAttribute('aItem', new THREE.BufferAttribute(item, 1));
+  const p = new THREE.Points(g, puffMat); p.frustumCulled = false; scene.add(p);
+}
+
+/* ---------- finish: bloom on the bulb and glints, ACES, fringe, vignette, grain ---------- */
+const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: phone ? 2 : 4 }));
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new V2(1, 1), .5, .6, .9);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+const finish = new ShaderPass({
+  uniforms: { tDiffuse: { value: null }, uTime: { value: 0 } },
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }`,
+  fragmentShader: `uniform sampler2D tDiffuse; uniform float uTime; varying vec2 vUv;
+    float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+    void main(){ vec2 d = (vUv - .5) * .0025;
+      vec3 c = vec3(texture2D(tDiffuse, vUv + d).r, texture2D(tDiffuse, vUv).g, texture2D(tDiffuse, vUv - d).b);
+      float vig = smoothstep(1.2, .3, length((vUv - .5) * vec2(1.25, 1.45)));
+      c = c * mix(.72, 1., vig) + (h(vUv * 1000. + uTime) - .5) * .045;
+      gl_FragColor = vec4(c, 1.); }`,
+});
+composer.addPass(finish);
+
+/* ---------- camera script: cues pinned to points in each chapter, framed by size in cm ---------- */
+// yaw 0 looks at the jar from the front (window behind it); ox/oy move the subject to leave room for the copy
+const CUES = [
+  { sec: 'hero', at: 0, shot: { tx: 0, ty: 21, tz: 0, size: 66, yaw: -20, pitch: 9, ox: .2, oy: 0, dim: 0 }, m: { size: 74, ox: 0, oy: .2 } },
+  { sec: 'hero', at: 1, shot: { yaw: -12, size: 62 } },
+  { sec: 'jar', at: 0, shot: { tx: 0, ty: 19, tz: 0, size: 62, yaw: -8, pitch: 14, ox: -.2 }, m: { size: 70, ox: 0, oy: .24 } },
+  { sec: 'jar', at: 1, shot: { ty: 11, size: 40, yaw: 32, pitch: 30 }, m: { size: 48 } },
+  { sec: 'stories', at: 0, shot: { tx: 0, ty: 9, tz: 0, size: 42, yaw: 40, pitch: 74, ox: .3, dim: .35 }, m: { ox: 0, oy: .26, dim: .78 } },
+  { sec: 'stories', at: 1, shot: { yaw: 160 } },
+  { sec: 'how', at: .25, shot: { tx: 0, ty: 30, tz: -30, size: 150, yaw: 14, pitch: 4, ox: -.22, oy: 0, dim: .15 }, m: { size: 175, ox: 0, oy: .22, dim: .55 } },
+  { sec: 'how', at: 1, shot: { yaw: 22 } },
+  { sec: 'watch', at: .3, shot: { tx: 0, ty: 13, tz: 0, size: 50, yaw: 200, pitch: 16, ox: .22, dim: 0 }, m: { size: 56, ox: 0, oy: .2, dim: .35 } },
+];
+const SHOT_KEYS = Object.keys(CUES[0].shot);
+const jarSec = document.getElementById('jar');
+let track = [];
+function measure() {
+  const max = Math.max(1, document.documentElement.scrollHeight - innerHeight), narrow = innerWidth < 860;
+  let prev = {}, prevM = {};
+  track = CUES.map(c => {
+    const el = document.getElementById(c.sec);
+    prev = { ...prev, ...c.shot }; prevM = { ...prevM, ...(c.m || {}) };
+    return { p: clamp01((el.offsetTop + c.at * Math.max(0, el.offsetHeight - innerHeight)) / max), shot: narrow ? { ...prev, ...prevM } : { ...prev } };
+  });
+}
+function shotAt(p) {
+  if (p <= track[0].p) return { ...track[0].shot };
+  let i = 0;
+  while (i < track.length - 2 && p > track[i + 1].p) i++;
+  const a = track[i].shot, b = track[i + 1].shot, t = ease((p - track[i].p) / Math.max(1e-4, track[i + 1].p - track[i].p));
+  const out = {};
+  for (const k of SHOT_KEYS) out[k] = a[k] + (b[k] - a[k]) * t;
+  return out;
+}
+const rainAt = () => {   // runs straight with the scroll through the jar chapter, so captions keep pace
+  const span = Math.max(1, jarSec.offsetHeight - innerHeight);
+  return clamp01(((scrollY - jarSec.offsetTop) / span - .03) / .94);
+};
+
+/* ---------- caption card ---------- */
+const $ = id => document.getElementById(id);
+const bars = [...$('bars').querySelectorAll('b')];
+let shownItem = 0;
+function updateCard(rain) {
+  const idx = Math.min(6, Math.max(0, Math.floor(rain / .125)));
+  if (idx !== shownItem) {
+    shownItem = idx; const it = ITEMS[idx];
+    $('count').textContent = `${String(idx + 1).padStart(2, '0')} / 07`;
+    $('itemName').textContent = it.name; $('itemStory').textContent = it.story; $('itemLine').textContent = it.line; $('itemLink').href = it.href;
+  }
+  let landed = 0;
+  bars.forEach((b, i) => { const t = clamp01((rain - KEEPSAKES[i].start) / .15); b.style.transform = `scaleX(${t})`; if (t >= 1) landed++; });
+  $('landed').textContent = `${landed} of 7 in the jar`;
+}
+
+/* ---------- sizing and adaptive quality ---------- */
+const dim = $('dim');
+function resize() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setPixelRatio(pixelRatio); renderer.setSize(w, h, false);
+  composer.setPixelRatio(pixelRatio); composer.setSize(w, h);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+  const scale = h * pixelRatio / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
+  coneDust.uniforms.uScale.value = roomDust.uniforms.uScale.value = puffMat.uniforms.uScale.value = scale;
+  measure();
+}
+addEventListener('resize', resize);
+document.fonts?.ready.then(measure);
+resize();
+
+let fpsN = 0, fpsT = 0, downgrades = 0;
+function adapt(dt) {
+  fpsN++; fpsT += dt;
+  if (fpsT < 2) return;
+  const fps = fpsN / fpsT; fpsN = fpsT = 0;
+  if (fps >= 40 || downgrades > 1 || document.hidden) return;
+  downgrades++;
+  if (pixelRatio > 1) { pixelRatio = 1; resize(); } else bloom.enabled = false;
+}
+
+/* ---------- the loop: one clock ---------- */
+const state = shotAt(0);
+const look = new V3(), right = new V3(), up = new V3(), q = new THREE.Quaternion(), pos = new V3();
+let time = 0, last = performance.now(), lastRain = 0;
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  if (!reduceMotion) time += dt;
+  const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+  const target = shotAt(clamp01(scrollY / max));
+  const k = reduceMotion ? 1 : 1 - Math.exp(-dt * 3.2);
+  for (const key of SHOT_KEYS) state[key] += (target[key] - state[key]) * k;
+
+  // the rain
+  const rain = rainAt();
+  for (const [i, s] of KEEPSAKES.entries()) {
+    const t = clamp01((rain - s.start) / .15), fall = t * t;   // gravity: slow off the mark, fast at the bottom
+    pos.lerpVectors(s.air, s.rest, fall);
+    const bob = (1 - t) * (1 - t);
+    pos.x += Math.sin(time * .5 + i * 1.7) * .5 * bob;
+    pos.y += Math.sin(time * .7 + i * 2.3) * .8 * bob - Math.sin(clamp01((t - .9) / .1) * Math.PI) * .35;
+    s.obj.position.copy(pos);
+    q.slerpQuaternions(s.airR, s.restR, ease(t));
+    s.obj.quaternion.copy(q);
+    if (bob > 0) s.obj.rotateY(time * .12 * bob * (i % 2 ? 1 : -1));
+    if (t >= 1 && !s.done && rain > lastRain) s.landedAt = time;
+    s.done = t >= 1;
+    puffMat.uniforms.uAge.value[i] = time - s.landedAt;
+  }
+  lastRain = rain;
+  updateCard(rain);
+
+  // camera: orbit the target, framed by size, shifted sideways for the copy
+  const yaw = THREE.MathUtils.degToRad(state.yaw), pitch = THREE.MathUtils.degToRad(state.pitch);
+  const vfov = THREE.MathUtils.degToRad(camera.fov) / 2;
+  const dist = state.size / 2 / (Math.tan(vfov) * Math.min(1, camera.aspect));
+  look.set(state.tx, state.ty, state.tz);
+  camera.position.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)).multiplyScalar(dist).add(look);
+  camera.lookAt(look); camera.updateMatrixWorld();
+  right.setFromMatrixColumn(camera.matrixWorld, 0); up.setFromMatrixColumn(camera.matrixWorld, 1);
+  const visH = 2 * dist * Math.tan(vfov), visW = visH * camera.aspect;
+  const shift = right.multiplyScalar(-state.ox * visW).addScaledVector(up, -state.oy * visH);
+  camera.position.add(shift); look.add(shift); camera.lookAt(look);
+  dim.style.opacity = state.dim.toFixed(3);
+
+  windowMat.uniforms.uTime.value = coneDust.uniforms.uTime.value = roomDust.uniforms.uTime.value = time;
+  finish.uniforms.uTime.value = reduceMotion ? 0 : now * .001;
+  composer.render();
+  adapt(dt);
+  requestAnimationFrame(frame);
+}
+
+renderer.compileAsync(scene, camera).catch(() => {}).finally(() => {
+  $('gl').classList.add('ready'); loader.classList.add('done');
+  requestAnimationFrame(t => { last = t; frame(t); });
+});
+</script>
