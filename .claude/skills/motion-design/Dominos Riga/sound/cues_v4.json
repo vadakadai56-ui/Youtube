@@ -1,0 +1,218 @@
+{
+ "video": "/home/user/Youtube/.claude/skills/motion-design/Dominos Riga/out/Dominos Riga 2+1 v4 - 1080p.mp4",
+ "keep_audio": "no",
+ "base_audio": [
+  {
+   "file": "/home/user/Youtube/.claude/skills/motion-design/Dominos Riga/sound/music_bed_v4.wav",
+   "keep_level": true,
+   "gain_db": -6
+  }
+ ],
+ "cues": [
+  {
+   "t": 0.36,
+   "label": "domino 1 knocks the next",
+   "file": "/root/brand-sfx/wood/impactWood_light_000.ogg",
+   "role": "foley",
+   "gain_db": -3.0,
+   "pitch": 2,
+   "anchor": "arrive"
+  },
+  {
+   "t": 0.53,
+   "label": "domino 2 knocks the next",
+   "file": "/root/brand-sfx/wood/impactWood_light_001.ogg",
+   "role": "foley",
+   "gain_db": -2.4,
+   "pitch": 1,
+   "anchor": "arrive"
+  },
+  {
+   "t": 0.7,
+   "label": "domino 3 knocks the next",
+   "file": "/root/brand-sfx/wood/impactWood_light_002.ogg",
+   "role": "foley",
+   "gain_db": -1.8,
+   "pitch": 2,
+   "anchor": "arrive"
+  },
+  {
+   "t": 0.87,
+   "label": "domino 4 knocks the next",
+   "file": "/root/brand-sfx/wood/impactWood_light_003.ogg",
+   "role": "foley",
+   "gain_db": -1.2000000000000002,
+   "pitch": 0,
+   "anchor": "arrive"
+  },
+  {
+   "t": 1.04,
+   "label": "domino 5 knocks the next",
+   "file": "/root/brand-sfx/wood/impactWood_light_004.ogg",
+   "role": "foley",
+   "gain_db": -0.6000000000000001,
+   "pitch": 1,
+   "anchor": "arrive"
+  },
+  {
+   "t": 1.21,
+   "label": "last domino hits the tile",
+   "file": "/root/brand-sfx/wood/impactWood_medium_001.ogg",
+   "role": "hit",
+   "gain_db": -3,
+   "anchor": "arrive",
+   "layers": [
+    {
+     "dt": 0.0,
+     "file": "/root/brand-sfx/pop/hard-pop-click.mp3",
+     "role": "pop",
+     "gain_db": -8
+    }
+   ]
+  },
+  {
+   "t": 2.4,
+   "label": "\"2\" slides out",
+   "file": "/root/brand-sfx/click/cool-interface-click-tone.mp3",
+   "role": "click"
+  },
+  {
+   "t": 2.55,
+   "label": "\"+1\" slides out",
+   "file": "/root/brand-sfx/click/cool-interface-click-tone.mp3",
+   "role": "click",
+   "pitch": 7
+  },
+  {
+   "t": 4.1,
+   "label": "dive into blue half",
+   "file": "/root/brand-sfx/whoosh/cinematic-whoosh-fast-transition.mp3",
+   "role": "whoosh",
+   "anchor": "peak"
+  },
+  {
+   "t": 4.35,
+   "label": "pizza 1 lands",
+   "file": "/root/brand-sfx/pop/long-pop.mp3",
+   "role": "pop",
+   "gain_db": -2
+  },
+  {
+   "t": 4.47,
+   "label": "pizza 2 lands",
+   "file": "/root/brand-sfx/pop/long-pop.mp3",
+   "role": "pop",
+   "gain_db": -4,
+   "pitch": 2
+  },
+  {
+   "t": 6.67,
+   "label": "whip-pan to red half",
+   "file": "/root/brand-sfx/whoosh/fast-whoosh-transition.mp3",
+   "role": "whoosh",
+   "anchor": "peak"
+  },
+  {
+   "t": 7.28,
+   "label": "gift pizza stamp",
+   "file": "/root/brand-sfx/pop/hard-pop-click.mp3",
+   "role": "pop",
+   "layers": [
+    {
+     "dt": 0.0,
+     "file": "/root/brand-sfx/whoosh/movie-whoosh-impact-presentation.mp3",
+     "role": "hit",
+     "gain_db": -10,
+     "max_dur": 0.9
+    }
+   ]
+  },
+  {
+   "t": 9.55,
+   "label": "pull back to logo",
+   "file": "/root/brand-sfx/whoosh/swirling-whoosh.mp3",
+   "role": "whoosh",
+   "anchor": "peak",
+   "gain_db": -2
+  },
+  {
+   "t": 9.3,
+   "label": "pizza back to dot 1",
+   "file": "/root/brand-sfx/wood/impactWood_light_002.ogg",
+   "role": "foley",
+   "pitch": 4,
+   "gain_db": -7
+  },
+  {
+   "t": 9.42,
+   "label": "pizza back to dot 2",
+   "file": "/root/brand-sfx/wood/impactWood_light_000.ogg",
+   "role": "foley",
+   "pitch": 2,
+   "gain_db": -7
+  },
+  {
+   "t": 9.54,
+   "label": "pizza back to dot 3",
+   "file": "/root/brand-sfx/wood/impactWood_light_003.ogg",
+   "role": "foley",
+   "gain_db": -7
+  },
+  {
+   "t": 11.8,
+   "label": "logo moves into place",
+   "file": "/root/brand-sfx/whoosh/air-woosh.mp3",
+   "role": "whoosh",
+   "anchor": "peak",
+   "gain_db": -6,
+   "max_dur": 1.0
+  },
+  {
+   "t": 12.05,
+   "label": "wordmark slides out",
+   "file": "/root/brand-sfx/pop/explainer-pops-whoosh-light-pop.mp3",
+   "role": "pop",
+   "gain_db": -4
+  },
+  {
+   "t": 12.3,
+   "label": "pill pops",
+   "file": "/root/brand-sfx/pop/bubble-pop-up.mp3",
+   "role": "pop",
+   "pitch": -2,
+   "gain_db": -2
+  },
+  {
+   "t": 12.9,
+   "label": "type M",
+   "file": "/root/brand-sfx/click/typewriter-soft-click.mp3",
+   "role": "click"
+  },
+  {
+   "t": 13.0,
+   "label": "type O",
+   "file": "/root/brand-sfx/click/typewriter-soft-click.mp3",
+   "role": "click"
+  },
+  {
+   "t": 13.1,
+   "label": "type R",
+   "file": "/root/brand-sfx/click/typewriter-soft-click.mp3",
+   "role": "click"
+  },
+  {
+   "t": 13.2,
+   "label": "type E",
+   "file": "/root/brand-sfx/click/typewriter-soft-click.mp3",
+   "role": "click"
+  },
+  {
+   "t": 13.4,
+   "label": "light sweep",
+   "file": "/root/brand-sfx/shimmer/magic-sparkle-whoosh.mp3",
+   "role": "chime",
+   "anchor": "peak",
+   "gain_db": -6
+  }
+ ]
+}
