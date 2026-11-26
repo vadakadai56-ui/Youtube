@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="lv"><head><meta charset="utf-8"><title>Domino's Riga 2+1 v3</title>
+<style>
+  @font-face { font-family: M; src: url("assets/Montserrat-Black.ttf"); font-weight: 900; }
+  @font-face { font-family: M; src: url("assets/Montserrat-ExtraBold.ttf"); font-weight: 800; }
+  @font-face { font-family: M; src: url("assets/Montserrat-SemiBold.ttf"); font-weight: 600; }
+  html,body{margin:0;background:#000;height:100%} body{display:flex;align-items:center;justify-content:center}
+  canvas{height:100vh;aspect-ratio:9/16;display:block}
+</style></head><body><canvas id="c"></canvas>
+<script>
+// Domino's Riga 2+1, v2: "2+1 has always been in our logo". ONE continuous camera over a vector rebuild of the domino tile.
+// 2D canvas, 1080x1920. Page contract: renderAt(t), TOTAL, ready, EVENTS, ?t=, ?scale=. All beat times live in B.
+// v3, from treatment.md "Always 2+1": three taps, the tile forms, the count slides out, dive, whip-pan, pull back, the ask.
+const B = { d1: 0.2, d2: 0.55, d3: 0.9, tile: 1.2, fill: 1.3, nums: 2.4, numsOut: 3.4, dive: 3.6, diveEnd: 4.8, l2: 5.0, l2out: 6.1,
+  pan: 6.4, panEnd: 6.95, l3: 7.15, l3out: 8.45, back: 8.7, backEnd: 10.4, rotEnd: 10.6, l4: 9.75, l4out: 11.15, logo: 11.35, logoEnd: 12.2,
+  pill: 12.3, l5: 12.95, sweep: 13.0, END: 15 };
+const W = 1080, H = 1920, C = [540, 960], q = new URLSearchParams(location.search), SCALE = parseFloat(q.get('scale') || '1');
+const BLUE = '#006491', RED = '#E31837';
+const cv = document.getElementById('c'); cv.width = W * SCALE; cv.height = H * SCALE; const MAIN = cv.getContext('2d');
+const mk = () => { const c = document.createElement('canvas'); c.width = cv.width; c.height = cv.height; return c; };
+const TMP = mk(), ACC = mk(), SW = mk(); let ctx;
+const clamp01 = v => Math.max(0, Math.min(1, v)), lerp = (a, b, k) => a + (b - a) * k, prog = (t, a, b) => clamp01((t - a) / (b - a));
+const outExpo = k => (k = clamp01(k)) >= 1 ? 1 : 1 - Math.pow(2, -10 * k), outCubic = k => 1 - Math.pow(1 - clamp01(k), 3);
+const ioc = (t, a, b) => { const k = prog(t, a, b); return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; }, sine = k => 0.5 - 0.5 * Math.cos(Math.PI * clamp01(k));
+const img = s => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = s; });
+let LOGO, P = {};
+
+// The tile in its own frame (image px, measured from the official PNG rotated level): blue left, red right, centre (0,0).
+const T = { outer: [-199, -103, 398, 206, 12], half: 91.25, hc: 96.75, gap: 5.5, dotR: 32,
+  dots: [[-129.25, -33.5], [-63.75, 34], [96.75, 0]] };   // two on the blue half, one on the red half
+// Official logo PNG (2000x500): tile centre, tile + wordmark boxes, visible bounding box. In the PNG the tile is turned -45 degrees.
+const G = { tileC: [309.5, 244.5], tile: [107, 42, 513, 448], word: [520, 150, 1932, 450], box: [107, 42, 1931, 447] };
+const LS = 0.49, LCY = 800;   // end logo scale and the y of its visible centre
+const logoX = x => C[0] + (x - (G.box[0] + G.box[2]) / 2) * LS, logoY = y => LCY + (y - (G.box[1] + G.box[3]) / 2) * LS;
+
+// ONE camera: screen = O + Z * R(rot) * (world - F). Zoom only goes in until 9.0 s, then only out; rotation only turns one way.
+function cam(t) {
+  const lz = Math.log(2.0) + Math.log(2.35 / 2.0) * sine(prog(t, 0, B.dive)) + Math.log(11.0 / 2.35) * ioc(t, B.dive, B.diveEnd)
+    + Math.log(11.3 / 11.0) * prog(t, B.diveEnd, B.pan) + Math.log(11.5 / 11.3) * ioc(t, B.pan, B.panEnd) + Math.log(11.9 / 11.5) * prog(t, B.panEnd, B.back)
+    + Math.log(1.95 / 11.9) * ioc(t, B.back, B.backEnd) + Math.log(1.88 / 1.95) * prog(t, B.backEnd, B.logo) + Math.log(LS / 1.88) * ioc(t, B.logo, B.logoEnd);
+  const rot = -100 + 10 * outCubic(prog(t, 0, B.dive)) + 45 * ioc(t, B.back, B.rotEnd);
+  const fx = lerp(lerp(lerp(0, -T.hc, ioc(t, B.dive, B.diveEnd)), T.hc, ioc(t, B.pan, B.panEnd)), 0, ioc(t, B.back, B.backEnd));
+  const k = ioc(t, B.logo, B.logoEnd), O = [lerp(C[0], logoX(G.tileC[0]), k), lerp(C[1], logoY(G.tileC[1]), k)];
+  const Z = Math.exp(lz), a = rot * Math.PI / 180;
+  return { Z, rot: a, F: [fx, 0], O, p: w => { const x = w[0] - fx, y = w[1]; return [O[0] + Z * (x * Math.cos(a) - y * Math.sin(a)), O[1] + Z * (x * Math.sin(a) + y * Math.cos(a))]; } };
+}
+function withCam(c, fn) { ctx.save(); ctx.translate(c.O[0], c.O[1]); ctx.rotate(c.rot); ctx.scale(c.Z, c.Z); ctx.translate(-c.F[0], -c.F[1]); fn(); ctx.restore(); }
+
+function tile(t, c, a) {   // grows around the dots, then each half fills outward from its own dots
+  const kt = outExpo(prog(t, B.tile, B.tile + 0.7)); if (kt <= 0 || a <= 0) return;
+  withCam(c, () => {
+    ctx.globalAlpha = a; ctx.save(); ctx.scale(lerp(0.82, 1, kt), lerp(0.82, 1, kt)); ctx.globalAlpha = a * clamp01(kt * 2.5);
+    const [x, y, w, h, r] = T.outer; ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.fillStyle = '#fff'; ctx.fill(); ctx.restore();
+    [[-1, BLUE, B.fill, [-96.5, 0]], [1, RED, B.fill + 0.05, T.dots[2]]].forEach(([s, col, t0, o]) => {
+      const kf = outCubic(prog(t, t0, t0 + 0.65)); if (kf <= 0) return;
+      ctx.save(); ctx.beginPath(); ctx.arc(o[0], o[1], lerp(T.dotR, 140, kf), 0, 7); ctx.clip();
+      const x0 = s < 0 ? -T.hc - T.half : T.gap; ctx.beginPath();
+      ctx.roundRect(x0, -T.half, T.half * 2 - (T.hc - T.half - T.gap), T.half * 2, s < 0 ? [10, 0, 0, 10] : [0, 10, 10, 0]); ctx.fillStyle = col; ctx.fill(); ctx.restore();
+    });
+  });
+}
+function dot(t, c, i) {   // a dot of the tile; in "pizza mode" it moves to an art-directed spot and the pizza appears on it
+  const tA = [B.d1, B.d2, B.d3][i], kk = prog(t, tA, tA + 0.22); if (kk <= 0) return;
+  const ka = lerp(1.4, 1, outCubic(kk)), fa = clamp01(kk * 4);   // a dot is SET DOWN like a domino: drops from 140% to 100% in 0.22 s
+  const blue = i < 2, m = (blue ? ioc(t, B.dive + 0.2, B.diveEnd + 0.2) : ioc(t, B.pan + 0.4, B.panEnd + 0.4)) * (1 - ioc(t, B.back, B.back + 0.9));
+  const base = c.p(T.dots[i]), anchor = c.p(blue ? [-T.hc, 0] : [T.hc, 0]);
+  const des = blue ? [anchor[0] + (i ? 215 : -215), anchor[1] + (i ? -235 : 235)] : [anchor[0], anchor[1] + 60], rd = blue ? 245 : 360;
+  const x = lerp(base[0], des[0], m), y = lerp(base[1], des[1], m), r = lerp(T.dotR * c.Z, rd, m) * ka;
+  if (x < -r || x > W + r || y < -r || y > H + r) return;
+  // pulse ring when the dot first appears
+  const pr = prog(t, tA + 0.18, tA + 0.7);
+  ctx.save(); ctx.globalAlpha *= fa;
+  if (pr > 0 && pr < 1) { ctx.save(); ctx.globalAlpha *= 0.35 * (1 - pr); ctx.strokeStyle = '#fff'; ctx.lineWidth = 6 * (1 - pr) + 1; ctx.beginPath(); ctx.arc(x, y, r + 8 + pr * 60, 0, 7); ctx.stroke(); ctx.restore(); }
+  ctx.save(); if (r > 120) { ctx.shadowColor = `rgba(0,0,0,${0.3 * prog(r, 120, 220)})`; ctx.shadowBlur = r * 0.18 * SCALE; ctx.shadowOffsetY = r * 0.06 * SCALE; }
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = '#fff'; ctx.fill(); ctx.restore(); ctx.restore();
+  const pa = prog(r, 110, 230); if (pa <= 0) return;
+  const im = [P.pep, P.mar, P.bbq][i], d = r * 2 / 1.05 * lerp(0.93, 1, pa), s = d / 470;
+  ctx.save(); ctx.globalAlpha = pa; ctx.translate(x, y); ctx.rotate((t * [9, -7, 8][i] + [0, 60, 20][i]) * Math.PI / 180); ctx.drawImage(im, -240 * s, -240 * s, 480 * s, 480 * s); ctx.restore();
+  // steam: soft wisps rising off a settled pizza
+  const sa = pa * m; if (sa <= 0.05) return;
+  ctx.save(); for (let j = 0; j < 3; j++) { const ph = (t * 0.32 + j / 3 + i * 0.17) % 1, wx = x + Math.sin(j * 2.1 + t * 1.1 + i) * r * 0.35, wy = y - r * 0.2 - ph * r * 1.3, wr = r * (0.35 + ph * 0.45);
+    const g = ctx.createRadialGradient(wx, wy, 0, wx, wy, wr); g.addColorStop(0, `rgba(255,255,255,${0.13 * sa * Math.sin(Math.PI * ph)})`); g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g; ctx.fillRect(wx - wr, wy - wr, wr * 2, wr * 2); } ctx.restore();
+}
+function num(str, x0, x1, y, size, tIn, tOut, t) {   // the count slides OUT from behind its half of the tile, then blurs away
+  const k = outExpo(prog(t, tIn, tIn + 0.7)), ko = sine(prog(t, tOut, tOut + 0.3)); if (k <= 0 || ko >= 1) return;
+  ctx.save(); ctx.font = `900 ${size}px M`; ctx.letterSpacing = `${-0.04 * size}px`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.globalAlpha = clamp01(k * 1.6) * (1 - ko); ctx.filter = `blur(${ko * 10 * SCALE}px)`; ctx.fillStyle = '#fff'; ctx.fillText(str, lerp(x0, x1, k), y); ctx.restore();
+}
+function words(str, x0, y, size, w, col, tIn, tOut, t, stagger = 0.08, align = 'center') {   // word by word: blur -> sharp, small rise; leaves the same way
+  ctx.save(); ctx.font = `${w} ${size}px M`; ctx.letterSpacing = `${-0.03 * size}px`; ctx.textBaseline = 'middle';
+  const ws = str.split(' '), sp = ctx.measureText(' ').width, wd = ws.map(s => ctx.measureText(s).width), tot = wd.reduce((a, b) => a + b, 0) + sp * (ws.length - 1);
+  let x = align === 'center' ? x0 - tot / 2 : x0;
+  ws.forEach((s, i) => {
+    const ki = outCubic(prog(t, tIn + i * stagger, tIn + i * stagger + 0.6)), ko = tOut ? sine(prog(t, tOut + i * 0.04, tOut + i * 0.04 + 0.35)) : 0, a = ki * (1 - ko);
+    if (a > 0.003) { ctx.globalAlpha = a; ctx.filter = `blur(${((1 - ki) * 14 + ko * 10) * SCALE}px)`; ctx.fillStyle = col; ctx.fillText(s, x, y + (1 - ki) * 34 - ko * 24); }
+    x += wd[i] + sp;
+  });
+  ctx.restore();
+}
+
+function frame(t) {
+  ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0); ctx.globalAlpha = 1; ctx.filter = 'none';
+  const g = ctx.createRadialGradient(540, 900, 100, 540, 960, 1300); g.addColorStop(0, '#0E3354'); g.addColorStop(1, '#04121F'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  const c = cam(t), swap = prog(t, B.logoEnd, B.logoEnd + 0.15);   // vector tile hands over to the official PNG tile
+  const pb0 = c.p([-T.hc, 0]), pr0 = c.p([T.hc, 0]);   // the count is drawn BEFORE the tile, so it emerges from behind it
+  num('2', pb0[0] - 40, pb0[0] - 330, pb0[1], 170, B.nums, B.numsOut, t);
+  num('+1', pr0[0] + 40, pr0[0] + 330, pr0[1], 150, B.nums + 0.15, B.numsOut, t);
+  tile(t, c, 1 - swap);
+  if (swap < 1) { ctx.save(); ctx.globalAlpha = 1 - swap; [0, 1, 2].forEach(i => dot(t, c, i)); ctx.restore(); }
+  // "2" and "+1" beside the halves
+  words('Pērc 2 picas', 540, 300, 104, 900, '#fff', B.l2, B.l2out, t);
+  words('un saņem', 540, 250, 84, 900, '#fff', B.l3, B.l3out, t);
+  words('1 dāvanā!', 540, 360, 120, 900, '#fff', B.l3 + 0.18, B.l3out, t);
+  words('2+1.', 540, 1520, 130, 900, '#fff', B.l4, B.l4out, t);
+  words('Tas vienmēr ir bijis', 540, 1645, 58, 800, '#fff', B.l4 + 0.25, B.l4out, t);
+  words('mūsu logotipā.', 540, 1720, 58, 800, '#fff', B.l4 + 0.45, B.l4out, t);
+  if (t > B.logoEnd - 0.15) {
+    ctx.save(); ctx.globalAlpha = swap; const [x0, y0, x1, y1] = G.tile;
+    ctx.drawImage(LOGO, x0, y0, x1 - x0, y1 - y0, logoX(x0), logoY(y0), (x1 - x0) * LS, (y1 - y0) * LS); ctx.restore();
+    const kw = outExpo(prog(t, B.logoEnd - 0.15, B.logoEnd + 0.8)), clipX = logoX(G.tile[2]);
+    ctx.save(); ctx.beginPath(); ctx.rect(clipX, 0, W - clipX, H); ctx.clip(); ctx.globalAlpha = kw;
+    ctx.drawImage(LOGO, G.word[0], G.word[1], G.word[2] - G.word[0], G.word[3] - G.word[1], logoX(G.word[0]) - (1 - kw) * 380, logoY(G.word[1]), (G.word[2] - G.word[0]) * LS, (G.word[3] - G.word[1]) * LS);
+    ctx.restore();
+    const k = prog(t, B.sweep, B.sweep + 0.8);
+    if (k > 0 && k < 1) { const s = SW.getContext('2d'); s.setTransform(1, 0, 0, 1, 0, 0); s.clearRect(0, 0, SW.width, SW.height); s.setTransform(SCALE, 0, 0, SCALE, 0, 0);
+      s.drawImage(LOGO, logoX(0), logoY(0), 2000 * LS, 500 * LS); s.globalCompositeOperation = 'source-atop';
+      const x = lerp(logoX(G.box[0]) - 300, logoX(G.box[2]) + 300, sine(k)), gr = s.createLinearGradient(x - 140, 0, x + 140, 0);
+      gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.5, 'rgba(255,255,255,0.55)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+      s.fillStyle = gr; s.fillRect(0, 0, W, H); s.globalCompositeOperation = 'source-over'; ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(SW, 0, 0); ctx.restore(); }
+  }
+  // a dot grows, then stretches into the code pill
+  const kp = outExpo(prog(t, B.pill, B.pill + 0.5)), ks = ioc(t, B.pill + 0.25, B.pill + 0.95);
+  if (kp > 0) {
+    const r = 85 * kp, w = lerp(r * 2, 780, ks); ctx.save(); ctx.beginPath(); ctx.roundRect(540 - w / 2, 1080 - r, w, r * 2, r); ctx.fillStyle = '#fff'; ctx.fill(); ctx.restore();
+    words('Atlaides kods', 190, 1080, 40, 800, RED, B.pill + 0.5, 0, t, 0.08, 'left');
+    ctx.save(); ctx.font = '900 112px M'; const lw = [...'MORE'].map(ch => ctx.measureText(ch).width - 3); let lx = 890 - lw.reduce((a, b) => a + b); ctx.restore();
+    [...'MORE'].forEach((ch, i) => { const k = outCubic(prog(t, B.pill + 0.6 + 0.1 * i, B.pill + 1.0 + 0.1 * i));
+      if (k > 0) { ctx.save(); ctx.font = '900 112px M'; ctx.textBaseline = 'middle'; ctx.fillStyle = BLUE; ctx.globalAlpha = k; ctx.filter = `blur(${(1 - k) * 12 * SCALE}px)`; ctx.fillText(ch, lx, 1084 + (1 - k) * 26); ctx.restore(); }
+      lx += lw[i]; });
+  }
+  words('dominospizza.lv', 540, 1250, 54, 600, '#fff', B.l5, 0, t);
+  words('M vai L izmēra picas · min. pasūtījums €12,50', 540, 1760, 27, 600, 'rgba(255,255,255,0.75)', B.l5 + 0.3, 0, t, 0.02);
+  words('Noteikumi un ierobežojumi dominospizza.lv', 540, 1805, 27, 600, 'rgba(255,255,255,0.75)', B.l5 + 0.35, 0, t, 0.02);
+}
+
+const SUB = 10, SHUTTER = 0.5 / 30;   // motion blur: 10 sub-frames over a 180-degree shutter at 30 fps
+function render(t) {
+  const A = ACC.getContext('2d'); A.setTransform(1, 0, 0, 1, 0, 0); A.globalAlpha = 1; A.clearRect(0, 0, ACC.width, ACC.height);
+  for (let i = 0; i < SUB; i++) { const ts = Math.max(0, Math.min(B.END, t + (i / (SUB - 1) - 0.5) * SHUTTER));
+    ctx = TMP.getContext('2d'); frame(ts); A.globalAlpha = 1 / (i + 1); A.drawImage(TMP, 0, 0); }
+  MAIN.setTransform(1, 0, 0, 1, 0, 0); MAIN.drawImage(ACC, 0, 0);
+}
+window.TOTAL = B.END; window.renderAt = t => render(t);
+window.EVENTS = [['dot1', B.d1], ['dot2', B.d2], ['dot3', B.d3], ['tile_grow', B.tile], ['fill', B.fill], ['num_2', B.nums], ['num_plus1', B.nums + 0.15], ['dive_whoosh', B.dive],
+  ['pizzas_in', B.dive + 0.6], ['line_buy2', B.l2], ['pan_whoosh', B.pan], ['pizza3_in', B.pan + 0.75], ['line_gift', B.l3], ['pull_whoosh', B.back],
+  ['line_logo', B.l4], ['logo_move', B.logo], ['wordmark', B.logoEnd - 0.15], ['pill_pop', B.pill], ['pill_stretch', B.pill + 0.25], ['type_M', B.pill + 0.6],
+  ['type_O', B.pill + 0.7], ['type_R', B.pill + 0.8], ['type_E', B.pill + 0.9], ['url', B.l5], ['sweep', B.sweep]].map(([name, t]) => ({ name, t }));
+window.ready = Promise.all([img('assets/dominos_logo.8a9a8ffbe4ab.png'), img('assets/PepperoniTOP.png'), img('assets/MargheritaTOP.png'), img('assets/BarbecueTOP.png'),
+  document.fonts.load('900 40px M'), document.fonts.load('800 40px M'), document.fonts.load('600 40px M')]).then(([l, a, b, c]) => {
+  LOGO = l; P = { pep: a, mar: b, bbq: c };
+  if (q.has('t')) render(parseFloat(q.get('t'))); else (function tick(n) { render((n / 1000) % B.END); requestAnimationFrame(tick); })(0);
+  return true;
+});
+</script></body></html>
