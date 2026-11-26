@@ -1,0 +1,548 @@
+<title>Dustlight Lens</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="A brass cinema projector lens, built in code and rendered live in the browser. Scroll to take it apart; hold to run the projector.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one fixed WebGL canvas behind; story sections scroll over it. Copy sits left on wide screens, at the bottom on phones. */
+:root{
+  --room:#120f0c;      /* projection booth, warm umber black */
+  --room-2:#1e1914;
+  --brass:#d6ad6a;
+  --beam:#f4e7c9;      /* lamp light */
+  --dust:#a39580;
+  --line:rgba(244,231,201,.18);
+  --f-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --f-body:"Instrument Sans",system-ui,-apple-system,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+html,body{background:var(--room);color:var(--beam)}
+body{font-family:var(--f-body);font-size:17px;line-height:1.55;overflow-x:clip}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;opacity:0;transition:opacity 1.4s ease}
+#gl.ready{opacity:1}
+#shade{position:fixed;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(18,15,12,.72) 0%,rgba(18,15,12,.25) 38%,transparent 60%)}
+#labels{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0}
+#labels svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#labels line{stroke:var(--brass);stroke-width:1;stroke-opacity:.7}
+#labels circle{fill:var(--brass)}
+.lbl{position:absolute;left:0;top:0;font-family:var(--f-mono);font-size:11px;line-height:1.35;letter-spacing:.04em;white-space:nowrap;color:var(--beam);background:rgba(18,15,12,.78);border:1px solid var(--line);padding:4px 7px;border-radius:3px}
+.lbl b{display:block;font-weight:500;color:var(--brass);text-transform:uppercase;letter-spacing:.12em;font-size:10px}
+
+header{position:fixed;top:0;left:0;right:0;z-index:4;display:flex;justify-content:space-between;align-items:center;
+  padding-top:calc(14px + env(safe-area-inset-top,0px));padding-bottom:14px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.14em;text-transform:uppercase;color:var(--beam);text-decoration:none}
+.brand span{color:var(--brass)}
+.yt{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--beam);text-decoration:none;border:1px solid var(--line);padding:8px 12px;border-radius:999px;background:rgba(18,15,12,.5)}
+.yt:hover,.yt:focus-visible{border-color:var(--brass);color:var(--brass)}
+
+main{position:relative;z-index:3}
+section{min-height:100svh;display:flex;align-items:center;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14vh}
+.copy{max-width:31rem;display:grid;gap:18px;margin-left:clamp(0px,5vw,72px)}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass)}
+h1,h2{font-family:var(--f-display);font-weight:900;text-transform:uppercase;line-height:.9;letter-spacing:.01em;margin:0;text-wrap:balance}
+h1{font-size:clamp(3.4rem,8.4vw,7.4rem)}
+h2{font-size:clamp(2.8rem,6.2vw,5.4rem)}
+p{margin:0;color:rgba(244,231,201,.82);max-width:30rem}
+.spec{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.06em;color:var(--dust);border-top:1px solid var(--line);padding-top:12px;font-variant-numeric:tabular-nums}
+
+button{font:inherit;color:inherit}
+.toggle{justify-self:start;font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;background:transparent;border:1px solid var(--line);padding:10px 14px;border-radius:999px;cursor:pointer}
+.toggle[aria-pressed="true"]{border-color:var(--brass);color:var(--brass)}
+.toggle:focus-visible,.hold:focus-visible,.cta:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+
+.hold{justify-self:start;display:flex;align-items:center;gap:14px;background:transparent;border:0;padding:0;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:none;-webkit-touch-callout:none}
+.hold svg{width:72px;height:72px;flex:none}
+.hold .track{fill:rgba(18,15,12,.6);stroke:var(--line);stroke-width:2}
+.hold .ring{fill:none;stroke:var(--brass);stroke-width:3;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%}
+.hold .dot{fill:var(--beam)}
+.hold .t{font-family:var(--f-mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+.hold .t small{display:block;color:var(--dust);letter-spacing:.06em;text-transform:none;font-size:12px;margin-top:2px}
+
+.cta{justify-self:start;display:inline-block;font-family:var(--f-mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--room);background:var(--beam);padding:14px 22px;border-radius:999px}
+.cta:hover{background:var(--brass)}
+footer{position:relative;z-index:3;text-align:center;font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;color:var(--dust);padding-block:0 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+@media (max-width:760px){
+  #shade{background:linear-gradient(0deg,rgba(18,15,12,.94) 0%,rgba(18,15,12,.7) 34%,transparent 58%)}
+  section{align-items:flex-end;padding-block:10vh 7vh}
+  .copy{margin-left:0;gap:14px}
+  body{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){#gl{transition:none}}
+</style>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+<div id="shade"></div>
+<div id="labels" aria-hidden="true"><svg></svg></div>
+
+<header>
+  <a class="brand" href="https://www.youtube.com/@the.dustlight.stories" target="_blank" rel="noopener">Dust<span>light</span></a>
+  <a class="yt" href="https://www.youtube.com/@the.dustlight.stories" target="_blank" rel="noopener">Watch the stories</a>
+</header>
+
+<main>
+  <section data-cue="hero">
+    <div class="copy">
+      <div class="eyebrow">Stories about the things we forgot</div>
+      <h1>Somebody kept this lens.</h1>
+      <p>A brass cinema projector lens, built here entirely in code and lit like a photo studio. Nothing on this page is a video. Scroll to take it apart.</p>
+      <div class="spec">f/1.9 · 75 mm · Ø 66 mm · 8 parts</div>
+    </div>
+  </section>
+
+  <section data-cue="close">
+    <div class="copy">
+      <div class="eyebrow">Close-up · time runs at 1/12</div>
+      <h2>Four pieces of glass.</h2>
+      <p>Each element carries a thin coating that tints its reflections violet and green. The dust in front of it is drifting at one twelfth of its real speed.</p>
+      <div class="spec">Front element Ø 47 mm · 10 mm thick at the centre</div>
+    </div>
+  </section>
+
+  <section data-cue="apart">
+    <div class="copy">
+      <div class="eyebrow">Exploded view</div>
+      <h2>Eight parts. No screws.</h2>
+      <p>The rings thread onto the barrel. Take them off in order, front ring first, and the glass lifts straight out.</p>
+      <button class="toggle" id="blueprint" type="button" aria-pressed="false">Show the geometry</button>
+    </div>
+  </section>
+
+  <section data-cue="around">
+    <div class="copy">
+      <div class="eyebrow">Turned brass</div>
+      <h2>Cut on a lathe.</h2>
+      <p>Every part is one profile spun around the lens axis, the way a machinist cut the real thing. Move your cursor to turn the studio lights.</p>
+      <div class="spec">Bevels 0.5 mm · brass, satin barrel, polished rings</div>
+    </div>
+  </section>
+
+  <section data-cue="project">
+    <div class="copy">
+      <div class="eyebrow">The projector</div>
+      <h2>Hold to run the film.</h2>
+      <p>The lamp comes up, the shutter runs at 24 frames a second, and the dust in the room shows in the beam. Sound on.</p>
+      <button class="hold" id="hold" type="button" aria-label="Hold to run the projector">
+        <svg viewBox="0 0 72 72"><circle class="track" cx="36" cy="36" r="32"/><circle class="ring" id="ring" cx="36" cy="36" r="32" stroke-dasharray="201.06" stroke-dashoffset="201.06"/><circle class="dot" cx="36" cy="36" r="5"/></svg>
+        <span class="t" id="holdText">Hold<small>press and keep holding</small></span>
+      </button>
+    </div>
+  </section>
+
+  <section data-cue="outro" class="outro">
+    <div class="copy">
+      <div class="eyebrow">Dustlight</div>
+      <h2>Every story starts as dust in a beam of light.</h2>
+      <p>Short animated stories about the things we forgot. New ones every week.</p>
+      <a class="cta" href="https://www.youtube.com/@the.dustlight.stories" target="_blank" rel="noopener">Watch on YouTube</a>
+    </div>
+  </section>
+</main>
+<footer>Rendered live on your device · 0 video files · 1 canvas</footer>
+
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+
+const V2 = THREE.Vector2, clamp01 = v => Math.min(1, Math.max(0, v));
+const ease = t => { t = clamp01(t); return t * t * (3 - 2 * t); };
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const coarse = matchMedia('(pointer: coarse)').matches;
+
+/* ---------- renderer ---------- */
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
+let pixelRatio = Math.min(devicePixelRatio, coarse ? 1.75 : 2);
+renderer.setPixelRatio(pixelRatio);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x120f0c);
+const camera = new THREE.PerspectiveCamera(28, 1, 1, 6000);
+
+/* ---------- a tiny photo studio, baked into the environment ---------- */
+{
+  const s = new THREE.Scene();
+  s.background = new THREE.Color(0x030202);
+  const panel = (w, h, power, color, pos) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h),
+      new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(power), side: THREE.DoubleSide }));
+    m.position.set(...pos); m.lookAt(0, 0, 0); s.add(m);
+  };
+  panel(22, 14, 3.2, 0xfff0da, [-22, 20, 20]);   // key softbox, off-axis
+  panel(2.4, 34, 7, 0xffffff, [30, 4, 12]);      // strip, edge line
+  panel(2.4, 34, 4.5, 0xffdcae, [-26, 2, -20]);  // warm strip, back edge
+  panel(70, 5, .35, 0xffcf8f, [0, -20, 0]);      // floor bounce
+  panel(40, 40, 1.1, 0xfff4e4, [0, 30, 0]);      // overhead scrim, lights the side views
+  panel(30, 10, .6, 0xffe6c4, [6, -4, 30]);      // low front fill
+  const pm = new THREE.PMREMGenerator(renderer);
+  scene.environment = pm.fromScene(s, 0.02).texture;
+  pm.dispose();
+}
+
+/* ---------- materials ---------- */
+const mats = {
+  satin:    new THREE.MeshPhysicalMaterial({ color: 0xc89d62, metalness: 1, roughness: .3, anisotropy: .85 }),
+  polished: new THREE.MeshPhysicalMaterial({ color: 0xe6c288, metalness: 1, roughness: .07 }),
+  blacked:  new THREE.MeshPhysicalMaterial({ color: 0x2b2723, metalness: 1, roughness: .36, anisotropy: .6 }),
+  glass:    new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 0, roughness: 0, transmission: 1, thickness: 6, ior: 1.52,
+              iridescence: 1, iridescenceIOR: 1.35, iridescenceThicknessRange: [180, 420], emissive: 0xffb866, emissiveIntensity: 0 }),
+};
+const lineMat = new THREE.LineBasicMaterial({ color: 0xd6ad6a, transparent: true, opacity: .75 });
+
+/* ---------- geometry: profiles in real millimetres, spun on a lathe ---------- */
+// Profiles run counter-clockwise (x = radius, y = lens axis) so lathe normals face out.
+function rounded(pts, r = .5, steps = 3) {
+  const out = [], n = pts.length;
+  for (let i = 0; i < n; i++) {
+    const p = pts[i], a = pts[(i + n - 1) % n], b = pts[(i + 1) % n];
+    const p0 = p.clone().addScaledVector(a.clone().sub(p).normalize(), r);
+    const p1 = p.clone().addScaledVector(b.clone().sub(p).normalize(), r);
+    for (let k = 0; k <= steps; k++) {
+      const t = k / steps;
+      out.push(new V2().addScaledVector(p0, (1 - t) ** 2).addScaledVector(p, 2 * t * (1 - t)).addScaledVector(p1, t * t));
+    }
+  }
+  out.push(out[0].clone());
+  return out;
+}
+const P = a => a.map(([x, y]) => new V2(x, y));
+function lensProfile(r, tc, te, y, steps = 24) {   // biconvex element centred on y
+  const pts = [], sag = x => te / 2 + (tc - te) / 2 * (1 - (x / r) ** 2);
+  for (let i = 0; i <= steps; i++) { const x = r * i / steps; pts.push(new V2(x, y - sag(x))); }
+  for (let i = steps; i >= 0; i--) { const x = r * i / steps; pts.push(new V2(x, y + sag(x))); }
+  return pts;
+}
+const grooves = [];
+for (let y = 49; y < 69; y += 1.6) grooves.push([29.6, y], [29.6, y + .8], [28.7, y + .8], [28.7, y + 1.6]);
+
+const lens = new THREE.Group();        // lens axis = local Y, front at the top
+lens.position.y = -48;
+const rig = new THREE.Group();         // turns the axis to world +X
+rig.rotation.z = -Math.PI / 2;
+rig.add(lens); scene.add(rig);
+
+// lift: where the part travels in the exploded view (mm along the axis); order: top parts leave first
+const PARTS = [
+  { name: 'Rear mount',     spec: 'blacked steel · M48 thread', mat: 'blacked', lift: -92, order: .15,
+    prof: rounded(P([[20, -10], [24, -10], [24, 0], [33, 0], [33, 3.5], [20, 3.5]])) },
+  { name: 'Rear element',   spec: 'Ø 38 mm · crown glass', mat: 'glass', lift: -70, order: .25, prof: lensProfile(19, 7, 3, 9) },
+  { name: 'Inner element',  spec: 'Ø 42 mm · flint glass', mat: 'glass', lift: -64, order: .35, prof: lensProfile(21, 6, 2.6, 33) },
+  { name: 'Barrel',         spec: 'satin brass · 78.5 mm', mat: 'satin', lift: 0, order: 0,
+    prof: rounded(P([[22.5, 3.5], [26, 3.5], [26, 78], [27, 78], [27, 82], [22.5, 82]])) },
+  { name: 'Middle element', spec: 'Ø 42 mm · crown glass', mat: 'glass', lift: 62, order: .65, prof: lensProfile(21, 5, 2.4, 53) },
+  { name: 'Focus ring',     spec: 'knurled · 26 mm wide', mat: 'blacked', lift: 92, order: .75,
+    prof: rounded(P([[26.2, 46], [29.6, 46], ...grooves, [29.6, 72], [26.2, 72]]), .18, 2) },
+  { name: 'Front element',  spec: 'Ø 47 mm · coated', mat: 'glass', lift: 102, order: .88, prof: lensProfile(23.5, 10, 4, 87) },
+  { name: 'Front ring',     spec: 'polished brass · Ø 56 mm', mat: 'polished', lift: 130, order: 1,
+    prof: rounded(P([[24, 82], [28, 82], [28, 95], [25.6, 95], [24, 91]])) },
+];
+
+function meridians(prof, count) {        // profile lines for blueprint mode
+  const pos = [];
+  for (let k = 0; k < count; k++) {
+    const a = k / count * Math.PI * 2, c = Math.cos(a), s = Math.sin(a);
+    for (let i = 0; i < prof.length - 1; i++) {
+      const p = prof[i], q = prof[i + 1];
+      pos.push(p.x * s, p.y, p.x * c, q.x * s, q.y, q.x * c);
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  return g;
+}
+
+for (const p of PARTS) {
+  const geo = new THREE.LatheGeometry(p.prof, 160);
+  p.mesh = new THREE.Mesh(geo, mats[p.mat]);
+  p.lines = new THREE.Group();
+  p.lines.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo, 25), lineMat));
+  p.lines.add(new THREE.LineSegments(meridians(p.prof, 12), lineMat));
+  p.lines.visible = false;
+  p.obj = new THREE.Group(); p.obj.add(p.mesh, p.lines);
+  lens.add(p.obj);
+  const ys = p.prof.map(v => v.y);
+  p.mid = (Math.min(...ys) + Math.max(...ys)) / 2;
+}
+
+/* ---------- the beam and the dust ---------- */
+const BEAM_LEN = 1500;
+const beamGeo = new THREE.CylinderGeometry(300, 22, BEAM_LEN, 72, 1, true);
+beamGeo.translate(0, BEAM_LEN / 2, 0);
+const beamMat = new THREE.ShaderMaterial({
+  uniforms: { uOn: { value: 0 }, uColor: { value: new THREE.Color(0xffe2b0) } },
+  vertexShader: `varying float vH; varying float vEdge;
+    void main(){ vH = position.y / ${BEAM_LEN}.0; vec4 mv = modelViewMatrix * vec4(position,1.);
+      vec3 n = normalize(normalMatrix * normal); vEdge = abs(dot(n, normalize(-mv.xyz)));
+      gl_Position = projectionMatrix * mv; }`,
+  fragmentShader: `uniform float uOn; uniform vec3 uColor; varying float vH; varying float vEdge;
+    void main(){ float a = pow(vEdge, 2.2) * pow(1. - vH, 2.) * uOn * .22; gl_FragColor = vec4(uColor * a, a); }`,
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+});
+const beam = new THREE.Mesh(beamGeo, beamMat);
+beam.position.y = 95;
+lens.add(beam);
+
+const dustMat = (base, size) => new THREE.ShaderMaterial({
+  uniforms: { uTime: { value: 0 }, uOn: { value: 0 }, uBase: { value: base }, uSize: { value: size }, uScale: { value: 1 } },
+  vertexShader: `attribute float aSeed; uniform float uTime, uSize, uScale; varying float vSeed;
+    void main(){ vec3 p = position;
+      p += vec3(sin(uTime*.31 + aSeed*17.), sin(uTime*.23 + aSeed*29.), cos(uTime*.27 + aSeed*11.)) * 6.;
+      p.y += mod(uTime * 2.5 + aSeed * 40., 40.) - 20.;
+      vec4 mv = modelViewMatrix * vec4(p, 1.); vSeed = aSeed;
+      gl_PointSize = uSize * (.5 + fract(aSeed * 7.3)) * uScale / -mv.z; gl_Position = projectionMatrix * mv; }`,
+  fragmentShader: `uniform float uOn, uBase, uTime; varying float vSeed;
+    void main(){ float d = length(gl_PointCoord - .5); float a = smoothstep(.5, .0, d);
+      float tw = .6 + .4 * sin(uTime * 2. + vSeed * 50.);
+      float b = (uBase + uOn) * a * tw; gl_FragColor = vec4(vec3(1., .86, .62) * b, b); }`,
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+});
+function dust(count, pick, mat) {
+  const pos = new Float32Array(count * 3), seed = new Float32Array(count);
+  for (let i = 0; i < count; i++) { pick(pos, i * 3); seed[i] = Math.random(); }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1));
+  const pts = new THREE.Points(g, mat); pts.frustumCulled = false; return pts;
+}
+const beamDustMat = dustMat(0, 2.4);
+const beamDust = dust(coarse ? 900 : 1600, (a, o) => {   // inside the beam cone, in lens space
+  const y = 10 + Math.random() ** 1.4 * 900, R = 22 + 278 * y / BEAM_LEN;
+  const r = R * Math.sqrt(Math.random()) * .92, t = Math.random() * Math.PI * 2;
+  a[o] = Math.cos(t) * r; a[o + 1] = 95 + y; a[o + 2] = Math.sin(t) * r;
+}, beamDustMat);
+lens.add(beamDust);
+const roomDustMat = dustMat(.09, 1.6);
+scene.add(dust(coarse ? 260 : 420, (a, o) => {
+  a[o] = (Math.random() - .5) * 600; a[o + 1] = (Math.random() - .5) * 360; a[o + 2] = (Math.random() - .5) * 500;
+}, roomDustMat));
+
+/* ---------- post: MSAA HDR → bloom (glints only) → ACES → grain ---------- */
+const rt = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
+const composer = new EffectComposer(renderer, rt);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new V2(1, 1), .55, .5, .82);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+const grain = new ShaderPass({
+  uniforms: { tDiffuse: { value: null }, uTime: { value: 0 }, uAmt: { value: .04 } },
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }`,
+  fragmentShader: `uniform sampler2D tDiffuse; uniform float uTime, uAmt; varying vec2 vUv;
+    float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+    void main(){ vec4 c = texture2D(tDiffuse, vUv); float n = h(vUv * 1000. + uTime) - .5;
+      float vig = smoothstep(1.25, .3, length(vUv - .5) * 1.45);
+      c.rgb = c.rgb * mix(.78, 1., vig) + n * uAmt; gl_FragColor = c; }`,
+});
+composer.addPass(grain);
+
+/* ---------- camera script: one cue per section, framed by size in mm ---------- */
+const CUES = {
+  hero:    { size: 150, theta: 58,  phi: 72, tx: 0,  ox: .2,  explode: 0, beam: 0, ts: 1 },
+  close:   { size: 64,  theta: 84,  phi: 80, tx: 36, ox: .17, explode: 0, beam: 0, ts: 1 / 12 },
+  apart:   { size: 430, theta: 10,  phi: 74, tx: 20, ox: .17, explode: 1, beam: 0, ts: 1 },
+  around:  { size: 400, theta: -55, phi: 58, tx: 20, ox: .17, explode: 1, beam: 0, ts: 1 },
+  project: { size: 175, theta: 28,  phi: 76, tx: 0,  ox: .2,  explode: 0, beam: 0, ts: 1 },
+  outro:   { size: 210, theta: 66,  phi: 84, tx: 0,  ox: .2,   explode: 0, beam: 1, ts: 1 },
+};
+const KEYS = Object.keys(CUES.hero);
+const sections = [...document.querySelectorAll('section[data-cue]')];
+let anchors = [];
+function measure() {
+  const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+  anchors = sections.map(s => clamp01((s.offsetTop + s.offsetHeight / 2 - innerHeight / 2) / max));
+}
+function cueAt(p) {
+  let i = 0;
+  while (i < anchors.length - 2 && p > anchors[i + 1]) i++;
+  const a = CUES[sections[i].dataset.cue], b = CUES[sections[i + 1].dataset.cue];
+  const t = ease((p - anchors[i]) / Math.max(1e-4, anchors[i + 1] - anchors[i]));
+  const out = {};
+  for (const k of KEYS) out[k] = a[k] + (b[k] - a[k]) * t;
+  return out;
+}
+const state = { ...CUES.hero };
+const cursor = new V2(), cursorS = new V2();
+addEventListener('pointermove', e => cursor.set(e.clientX / innerWidth * 2 - 1, e.clientY / innerHeight * 2 - 1), { passive: true });
+
+/* ---------- sound: synthesized, no audio files ---------- */
+let audio = null;
+function startAudio() {
+  if (audio) { audio.ctx.resume(); return; }
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const out = ctx.createGain(); out.gain.value = .9; out.connect(ctx.destination);
+  const noise = ctx.createBuffer(1, ctx.sampleRate * .05, ctx.sampleRate);
+  const d = noise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const hum = ctx.createGain(); hum.gain.value = 0; hum.connect(out);
+  const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 320; lp.connect(hum);
+  for (const f of [50, 100.6, 150.3]) { const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.connect(lp); o.start(); }
+  const burst = (freq, q, gain, len) => {
+    const s = ctx.createBufferSource(); s.buffer = noise;
+    const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = q;
+    const g = ctx.createGain(), t = ctx.currentTime;
+    g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(.0001, t + len);
+    s.connect(f).connect(g).connect(out); s.start(t); s.stop(t + len + .01);
+  };
+  audio = { ctx, hum,
+    tick: () => burst(1800 + Math.random() * 600, 2.5, .05, .018),
+    clunk: () => { burst(180, 1.2, .5, .16); burst(900, 3, .15, .05); } };
+}
+
+/* ---------- hold to run the projector ---------- */
+const holdBtn = document.getElementById('hold'), ring = document.getElementById('ring'), holdText = document.getElementById('holdText');
+const RING = 201.06;
+let holding = false, holdP = 0, running = false;
+const press = e => { if (e.type === 'keydown' && (e.repeat || (e.key !== ' ' && e.key !== 'Enter'))) return;
+  e.preventDefault(); holding = true; startAudio(); if (e.pointerId !== undefined) holdBtn.setPointerCapture(e.pointerId); };
+const release = () => { holding = false; };
+holdBtn.addEventListener('pointerdown', press);
+holdBtn.addEventListener('keydown', press);
+for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture', 'keyup', 'blur']) holdBtn.addEventListener(ev, release);
+holdBtn.addEventListener('contextmenu', e => e.preventDefault());
+
+/* ---------- blueprint toggle ---------- */
+const bpBtn = document.getElementById('blueprint');
+bpBtn.addEventListener('click', () => {
+  const on = bpBtn.getAttribute('aria-pressed') !== 'true';
+  bpBtn.setAttribute('aria-pressed', on); bpBtn.textContent = on ? 'Show the brass' : 'Show the geometry';
+  for (const p of PARTS) { p.mesh.visible = !on; p.lines.visible = on; }
+});
+
+/* ---------- labels: projected every frame, alternating above and below the axis ---------- */
+const labelLayer = document.getElementById('labels'), svg = labelLayer.querySelector('svg');
+for (const [i, p] of PARTS.entries()) {
+  p.el = document.createElement('div'); p.el.className = 'lbl';
+  p.el.innerHTML = `<b>${p.name}</b>${p.spec}`; labelLayer.appendChild(p.el);
+  p.leader = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  p.pin = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); p.pin.setAttribute('r', 2.5);
+  svg.append(p.leader, p.pin);
+  p.side = i % 2 ? 1 : -1;
+  p.stack = (i >> 1) % 2 ? 1.5 : 1;   // stagger neighbours on the same side
+}
+const tmp = new THREE.Vector3();
+function updateLabels(e) {
+  const o = clamp01((e - .7) / .25);
+  labelLayer.style.opacity = o;
+  if (!o) return;
+  const W = innerWidth, H = innerHeight, gap = Math.min(150, H * .17);
+  for (const p of PARTS) {
+    tmp.set(0, p.mid, 0); p.obj.localToWorld(tmp); tmp.project(camera);
+    const x = (tmp.x * .5 + .5) * W, y = (-tmp.y * .5 + .5) * H, ly = y + p.side * gap * p.stack;
+    p.el.style.transform = `translate(${x}px,${ly}px) translate(-50%,${p.side < 0 ? '-100%' : '0'})`;
+    p.leader.setAttribute('x1', x); p.leader.setAttribute('y1', y); p.leader.setAttribute('x2', x); p.leader.setAttribute('y2', ly);
+    p.pin.setAttribute('cx', x); p.pin.setAttribute('cy', y);
+  }
+}
+
+/* ---------- sizing + adaptive quality ---------- */
+function resize() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setPixelRatio(pixelRatio); renderer.setSize(w, h, false);
+  composer.setPixelRatio(pixelRatio); composer.setSize(w, h);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+  const scale = h * pixelRatio / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
+  beamDustMat.uniforms.uScale.value = roomDustMat.uniforms.uScale.value = scale;
+  measure();
+}
+addEventListener('resize', resize);
+document.fonts?.ready.then(measure);
+resize();
+
+let fpsFrames = 0, fpsT = 0, downgrades = 0;
+function adapt(dt) {
+  fpsFrames++; fpsT += dt;
+  if (fpsT < 2) return;
+  const fps = fpsFrames / fpsT; fpsFrames = fpsT = 0;
+  if (fps >= 40 || downgrades > 1 || document.hidden) return;
+  downgrades++;
+  if (pixelRatio > 1) { pixelRatio = 1; resize(); } else bloom.enabled = false;
+}
+
+/* ---------- the loop: one clock drives everything ---------- */
+const look = new THREE.Vector3(), right = new THREE.Vector3(), up = new THREE.Vector3();
+let time = 0, last = performance.now(), lastBeat = 0;
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+  const target = cueAt(clamp01(scrollY / max));
+  const narrow = innerWidth < 760;
+  if (narrow) target.ox = 0;
+
+  holdP = clamp01(holdP + (holding ? dt / 1.1 : -dt / .4));
+  ring.setAttribute('stroke-dashoffset', RING * (1 - holdP));
+  const nowRunning = holding && holdP >= 1;
+  if (nowRunning && !running) { audio?.clunk(); holdText.firstChild.textContent = 'Running'; }
+  if (!nowRunning && running) holdText.firstChild.textContent = 'Hold';
+  running = nowRunning;
+  target.beam = Math.max(target.beam, running ? 1 : holdP * .15) * (1 - target.explode);
+
+  const k = reduceMotion ? 1 : 1 - Math.exp(-dt * 3.5);
+  for (const key of KEYS) state[key] += (target[key] - state[key]) * k;
+  cursorS.lerp(cursor, reduceMotion ? 1 : 1 - Math.exp(-dt * 2.5));
+
+  time += dt * state.ts;
+
+  // explode: staggered by order, top parts leave first and come back last
+  for (const p of PARTS) {
+    const delay = (1 - p.order) * .42;
+    p.obj.position.y = p.lift * ease((state.explode - delay) / .58);
+  }
+
+  // camera: spherical around the axis, framed by size, nudged sideways for the copy
+  const th = THREE.MathUtils.degToRad(state.theta), ph = THREE.MathUtils.degToRad(state.phi);
+  const vfov = THREE.MathUtils.degToRad(camera.fov) / 2;
+  const fit = Math.tan(vfov) * Math.min(1, camera.aspect);
+  const dist = state.size / 2 / fit;
+  look.set(state.tx, 0, 0);
+  camera.position.set(Math.sin(ph) * Math.sin(th), Math.cos(ph), Math.sin(ph) * Math.cos(th)).multiplyScalar(dist).add(look);
+  camera.lookAt(look);
+  camera.updateMatrixWorld();
+  right.setFromMatrixColumn(camera.matrixWorld, 0); up.setFromMatrixColumn(camera.matrixWorld, 1);
+  const visH = 2 * dist * Math.tan(vfov), visW = visH * camera.aspect;
+  const shift = right.multiplyScalar(-state.ox * visW).addScaledVector(up, narrow ? -.17 * visH : 0);
+  camera.position.add(shift); look.add(shift); camera.lookAt(look);
+
+  scene.environmentRotation.set(cursorS.y * .45, -cursorS.x * .8 + time * .02, 0);
+
+  // projector: shutter flicker at 24 fps on the shared clock
+  const shutter = .9 + .1 * (Math.sin(time * Math.PI * 48) > 0 ? 1 : 0);
+  const on = state.beam * shutter;
+  beamMat.uniforms.uOn.value = on;
+  beamDustMat.uniforms.uOn.value = on * .9;
+  mats.glass.emissiveIntensity = on * 1.6;
+  beamDustMat.uniforms.uTime.value = roomDustMat.uniforms.uTime.value = time;
+  grain.uniforms.uTime.value = reduceMotion ? 0 : now * .001;
+
+  if (audio) {
+    audio.hum.gain.setTargetAtTime(state.beam * .05, audio.ctx.currentTime, .08);
+    const beat = Math.floor(time * 24);
+    if (beat !== lastBeat && state.beam > .5) audio.tick();
+    lastBeat = beat;
+  }
+
+  updateLabels(state.explode);
+  composer.render();
+  adapt(dt);
+  requestAnimationFrame(frame);
+}
+
+// compile every shader behind the fade so the first scroll doesn't hitch
+renderer.compileAsync(scene, camera).catch(() => {}).finally(() => {
+  canvas.classList.add('ready');
+  requestAnimationFrame(t => { last = t; frame(t); });
+});
+</script>
