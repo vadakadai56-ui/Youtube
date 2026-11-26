@@ -1,0 +1,33 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; font-family: var(--font-display, Montserrat), sans-serif; color: #fff; }
+    #hook-line { position: absolute; left: 90px; right: 90px; top: 470px; text-align: center; font-size: 64px; font-weight: 800; letter-spacing: -0.03em; }
+    #hook-line span { display: inline-block; }
+    #hook-tile { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    #hook-tile-w { position: absolute; left: 360px; top: 780px; width: 360px; height: 360px; }
+    #hook-tile-w img { width: 100%; height: 100%; display: block; }
+    .hook-num { position: absolute; width: 260px; text-align: center; font-size: 150px; font-weight: 900; letter-spacing: -0.04em; line-height: 1; }
+    #hook-two { left: 140px; top: 985px; }
+    #hook-plus { left: 670px; top: 780px; color: #fff; }
+  </style>
+  <div id="root" data-composition-id="hook" data-width="1080" data-height="1920">
+    <h1 id="hook-line" class="clip" data-start="0" data-duration="3.27" data-track-index="2"><span>Look</span> <span>closely</span> <span>at</span> <span>our</span> <span>logo.</span></h1>
+    <div id="hook-tile" class="clip" data-start="0" data-duration="3.27" data-track-index="1" data-layout-allow-overlap>
+      <div id="hook-tile-w"><img src="assets/img/tile.png" alt="Domino's tile" /></div>
+    </div>
+    <div id="hook-two" class="hook-num clip" data-start="1.5" data-duration="1.77" data-track-index="3"><span id="hook-two-t" style="display:inline-block">2</span></div>
+    <div id="hook-plus" class="hook-num clip" data-start="2.05" data-duration="1.22" data-track-index="4"><span id="hook-plus-t" style="display:inline-block">+1</span></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#hook-tile-w", { opacity: 0, scale: 0.86, filter: "blur(14px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.9, ease: "expo.out" }, 0);
+    tl.fromTo("#hook-line span", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out", stagger: 0.08 }, 0.3);
+    // beat-grid: "2" at 1.64s, "+1" at 2.19s
+    tl.fromTo("#hook-two-t", { opacity: 0, y: 30, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 1.64);
+    tl.fromTo("#hook-plus-t", { opacity: 0, y: 30, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 2.19);
+    // exit: words and numbers blur out, the tile rises and shrinks to where the next scene holds it
+    tl.to(["#hook-line span", "#hook-two-t", "#hook-plus-t"], { opacity: 0, filter: "blur(8px)", duration: 0.22, ease: "power2.in", stagger: 0.03 }, 2.8);
+    tl.to("#hook-tile-w", { y: -320, scale: 0.55, duration: 0.42, ease: "power2.inOut" }, 2.85);
+    window.__timelines["hook"] = tl;
+  </script>
+</template>

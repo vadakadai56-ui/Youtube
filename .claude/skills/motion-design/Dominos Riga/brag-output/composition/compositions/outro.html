@@ -1,0 +1,26 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; font-family: var(--font-display, Montserrat), sans-serif; color: #fff; text-align: center; }
+    #outro-logo { position: absolute; left: 120px; top: 760px; width: 840px; height: 210px; }
+    #outro-logo img { width: 100%; height: 100%; display: block; object-fit: contain; }
+    #outro-code { position: absolute; left: 90px; right: 90px; top: 1020px; font-size: 60px; font-weight: 900; letter-spacing: -0.03em; }
+    #outro-ready { position: absolute; left: 90px; right: 90px; top: 1120px; font-size: 44px; font-weight: 600; letter-spacing: -0.02em; }
+    #outro-note { position: absolute; left: 90px; right: 90px; top: 1440px; font-size: 30px; font-weight: 600; color: rgba(255,255,255,0.65); }
+    #outro-code span, #outro-ready span { display: inline-block; }
+  </style>
+  <div id="root" data-composition-id="outro" data-width="1080" data-height="1920">
+    <div id="outro-logo" class="clip" data-start="0" data-duration="2.53" data-track-index="1"><img id="outro-logo-img" src="assets/img/dominos-logo.png" alt="Domino's" /></div>
+    <h1 id="outro-code" class="clip" data-start="0" data-duration="2.53" data-track-index="2"><span>2+1</span> <span>·</span> <span>kods</span> <span>MORE</span></h1>
+    <p id="outro-ready" class="clip" data-start="0" data-duration="2.53" data-track-index="3"><span>Ready</span> <span>when</span> <span>you</span> <span>are.</span></p>
+    <p id="outro-note" class="clip" data-start="0" data-duration="2.53" data-track-index="4"><span id="outro-note-t">Internal pitch · not for publishing</span></p>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // beat-locked: 17.47s, the logo lands with the bell
+    tl.fromTo("#outro-logo-img", { opacity: 0, scale: 0.96, filter: "blur(12px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, 0);
+    tl.fromTo("#outro-code span", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, ease: "power2.out", stagger: 0.067 }, 0.25);
+    tl.fromTo("#outro-ready span", { opacity: 0.3, color: "#7d8fa3" }, { opacity: 1, color: "#ffffff", duration: 0.2, ease: "power2.out", stagger: 0.08 }, 0.42);
+    tl.fromTo("#outro-note-t", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 0.25);
+    window.__timelines["outro"] = tl;
+  </script>
+</template>

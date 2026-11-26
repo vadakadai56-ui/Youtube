@@ -1,0 +1,23 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; font-family: var(--font-display, Montserrat), sans-serif; color: #fff; }
+    #film-line { position: absolute; left: 90px; right: 90px; top: 300px; text-align: center; font-size: 62px; font-weight: 800; letter-spacing: -0.03em; }
+    #film-line span { display: inline-block; }
+    #film-phone { position: absolute; left: 260px; top: 512px; width: 560px; height: 996px; }
+    #film-phone-w { position: absolute; inset: 0; border-radius: 64px; background: #0b0b0f; box-shadow: 0 40px 100px rgba(0,0,0,0.55), inset 0 0 0 2px rgba(255,255,255,0.12); }
+    #film-ad { position: absolute; left: 274px; top: 537px; width: 532px; height: 946px; border-radius: 50px; object-fit: cover; }
+  </style>
+  <div id="root" data-composition-id="film" data-width="1080" data-height="1920">
+    <h1 id="film-line" class="clip" data-start="0" data-duration="6.02" data-track-index="2"><span>So</span> <span>I</span> <span>made</span> <span>it</span> <span>the</span> <span>ad.</span></h1>
+    <div id="film-phone" class="clip" data-start="0" data-duration="6.02" data-track-index="1"><div id="film-phone-w"></div></div>
+    <video id="film-ad" class="clip" data-start="0" data-duration="6.02" data-media-start="3.0" data-track-index="3" muted playsinline src="assets/video/ad.mp4"></video>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#film-phone-w", { opacity: 0, scale: 0.92, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, 0);
+    tl.fromTo("#film-ad", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" }, 0.1);
+    tl.fromTo("#film-line span", { opacity: 0 }, { opacity: 1, duration: 0.16, ease: "power2.out", stagger: 0.07 }, 0.3);
+    tl.to("#film-line span", { opacity: 0, filter: "blur(8px)", duration: 0.22, ease: "power2.in", stagger: 0.03 }, 5.55);
+    window.__timelines["film"] = tl;
+  </script>
+</template>

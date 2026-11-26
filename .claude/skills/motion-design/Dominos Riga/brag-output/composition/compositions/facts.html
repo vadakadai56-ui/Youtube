@@ -1,0 +1,36 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; font-family: var(--font-display, Montserrat), sans-serif; color: #fff; }
+    #facts-stage { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    #facts-phone-w { position: absolute; left: 260px; top: 512px; width: 560px; height: 996px; transform-origin: 50% 0%; }
+    #facts-phone-body { position: absolute; inset: 0; border-radius: 64px; background: #0b0b0f; box-shadow: 0 40px 100px rgba(0,0,0,0.55), inset 0 0 0 2px rgba(255,255,255,0.12); }
+    #facts-ad { position: absolute; left: 14px; top: 25px; width: 532px; height: 946px; border-radius: 50px; object-fit: cover; }
+    .facts-chip { position: absolute; left: 110px; width: 860px; height: 96px; }
+    .facts-chip-w { width: 100%; height: 100%; border-radius: 48px; background: rgba(255,255,255,0.08); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center; gap: 18px; font-size: 36px; font-weight: 700; letter-spacing: -0.02em; }
+    .facts-chip-w i { width: 18px; height: 18px; border-radius: 50%; background: #E31837; flex: none; }
+    #facts-c1 { top: 1180px; } #facts-c2 { top: 1300px; } #facts-c3 { top: 1420px; }
+  </style>
+  <div id="root" data-composition-id="facts" data-width="1080" data-height="1920">
+    <div id="facts-stage">
+      <div id="facts-phone-w"><div id="facts-phone-body"></div>
+        <video id="facts-ad" class="clip" data-start="0" data-duration="4.25" data-media-start="10.75" data-track-index="2" muted playsinline src="assets/video/ad.mp4"></video>
+      </div>
+    </div>
+    <div id="facts-c1" class="facts-chip clip" data-start="0" data-duration="4.36" data-track-index="3"><div class="facts-chip-w"><i></i>One camera. No cuts.</div></div>
+    <div id="facts-c2" class="facts-chip clip" data-start="0" data-duration="4.36" data-track-index="4"><div class="facts-chip-w"><i></i>Logo, photos &amp; deal from dominospizza.lv</div></div>
+    <div id="facts-c3" class="facts-chip clip" data-start="0" data-duration="4.36" data-track-index="5"><div class="facts-chip-w"><i></i>15 s · 9:16 · with sound</div></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // the phone keeps its place from the last scene, then rises and shrinks to make room
+    tl.fromTo("#facts-phone-w", { scale: 1, y: 0 }, { scale: 0.62, y: -60, duration: 0.55, ease: "power2.inOut" }, 0);
+    // beat-grid: chip 1 at 13.64s, chip 2 at 14.20s, chip 3 at 14.73s (local 0.53 / 1.09 / 1.62), then the set holds
+    ["#facts-c1", "#facts-c2", "#facts-c3"].forEach((id, i) => {
+      tl.fromTo(id + " .facts-chip-w", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, [0.53, 1.09, 1.62][i]);
+    });
+    tl.to(".facts-chip-w", { opacity: 0, filter: "blur(8px)", duration: 0.22, ease: "power2.in", stagger: 0.04 }, 3.95);
+    tl.to("#facts-phone-w", { opacity: 0, scale: 0.4, y: 120, filter: "blur(10px)", duration: 0.35, ease: "power3.in" }, 4.0);
+    window.__timelines["facts"] = tl;
+  </script>
+</template>

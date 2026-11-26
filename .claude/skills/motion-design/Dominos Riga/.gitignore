@@ -4,3 +4,7 @@ site/
 out/
 sound/result/
 sound/music_bed.wav
+brag-output/*.mp4
+brag-output/composition/assets/video/
+brag-output/composition/.hyperframes/
+brag-output/composition/node_modules/
