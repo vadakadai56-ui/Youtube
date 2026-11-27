@@ -127,6 +127,22 @@ Metricool's free plan hit its limit at 13:30 on 23 Nov ("You have reached your M
 - Channel: create the "The Lost Toy Room" playlist (public) and set "Related video" on each part to the next part.
 - Old ball-sim Shorts were set to private by the owner.
 
+## Analytics (27 Nov 2026, weekly, Windsor: YouTube last 7 days, Instagram last 14 days)
+Nothing new went up after 24 Nov (Dustlight paused, then held for new characters), so these are the 20-23 Nov uploads.
+| Video | YT views | YT avg s | YT likes | YT subs | IG views | IG likes | IG shares |
+|---|---|---|---|---|---|---|---|
+| She waved at every train (Same Window) | 1537 | 24.4 | 20 | 1 | 1728 | 17 | 1 |
+| Every evening at 6, an empty swing | 1414 | 43.5 | 39 | 5 | 1253 | 58 | 0 |
+| Hotel out of a frozen river | 729 | 27.9 | 11 | 0 | 1199 | 31 | 0 |
+| Two cups of tea (Second Cup) | 130 | 34.9 | 8 | 0 | 1438 | 72 | 3 |
+| Lost toy room Part 2 | 277 | 33.2 | 4 | 0 | - | - | - |
+| Lost toy room Finale | 227 | 27.4 | 9 | 1 | - | - | - |
+| Lost toy room Part 1 | 31 | 31.8 | 1 | 0 | - | - | - |
+| She forgot everyone, Part 3 | 20 | 15.0 | 1 | 0 | - | - | - |
+huss.clip Reels: scared 149, NPC 130, L3 0 (Windsor; far below the 10K payout line). Comments and shares are near zero everywhere.
+By format: quiet emotional one-offs (swing, tea, train window) win on both platforms; how-it's-made (ice hotel) is mid; multi-part series lose most viewers after part 1. By character model: all of these use the pre-23-Nov figures; the owner now dislikes the current people, so the next look is open.
+Changes for next week: (1) lead with single emotional stories like The Empty Swing (best retention and subs), no new multi-part series; (2) re-render the held stories with the owner's new characters before anything else goes up; (3) end every video on a direct question so comments rise (currently ~1 per video).
+
 ## Analytics (21 Nov 2026, from YouTube Studio screenshot, last 28 days)
 - Channel: 8.2K views, 38.8 watch hours, 18 subscribers. Daily views peaked at about 2.7K on 20 Nov (story launch).
 - Top Shorts: Scissors was down to 1 (old ball-sim) 1.3K over ~6 days; Last ball standing (ball-sim) 1.2K over ~6 days; Lost Toy Room Part 1 1.1K over ~2 days; **The Second Cup 1.1K in ~1 day**; Lost Toy Room Part 3 1.0K over ~2 days.
