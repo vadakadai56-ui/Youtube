@@ -3,6 +3,11 @@
 Dustlight is a channel for **all kinds of stories**. Emotional twists were only the starting point (the first videos), not the house style: no format is the default. Every script stays original: our own characters, towns,
 gags and twists, never another creator's lines. All formats use the same pipeline (Blender low-poly look, an ElevenLabs voice, synthesized music plus real CC0 sounds).
 
+## Direction change (owner, 27 Nov 2026): no more story videos
+Story formats (emotional twists, series, narrated tales) are dropped: they did not get the reach. Keep only **science** and **meme**.
+New reference look: a stylised cinematic 3D character (high-end animated-film look, human proportions) talking straight to camera, one relatable punchline, word-by-word captions, an end card; 10 to 18 s. Made with an AI video model that does the dialogue and lip-sync (ElevenLabs Veo 3.1 Lite, about 2,400 credits per 8 s clip), not Blender. Every character is our own and named; never copy another account's characters or lines.
+The table below is kept as history; formats 1, 3 and other story formats are retired.
+
 ## Look (colour grade) chosen per video (owner, 22 Nov 2026: "why does it feel the same and dull")
 Every video sets `scene.LOOK` in its shots.py: **comedy** (Standard transform, contrasty, saturation x1.3, bright complementary palettes, never beige on beige), **dream** (soft, warm, slightly bright), **horror** (dark, high contrast, desaturated), **story** (AgX, gentle). Pick it in the style recipe with the character model. Comedy also needs faster cuts and bouncier motion.
 
