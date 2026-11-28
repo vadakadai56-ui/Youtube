@@ -6,6 +6,8 @@ gags and twists, never another creator's lines. All formats use the same pipelin
 ## Direction change (owner, 27 Nov 2026): no more story videos
 Story formats (emotional twists, series, narrated tales) are dropped: they did not get the reach. Keep only **science** and **meme**.
 New reference look: a stylised cinematic 3D character (high-end animated-film look, human proportions) talking straight to camera, one relatable punchline, word-by-word captions, an end card; 10 to 18 s. Made with an AI video model that does the dialogue and lip-sync (ElevenLabs Veo 3.1 Lite, about 2,400 credits per 8 s clip), not Blender. Every character is our own and named; never copy another account's characters or lines.
+Language: Manglish (English with Malayalam words and Kerala details). Host: Abhidev (the owner, 22, Pathanamthitta), as his own PS2-style 3D character (`channel/style-tests/abhidev-ps2-sheet-v2.png`, not committed). Every video ends on his sign-off: **"Ithu Kerala aanu. Logic optional."** (owner, 28 Nov 2026).
+
 The table below is kept as history; formats 1, 3 and other story formats are retired.
 
 ## Look (colour grade) chosen per video (owner, 22 Nov 2026: "why does it feel the same and dull")
